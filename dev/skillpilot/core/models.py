@@ -1,20 +1,21 @@
 from django.db import models
-from django.utils.translation import gettext_lazy as _ #library to create enums
+from django.utils.translation import gettext_lazy as _ # library used to create enums
 
+# students table
 class Student(models.Model):
 
-    #enum
+    # enum for the study-pattern
     class pattern(models.TextChoices):
         FULL_TIME = 'FT', _('Full-Time')
         PART_TIME = 'PT', _('Part-Time')
 
-    #enum
+    # enum for the study-mode 
     class mode(models.TextChoices): 
         ONLINE = 'online', _('Online')
         IN_PERSON = 'in-person', _('In-Person')
         HYBRID = 'hybrid', _('Hybrid')
 
-    #enum for contract length
+    # enum for contract length
     class contractLength(models.TextChoices):
         SIX_WEEKS = '6-W', _("6-weeks")
         TWELVE_WEEKS = '12-W', _("12-weeks")
@@ -33,25 +34,22 @@ class Student(models.Model):
     desiredContractLength = models.CharField(max_length=25, choices=contractLength.choices)
     willingRelocate = models.BooleanField()
     aspirations = models.CharField(max_length = 200)
-
-#internship table
-    
+ 
+# internship table  
 class Internship(models.Model):
 
-    #enum for pattern
+    # enum for pattern
     class pattern(models.TextChoices):
         FULL_TIME = 'FT', _('Full-Time')
         PART_TIME = 'PT', _('Part-Time')
 
-    #enum for mode
+    # enum for mode
     class mode(models.TextChoices): 
         ONLINE = 'online', _('Online')
         IN_PERSON = 'in-person', _('In-Person')
         HYBRID = 'hybrid', _('Hybrid')
 
-
-    #attributes for internship table
-        
+    # attributes for internship table
     internshipID = models.CharField(max_length = 10, primary_key= True)
     companyID = models.ForeignKey('core.Company', on_delete = models.CASCADE)
     recruiterID = models.ForeignKey('core.Recruiter', on_delete = models.CASCADE)
@@ -63,14 +61,10 @@ class Internship(models.Model):
     title = models.CharField(max_length = 30)
     minGPA = models.SmallIntegerField()
 
-
-
 # companies table
-    
 class Company(models.Model):
 
     #attributes for company table
-
     companyID = models.CharField(max_length = 10, primary_key = True)
     companyName = models.CharField(max_length = 50)
     industrySector = models.CharField(max_length = 30)
@@ -80,11 +74,9 @@ class Company(models.Model):
 
 
 # recruiter table
-    
 class Recruiter(models.Model):
 
-    #attributes for recruiter table
-
+    # attributes for recruiter table
     recruiterID = models.CharField(max_length = 10, primary_key = True)
     fullName = models.CharField(max_length=50)
     email = models.EmailField()
@@ -92,12 +84,9 @@ class Recruiter(models.Model):
     jobTitle = models.CharField(max_length = 40)
     
 # interviews table
-    
 class Interview(models.Model):
 
-
     #enum for interview outcomes
-
     class outcomes(models.TextChoices):
 
         ACCEPTED = 'accepted', _('Accepted')
@@ -113,11 +102,9 @@ class Interview(models.Model):
 
 
 # computedMatch Table
-    
 class computedMatch(models.Model):
 
     # table attributes
-     
     computedMatch = models.CharField(max_length = 10, primary_key = True)
     internshipID = models.ForeignKey('core.Internship', on_delete = models.CASCADE)
     studentID = models.ForeignKey('core.Student', on_delete = models.CASCADE)
@@ -125,11 +112,9 @@ class computedMatch(models.Model):
 
 
 # superUser table 
-    
 class SuperUser(models.Model):
 
-    #enum for privilege
-
+    # enum for privilege
     class privileges(models.TextChoices):
 
         READ = 'r', _('Read')
@@ -141,30 +126,3 @@ class SuperUser(models.Model):
     superUserID = models.CharField(max_length = 10, primary_key = True)
     fullName = models.CharField(max_length=50)
     privileges =  models.CharField(max_length = 1, choices = privileges.choices)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-    
-
-
-

@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+        <title>University of Aberdeen Placement</title>
+    </head>
+
+    <body class="page1">
+
+        <header>
+            <h1>
+                <a href="{% url 'home' %}">
+                    <img class="rb" src="{% static 'images/return-button.jpg' %}" alt="return button"/>
+                </a>
+            </h1>
+            <a href="https://www.abdn.ac.uk/">
+                <img class="smallimg" src="{% static 'images/unilogo.png' %}" alt="University of Aberdeen logo"/>
+            </a>
+        </header>
+
+        <nav class="main-nav">
+
+            <div class="topList">
+                <h2>Welcome to SkillPilot</h2>
+                <div class="ListCon">
+                    <li>Browse current internships</li>
+                    <li>Apply for current internship</li>
+                </div>
+            </div>
+
+            <ul>
+                <div class="Content">
+                    <li><a href="{% url 'internship' %}">Employer application</a></li>
+                    <li><a href="{% url 'student' %}">Student application</a></li>
+                    <li><a href="">Contacts</a></li>
+                </div>
+            </ul>
+
+        </nav>
+
+        <ul>
+            <div class="admin">
+                <h2>Admin Login</h2>
+                {% comment %} <li><a href="{% url 'logadmin' %}">Login</a></li> {% endcomment %}
+            </div>
+        </ul>
+
+    </body>
+</html>

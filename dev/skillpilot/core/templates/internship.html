@@ -1,0 +1,89 @@
+<!--
+# internship table  
+class Internship(models.Model):
+
+    # enum for pattern
+    class pattern(models.TextChoices):
+        FULL_TIME = 'FT', _('Full-Time')
+        PART_TIME = 'PT', _('Part-Time')
+
+    # enum for mode
+    class mode(models.TextChoices): 
+        ONLINE = 'online', _('Online')
+        IN_PERSON = 'in-person', _('In-Person')
+        HYBRID = 'hybrid', _('Hybrid')
+
+    # attributes for internship table
+    internshipID = models.CharField(max_length = 10, primary_key= True)
+    companyID = models.ForeignKey('core.Company', on_delete = models.CASCADE)
+    recruiterID = models.ForeignKey('core.Recruiter', on_delete = models.CASCADE)
+    contractMode = models.CharField(max_length=10, choices= mode.choices)
+    contractPattern = models.CharField(max_length = 2, choices= pattern.choices)
+    # number of internships availables in the company for that internship type
+    numberPositions = models.SmallIntegerField() 
+    field = models.CharField(max_length = 20)
+    title = models.CharField(max_length = 30)
+    minGPA = models.SmallIntegerField()
+-->
+
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <title>Student Internship Form</title>
+  </head>
+  <body class="IFORM">
+    <div class="form1" style="overflow-y: scroll">
+      <div class="top">
+        <header class="form1H">
+          University of Aberdeen: Work-based Placements/Learning in Applied
+          Health Sciences 2024
+        </header>
+
+        <p>
+          The survey will take approximately 9 minutes to complete. Many thanks
+          for your interest in hosting a Work-based Placement or Work-Based
+          Learning Experience for our Masters students in 2024. Please complete
+          the form below for each placement opportunity to enable us to take
+          plans forward and identify student matches. Thank you in advance and
+          we look forward to supporting your organisation.
+        </p>
+      </div>
+
+      <form method="post" action="{% url 'submit-internship' %}">
+        {% csrf_token %}
+        <div class="fields2">
+          <div class="input">
+            <label for="Title">Title<span>*</span></label>
+            <input type="text" name="Title" id="Title" placeholder="Enter title" required>
+            <br><br>
+            <label for="Company">Company<span>*</span></label>
+            <input type="text" name="Company" id="Company" placeholder="Enter company" required>
+            <br><br>
+            <label for="Field">Field<span>*</span></label>
+            <input type="text" name="Field" id="Field" placeholder="Enter field" required>
+            <br><br>
+            <label for="MinScore">Minimum Score<span>*</span></label>
+            <input type="number" name="MinScore" id="MinScore" placeholder="Enter minimum score" required>
+            <br><br>
+            <label for="Positions">Positions<span>*</span></label>
+            <input type="number" name="Positions" id="Positions" placeholder="Enter positions" required>
+            <br><br>
+          </div>
+          <div class="submit">
+            <input type="submit" value="Complete application" id="submit" />
+            <button onclick="goBack()">Return</button>
+
+            <script>
+              function goBack() {
+                window.history.back();
+              }
+            </script>
+          </div>
+            <br>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

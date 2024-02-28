@@ -1,0 +1,369 @@
+/*universal*/
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
+
+}
+
+textarea{
+    background: rgba(255,255,255,0.5);
+    outline-style: none;
+    width: 90%;
+    height: 100px;
+    padding: 20px;
+    border-radius: 5px;
+    margin-top: 10px;
+    resize: none;
+   
+}
+
+div.input input{
+    background: rgba(255,255,255,0.5);
+    border-width: 0.7px;
+    width: 100%;
+    border-color:  grey;
+    border-radius: 5px;
+    padding: 3px;
+
+}
+
+span{
+    color: red ;
+}
+
+/*end*/
+
+/*main*/
+
+
+body.page1 {
+    background-image: url("../images/UniPostCover--University-of-Aberdeen.jpg");
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+ 
+.page1 h1{
+    background-color:white;
+    padding: 20px;
+    top: 0px;
+    height: 70px;
+    width: 100%;
+    position:fixed;
+    color: white;
+    
+}
+
+header img.smallimg{
+    position: absolute;
+    top: 20%;
+    width: 270px;
+    left: 10%;
+}
+.ListCon{
+    padding: 20px;
+    
+}
+.topList h2{
+    margin: 8px;
+    text-align: center;
+}
+
+.topList{
+    color: black;
+}
+.rb{
+    margin-top: -12px;
+    padding: 0px;
+    width: 50px;
+    margin-left: 25px;
+}
+
+.page1 nav{
+    background-color: white;
+    position: absolute;
+    top: 20%;
+    left: 55%;
+    width: 500px;
+    height: 260px;
+    border-radius: 5px;
+    padding: 10px 30px 20px 5px;
+    box-shadow: 0px 5px 20px 10px rgba(0,0,0,0.2);
+    max-height: 680px;
+}
+nav ul{
+    list-style-type: none;
+}
+div.Content li {
+    border-radius: 2px;
+    background-color: rgb(17, 17, 80);
+    margin: 5px;
+    padding: 7px;
+
+}
+nav li a{
+    text-decoration: none;
+    align-items: center;
+    font-weight: 500;
+    color: white;
+    
+   
+}
+
+.admin {
+    background-color: white;
+    width: 10px;
+    color: black;
+    position: absolute;
+    top: 75%;
+    left: 55%;
+    width: 500px;
+    height: 100px;
+    border-radius: 5px;
+    padding: 10px 30px 20px 5px;
+    box-shadow: 0px 5px 20px 10px rgba(0,0,0,0.2);
+    max-height: 680px;
+}
+
+div.admin li {
+    border-radius: 2px;
+    background-color: rgb(17, 17, 80);
+    margin: 5px;
+    padding: 7px;
+    list-style: none;
+    
+}
+
+div.admin li a{
+    text-decoration: none;
+    align-items: center;
+    font-weight: 500;
+    color: white;
+}
+
+div.admin h2{
+    text-align: center;
+}
+
+/*end*/
+
+/*Iform */
+
+body.IFORM {
+    background-image: url("../images/study-at-aberdeen.jpg");
+    background-attachment: fixed;/* Use 'cover' for background-size to ensure it covers the entire element */
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+div.top{
+    text-align: center;
+    padding: 1px;
+    margin-bottom: -20px;
+}
+
+header.form1H{
+    font-size: 25px;
+    font-weight: bold;
+    margin-top: 15px;
+    text-align: center;
+
+}
+
+.submit{
+    text-align: center;
+    margin-bottom: -40px;
+}
+
+p1{
+    color: grey;
+    font-size: 15px;
+    margin-left: 28px;
+    display: inline-block;
+}
+.fields{
+    max-height: 600px;
+}
+
+div.other textarea{
+    vertical-align:top;
+}
+
+div.margT{
+    margin-top: 10px;
+}
+
+#degrees option{
+    background-color: rgba(255,255,255,0.5);
+}
+
+.form1{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background:  rgba(255,255,255,0.5);
+    width: 570px;
+    border-radius: 5px;
+    padding: 10px 30px 20px 5px;
+    box-shadow: 0px 5px 20px 10px rgba(0,0,0,0.2);
+    max-height: 680px;
+}
+
+.form1 form{
+    margin: 30px 0;
+}
+
+/*end*/
+
+/*form2*/
+
+body.SFORM {
+    background-image: url("../images/study-at-aberdeen.jpg");
+    background-attachment: fixed;/* Use 'cover' for background-size to ensure it covers the entire element */
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+div.form2 header{
+    text-align: center;
+    font-weight: bold;
+    font-size: 30px;
+    margin-top: 15px;
+}
+
+.form2{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background:  rgba(255,255,255,0.5);
+    width: 570px;
+    border-radius: 5px;
+    padding: 10px 30px 20px 5px;
+    box-shadow: 0px 5px 20px 10px rgba(0,0,0,0.2);
+    max-height: 680px;
+}
+
+.submit2{
+    text-align: center;
+    text-decoration: none;
+    color: black;
+    margin-bottom: -50px;
+    font-size: 15px;
+    
+}
+
+.fields2{
+    max-height: 600px;
+}
+.form2 form{
+    margin: 30px 0;
+}
+
+#degrees{
+    cursor: pointer;
+    background-color:  rgba(255,255,255,0.5);
+    width: 500px;
+
+}
+
+/*admin page*/
+.page3{
+    background-image: url("../images/UniPostCover--University-of-Aberdeen.jpg");
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+ 
+.page3 h1{
+    background-color:white;
+    padding: 20px;
+    top: 0px;
+    height: 70px;
+    width: 100%;
+    position:fixed;
+    color: white;
+    
+}
+.rb2{
+    margin-top: -12px;
+    padding: 0px;
+    width: 50px;
+    margin-left: 25px;
+}
+.page3 nav {
+    background-color: white;
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    width: 500px;
+    height: 200px;
+    border-radius: 5px;
+    padding: 10px 10px 10px 5px;
+    box-shadow: 0px 5px 20px 10px rgba(0, 0, 0, 0.2);
+    transform: translate(-50%, -50%);
+}
+
+.Aheader h2{
+    text-align: center;
+}
+
+.Aheader li { 
+    text-decoration: none;
+}
+
+
+div.Content button {
+    display: block;
+    border: none;
+    border-radius: 2px;
+    background-color: rgb(17, 17, 80);
+    margin: 5px;
+    padding: 7px;
+    font-weight: 500;
+    width: 97.8%;
+    color: white;
+    cursor: pointer;
+    text-align: left;
+    font-size: 15px;
+}
+
+/*end*/
+
+
+/*pseudo elements  main page*/
+
+div.admin button:hover {
+    text-decoration: underline;
+}
+
+nav ul li a:hover {
+    text-decoration: underline;
+}
+
+.admin li a:hover{
+    text-decoration: underline;
+}
+/*pseudo elements IFORM */
+textarea::-webkit-scrollbar{
+    width: 0px;
+}
+
+textarea:is(:focus){
+    border-width: 1.5px;
+}
+
+input:is(:focus, :valid){
+    border-width: none;
+}
+
+div.admin button:hover {
+    background-color: rgb(0, 0, 128);
+}
+
+/*end*/

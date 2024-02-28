@@ -1,0 +1,113 @@
+<!--
+# students table
+class Student(models.Model):
+
+    # enum for the study-pattern
+    class pattern(models.TextChoices):
+        FULL_TIME = 'FT', _('Full-Time')
+        PART_TIME = 'PT', _('Part-Time')
+
+    # enum for the study-mode 
+    class mode(models.TextChoices): 
+        ONLINE = 'online', _('Online')
+        IN_PERSON = 'in-person', _('In-Person')
+        HYBRID = 'hybrid', _('Hybrid')
+
+    # enum for contract length
+    class contractLength(models.TextChoices):
+        SIX_WEEKS = '6-W', _("6-weeks")
+        TWELVE_WEEKS = '12-W', _("12-weeks")
+        SIX_MONTHS = '6-M', _("6-months")
+        NINE_MONTHS = '9-M', _("9-months")
+        ONE_YEAR = '1-Y', _("1-year")
+
+    studentID = models.BigAutoField(primary_key=True)
+    fullName = models.CharField(max_length=50)
+    email = models.EmailField()
+    currProgramme = models.CharField(max_length=50) # program they are currently studying
+    prevProgramme = models.CharField(max_length=50) # program they previously studies and now graduated from
+    studyMode= models.CharField(max_length=10, choices= mode.choices)
+    studyPattern = models.CharField(max_length = 2, choices= pattern.choices)
+    GPA = models.IntegerField()
+    desiredContractLength = models.CharField(max_length=25, choices=contractLength.choices)
+    willingRelocate = models.BooleanField()
+    aspirations = models.CharField(max_length = 200)
+-->
+
+{% load static %}
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <link rel="stylesheet" href="{% static 'css/styles.css'%}" />
+        <title>Student Internship Form</title>
+    </head>
+
+    <body class="SFORM">
+
+        <div class="form2" style="overflow-y: scroll">
+            <header>Student Internship Application</header>
+
+            <form method="POST" action="{% url 'student' %}">
+
+                {% csrf_token %}
+
+                <div class="fields">
+                    <div class="input">
+
+                        <label for="Fullname">1. Fullname<span>*</span></label>
+                        <input type="text" name="Fullname" id="Fullname" placeholder="Enter your answer" required>
+
+                        <br/><br/>
+
+                        <label for="Course">2. Course<span>*</span></label>
+                        <input type="text" name="Course" id="Course" placeholder="Enter your answer" required />
+                        
+                        <br/><br/>
+
+
+                        <label for="Score">3. Score<span>*</span></label>
+                        <input type="number" name="Score" id="Score" placeholder="Enter your answer" required />
+                        
+                        <br/><br/>
+
+
+                        <label for="Experience">4. Experience<span>*</span></label>
+                        <input type="text" name="Experience" id="Experience" placeholder="Enter your answer" required />
+                        
+                        <br/><br/>
+
+
+                        <label for="StudyMode">5. Study Mode<span>*</span></label>
+                        <input type="text" name="StudyMode" id="StudyMode" placeholder="Enter your answer" required />
+                        
+                        <br/><br/>
+
+
+                        <label for="StudyPattern">6. Study Pattern<span>*</span></label>
+                        <input type="text" name="StudyPattern" id="StudyPattern" placeholder="Enter your answer" required />
+                        
+                        <br/><br/>
+
+                    </div>
+
+                    <div class="submit2">
+                        <input type="submit" value="Complete application" id="submit2" />
+                        <button onclick="goBack()">Return</button>
+
+                        <script>
+                        function goBack() {
+                            window.history.back();
+                        }
+                        </script>
+
+                        <br/>
+                    </div>
+
+                </div>
+            </form>
+
+        </div>
+    </body>
+</html>

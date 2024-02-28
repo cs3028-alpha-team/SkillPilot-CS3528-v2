@@ -112,6 +112,9 @@ USE_I18N = True
 
 USE_TZ = True
 
+# configure static files path 
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_URL = "static/"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
