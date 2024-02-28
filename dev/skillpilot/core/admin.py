@@ -1,12 +1,11 @@
 from django.contrib import admin
 
-from  core.models import Student
+from  core.models import *
 
-# Register your models here.
 admin.site.register(Student)
-# admin.site.register(Internship)
-# admin.site.register(Company)
-# admin.site.register(Recruiter)
-# admin.site.register(Interview)
-# admin.site.register(computedMatch)
-# admin.site.register(SuperUser)
+admin.site.register(Internship)
+admin.site.register(Company)
+admin.site.register(Recruiter)
+admin.site.register(Interview)
+admin.site.register(computedMatch)
+admin.site.register(SuperUser)
