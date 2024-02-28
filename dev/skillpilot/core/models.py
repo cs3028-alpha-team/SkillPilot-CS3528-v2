@@ -32,7 +32,7 @@ class Student(models.Model):
     GPA = models.IntegerField()
     desiredContractLength = models.CharField(max_length=25, choices=contractLength.choices)
     willingRelocate = models.BooleanField()
-    aspriations = models.CharField(max_length = 200)
+    aspirations = models.CharField(max_length = 200)
 
 #internship table
     
@@ -91,8 +91,6 @@ class Recruiter(models.Model):
     companyID = models.ForeignKey('core.Company', on_delete = models.CASCADE)
     jobTitle = models.CharField(max_length = 40)
     
-
-
 # interviews table
     
 class Interview(models.Model):
