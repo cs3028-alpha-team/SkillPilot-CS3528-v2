@@ -89,7 +89,7 @@ class Recruiter(models.Model):
     fullName = models.CharField(max_length=50)
     email = models.EmailField()
     companyID = models.ForeignKey('core.Company', on_delete = models.CASCADE)
-    jobTitle = models.CharField(max_length = 30)
+    jobTitle = models.CharField(max_length = 40)
     
 
 
