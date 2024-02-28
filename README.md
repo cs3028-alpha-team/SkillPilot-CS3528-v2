@@ -1,5 +1,6 @@
-### TODO
+# SkillPilot - mass refactor
 
-### 
-- write models in models.py and register them
-- create superuser and save credentials 
+## TODO
+
+1. Populate "core" app
+    - populate forms.py such that they align with the models

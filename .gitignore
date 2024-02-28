@@ -1,2 +1,5 @@
 # local db file
 db.sqlite3
+
+# virtual environment folder
+/venv
