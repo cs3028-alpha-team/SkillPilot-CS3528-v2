@@ -7,11 +7,17 @@ def home(request):
     return render(request, 'home.html')
 
 
+def formSuccess(request):
+    return render(request, 'form-success.html')
+
 # view for the route '/student'
 def student(request):
     # POST request sent on '/student', trigger registration procedure
     if request.method == 'POST':
-        pass
+
+        # process data and register student to database        
+
+        return redirect('form-success')
 
     # serve the registration form for new students
     else:
@@ -22,7 +28,10 @@ def student(request):
 def internship(request):
     # POST request sent on '/internship', trigger registration procedure
     if request.method == 'POST':
-        pass
+        
+        # process data and register internship to database
+
+        return redirect("form-success")
 
     # serve the registration form for new internships
     else:
