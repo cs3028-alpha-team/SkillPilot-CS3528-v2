@@ -1,11 +1,7 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}  
+{% load static %} <!-- NOTE : this line is needed on ALL templates -->
 
-    <head>
-        <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
-        <title>University of Aberdeen Placement</title>
-    </head>
+{% block content %}
 
     <body class="page1">
 
@@ -48,4 +44,5 @@
         </ul>
 
     </body>
-</html>
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <!-- stylesheets for bootstrap, and custom css -->
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+        <title>SkillPilot</title>
+    </head>
+
+    <body>
+        
+        {% block content %}
+
+            <!-- all templates which inherit this base template will define
+            their custom content within this block content section -->
+
+        {% endblock %}      
+
+        <!-- footer div -->
+        <div id="footer">
+            
+        </div>
+
+    </body>
+</html>

@@ -26,64 +26,76 @@ class Internship(models.Model):
     minGPA = models.SmallIntegerField()
 -->
 
-{% load static %}
-<!DOCTYPE html>
-<html>
-  <head>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
-    <title>Student Internship Form</title>
-  </head>
-  <body class="IFORM">
-    <div class="form1" style="overflow-y: scroll">
-      <div class="top">
-        <header class="form1H">
-          University of Aberdeen: Work-based Placements/Learning in Applied
-          Health Sciences 2024
-        </header>
+{% extends "base.html" %}  
+{% load static %} <!-- NOTE : this line is needed on ALL templates -->
 
-        <p>
-          The survey will take approximately 9 minutes to complete. Many thanks
-          for your interest in hosting a Work-based Placement or Work-Based
-          Learning Experience for our Masters students in 2024. Please complete
-          the form below for each placement opportunity to enable us to take
-          plans forward and identify student matches. Thank you in advance and
-          we look forward to supporting your organisation.
-        </p>
-      </div>
+{% block content %}
 
-      <form method="post" action="{% url 'submit-internship' %}">
-        {% csrf_token %}
-        <div class="fields2">
-          <div class="input">
-            <label for="Title">Title<span>*</span></label>
-            <input type="text" name="Title" id="Title" placeholder="Enter title" required>
-            <br><br>
-            <label for="Company">Company<span>*</span></label>
-            <input type="text" name="Company" id="Company" placeholder="Enter company" required>
-            <br><br>
-            <label for="Field">Field<span>*</span></label>
-            <input type="text" name="Field" id="Field" placeholder="Enter field" required>
-            <br><br>
-            <label for="MinScore">Minimum Score<span>*</span></label>
-            <input type="number" name="MinScore" id="MinScore" placeholder="Enter minimum score" required>
-            <br><br>
-            <label for="Positions">Positions<span>*</span></label>
-            <input type="number" name="Positions" id="Positions" placeholder="Enter positions" required>
-            <br><br>
-          </div>
-          <div class="submit">
-            <input type="submit" value="Complete application" id="submit" />
-            <button onclick="goBack()">Return</button>
+    <body class="IFORM">
+        <div class="form1" style="overflow-y: scroll">
+            <div class="top">
+            <header class="form1H">
+                University of Aberdeen: Work-based Placements/Learning in Applied
+                Health Sciences 2024
+            </header>
 
-            <script>
-              function goBack() {
-                window.history.back();
-              }
-            </script>
-          </div>
-            <br>
+            <p>
+                The survey will take approximately 9 minutes to complete. Many thanks
+                for your interest in hosting a Work-based Placement or Work-Based
+                Learning Experience for our Masters students in 2024. Please complete
+                the form below for each placement opportunity to enable us to take
+                plans forward and identify student matches. Thank you in advance and
+                we look forward to supporting your organisation.
+            </p>
+            </div>
+
+            <form method="post" action="{% url 'internship' %}">
+            {% csrf_token %}
+            <div class="fields2">
+
+                <div class="input">
+                    <label for="Title">Title<span>*</span></label>
+                    <input type="text" name="Title" id="Title" placeholder="Enter title" required>
+
+                    <br><br>
+
+                    <label for="Company">Company<span>*</span></label>
+                    <input type="text" name="Company" id="Company" placeholder="Enter company" required>
+
+                    <br><br>
+
+                    <label for="Field">Field<span>*</span></label>
+                    <input type="text" name="Field" id="Field" placeholder="Enter field" required>
+
+                    <br><br>
+
+                    <label for="MinScore">Minimum Score<span>*</span></label>
+                    <input type="number" name="MinScore" id="MinScore" placeholder="Enter minimum score" required>
+
+                    <br><br>
+
+                    <label for="Positions">Positions<span>*</span></label>
+                    <input type="number" name="Positions" id="Positions" placeholder="Enter positions" required>
+
+                    <br><br>
+                </div>
+
+                <div class="submit">
+                    <input type="submit" value="Complete application" id="submit" />
+                    <button onclick="goBack()">Return</button>
+
+                    <script>
+                        function goBack() {
+                        window.history.back();
+                        }
+                    </script>
+                </div>
+
+                <br>
+            </div>
+
+            </form>
         </div>
-      </form>
-    </div>
-  </body>
-</html>
+    </body>
+
+{% endblock %}
