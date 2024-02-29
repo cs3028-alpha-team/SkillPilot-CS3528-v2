@@ -1,98 +1,73 @@
-<!--
-# internship table  
-class Internship(models.Model):
-
-    # enum for pattern
-    class pattern(models.TextChoices):
-        FULL_TIME = 'FT', _('Full-Time')
-        PART_TIME = 'PT', _('Part-Time')
-
-    # enum for mode
-    class mode(models.TextChoices): 
-        ONLINE = 'online', _('Online')
-        IN_PERSON = 'in-person', _('In-Person')
-        HYBRID = 'hybrid', _('Hybrid')
-
-    # attributes for internship table
-    internshipID = models.CharField(max_length = 10, primary_key= True)
-    companyID = models.ForeignKey('core.Company', on_delete = models.CASCADE)
-    recruiterID = models.ForeignKey('core.Recruiter', on_delete = models.CASCADE)
-    contractMode = models.CharField(max_length=10, choices= mode.choices)
-    contractPattern = models.CharField(max_length = 2, choices= pattern.choices)
-    # number of internships availables in the company for that internship type
-    numberPositions = models.SmallIntegerField() 
-    field = models.CharField(max_length = 20)
-    title = models.CharField(max_length = 30)
-    minGPA = models.SmallIntegerField()
--->
-
 {% extends "base.html" %}  
 {% load static %} <!-- NOTE : this line is needed on ALL templates -->
 
 {% block content %}
 
-    <body class="IFORM">
-        <div class="form1" style="overflow-y: scroll">
-            <div class="top">
-            <header class="form1H">
-                University of Aberdeen: Work-based Placements/Learning in Applied
-                Health Sciences 2024
-            </header>
+    <body>
+        <div class="container col-6 offset-3 my-3">
 
-            <p>
-                The survey will take approximately 9 minutes to complete. Many thanks
-                for your interest in hosting a Work-based Placement or Work-Based
-                Learning Experience for our Masters students in 2024. Please complete
-                the form below for each placement opportunity to enable us to take
-                plans forward and identify student matches. Thank you in advance and
-                we look forward to supporting your organisation.
-            </p>
-            </div>
+            <header class="display-5 mb-3">Internship Registration Form</header>
 
-            <form method="post" action="{% url 'internship' %}">
-            {% csrf_token %}
-            <div class="fields2">
+            <form method="POST" action="{% url 'internship' %}">
 
-                <div class="input">
-                    <label for="Title">Title<span>*</span></label>
-                    <input type="text" name="Title" id="Title" placeholder="Enter title" required>
+                {% csrf_token %}
 
-                    <br><br>
-
-                    <label for="Company">Company<span>*</span></label>
-                    <input type="text" name="Company" id="Company" placeholder="Enter company" required>
-
-                    <br><br>
-
-                    <label for="Field">Field<span>*</span></label>
-                    <input type="text" name="Field" id="Field" placeholder="Enter field" required>
-
-                    <br><br>
-
-                    <label for="MinScore">Minimum Score<span>*</span></label>
-                    <input type="number" name="MinScore" id="MinScore" placeholder="Enter minimum score" required>
-
-                    <br><br>
-
-                    <label for="Positions">Positions<span>*</span></label>
-                    <input type="number" name="Positions" id="Positions" placeholder="Enter positions" required>
-
-                    <br><br>
+                <!-- internship title input -->
+                <div class="mb-3">
+                    <label for="titleInput" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="titleInput" aria-describedby="titleInput" required>
                 </div>
 
-                <div class="submit">
-                    <input type="submit" value="Complete application" id="submit" />
-                    <button onclick="goBack()">Return</button>
-
-                    <script>
-                        function goBack() {
-                        window.history.back();
-                        }
-                    </script>
+                <!-- internship field input -->
+                <div class="mb-3">
+                    <label for="fieldInput" class="form-label">Field</label>
+                    <input type="text" class="form-control" id="fieldInput" aria-describedby="fieldInput" required>
                 </div>
 
-                <br>
-            </div>
+                <div class="row mb-3">
+
+                    <!-- internship contract length input -->
+                    <div class="col">
+                        <label for="contractmodeInput" class="form-label">Contract mode</label>
+                        <select id="contractmodeInput" class="form-select" aria-label="internship contract mode">
+                            <option selected></option>
+                            <option value="online">online</option>
+                            <option value="in-person">in-person</option>
+                            <option value="hybrid">hybrid</option>
+                        </select>
+                    </div>
+
+                    <!-- internship contract pattern input -->
+                    <div class="col">
+                        <label for="contractpatternInput" class="form-label">Contract pattern</label>
+                        <select id="contractpatternInput" class="form-select" aria-label="stcontract study pattern">
+                            <option selected></option>
+                            <option value="full-time">Full-time</option>
+                            <option value="part-time">Part-time</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="row mb-3">
+
+                    <!-- internship min GPA input -->
+                    <div class="col">
+                        <label for="internshipGPAInput" class="form-label">Min GPA</label>
+                        <input type="number" class="form-control" id="internshipGPAInput" aria-describedby="internshipGPAInput" min="40" max="90" required>
+                    </div>
+
+                    <!-- internship number of positions input -->
+                    <div class="col">
+                        <label for="internshipPositions" class="form-label">Positions</label>
+                        <input type="number" class="form-control" id="internshipPositions" aria-describedby="internshipPositions" min="1" max="10" required>
+                    </div>
+
+                </div>
+
+                <div class="row mb-3">
+                    <button type="submit" class="btn btn-primary col-3">Submit</button>
+                </div>
 
             </form>
         </div>
