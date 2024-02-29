@@ -3,10 +3,10 @@
 
 {% block content %}
 
-    <body class="SFORM">
+    <body>
+        <div class="container col-6 offset-3 my-3">
 
-        <div class="form2" style="overflow-y: scroll">
-            <header>Student Internship Application</header>
+            <header class="display-5 mb-3">Student Internship Application</header>
 
             <form method="POST" action="{% url 'student' %}">
 
@@ -36,21 +36,76 @@
                     <input type="text" class="form-control" id="prevProgrammeInput" aria-describedby="prevProgrammeInput" required>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Submit</button>
-           
-                <!-- student study mode input -->
-                <!-- student study pattern input -->
+                <div class="row mb-3">
 
-                <!-- student GPA input -->
-                <!-- student desired contract length input -->
-                <!-- student willing-to-relocate input -->
+                    <!-- student study mode input -->
+                    <div class="col">
+                        <label for="studymodeInput" class="form-label">Study mode</label>
+                        <select id="studymodeInput" class="form-select" aria-label="student study mode">
+                            <option selected></option>
+                            <option value="online">online</option>
+                            <option value="in-person">in-person</option>
+                            <option value="hybrid">hybrid</option>
+                        </select>
+                    </div>
+
+                    <!-- student study pattern input -->
+                    <div class="col">
+                        <label for="studypatternInput" class="form-label">Study pattern</label>
+                        <select id="studypatternInput" class="form-select" aria-label="student study pattern">
+                            <option selected></option>
+                            <option value="full-time">Full-time</option>
+                            <option value="part-time">Part-time</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="row mb-3">
+
+                    <!-- student GPA input -->
+                    <div class="col">
+                        <label for="studentGPAInput" class="form-label">GPA</label>
+                        <input type="number" class="form-control" id="studentGPAInput" aria-describedby="prevProgrammeInput" min=40 max=100 required>
+                    </div>
+
+                    <!-- student desired contract length input -->
+                    <div class="col">
+                        <label for="contractLengthInput" class="form-label">Contract Length</label>
+                        <select id="contractLengthInput" class="form-select" aria-label="student desired contract length">
+                            <option selected></option>
+                            <option value="6-w">6 weeks</option>
+                            <option value="12-w">12 weeks</option>
+                            <option value="6-m">6 months</option>
+                            <option value="9-m">9 months</option>
+                            <option value="1-y">1 year</option>
+                        </select>
+                    </div>
+
+                    <!-- student willing-to-relocate input -->
+                    <div class="col">
+                        <label for="willingRelocation" class="form-label">Willing to relocate</label>
+                        <select id="willingRelocation" class="form-select" aria-label="willing to relocate">
+                            <option selected></option>
+                            <option value="yes">yes</option>
+                            <option value="no">no</option>
+                        </select>
+                    </div>
+
+                </div>
 
                 <!-- student aspirations input -->
+                <div class="row mb-3">
+                    <label for="aspirations">Aspirations</label>
+                    <textarea class="form-control" id="aspirations" rows="2"></textarea>
+                </div>
+
+                <div class="row mb-3">
+                    <button type="submit" class="btn btn-primary col-3">Submit</button>
+                </div>
 
             </form>
-
         </div>
-
     </body>
 
 {% endblock %}
