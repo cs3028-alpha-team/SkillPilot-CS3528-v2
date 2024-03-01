@@ -12,7 +12,9 @@
 
                 {% csrf_token %}
 
-                <!-- internship title input -->
+                {{ form.as_p }}
+
+                {% comment %} <!-- internship title input -->
                 <div class="mb-3">
                     <label for="titleInput" class="form-label">Title</label>
                     <input type="text" class="form-control" id="titleInput" aria-describedby="titleInput" required>
@@ -63,7 +65,7 @@
                         <input type="number" class="form-control" id="internshipPositions" aria-describedby="internshipPositions" min="1" max="10" required>
                     </div>
 
-                </div>
+                </div> {% endcomment %}
 
                 <div class="row mb-3">
                     <button type="submit" class="btn btn-primary col-3">Submit</button>

@@ -33,6 +33,8 @@ def student(request):
 
         form = StudentForm(request.POST)
 
+        # process data and register student to database
+
         if form.is_valid():
             form.save() 
             return redirect('form-success')
@@ -47,13 +49,23 @@ def student(request):
 
 # view for the route '/internship'
 def internship(request):
+
+    form = InternshipForm()
+    context = { 'form' : form }
+
     # POST request sent on '/internship', trigger registration procedure
     if request.method == 'POST':
         
         # process data and register internship to database
+        form = InternshipForm(request.POST)
 
-        return redirect("form-success")
+        if form.is_valid():
+            form.save() 
+            return redirect('form-success')
+
+        else:
+            return redirect('form-failure')
 
     # serve the registration form for new internships
     else:
-        return render(request, 'internship.html')
+        return render(request, 'internship.html', context)

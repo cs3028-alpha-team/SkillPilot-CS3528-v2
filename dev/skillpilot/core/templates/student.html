@@ -3,112 +3,161 @@
 
 {% block content %}
 
+    <!--
+        once students have created an account with username and password, they will be able to access their dashboard 
+    -->
     <body>
-        <div class="container col-6 offset-3 my-3">
+        <div class="container mt-5 ms-5">
 
-            <header class="display-5 mb-3">Student Internship Application</header>
+            <!-- 
+                StudentName will be replaced with username once student log-in is successfull 
+                Also, the dashboard should not be accessible to unauthorized users
+            -->
+            <header class="display-5 mb-3">Welcome back, StudentName</header>
 
-            <form method="POST" action="{% url 'student' %}" autocomplete="off" enctype="multipart/form-data">
+            <div class="my-4 col-11 offset-3 row">
 
-                {% csrf_token %}
+                <div class="col-md-6">
+                    <!-- 
+                        here they can configure their profile, and if they have done so already then form will be replaced by a paragraph 
+                        saying something along the lines of "looks like you have configured your application 
+                        profile already, please contact admin for any issue..." 
+                    -->
+                    <h3 class="display-6 mt-5 mb-4">Configure your profile</h3>
+                    <form method="POST" action="{% url 'student' %}" autocomplete="off" enctype="multipart/form-data">
 
-                {{ form.as_p }}
+                        {% csrf_token %}
 
-                {% comment %} <!-- student fullname input -->
-                <div class="mb-3">
-                    <label for="fullnameInput" class="form-label">Full Name</label>
-                    <input type="text" class="form-control" id="fullnameInput" aria-describedby="fullnameInput" required>
+                        {{ form.as_p }}
+
+                        {% comment %} <!-- student fullname input -->
+                        <div class="mb-3">
+                            <label for="fullnameInput" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="fullnameInput" aria-describedby="fullnameInput" required>
+                        </div>
+
+                        <!-- student email input -->
+                        <div class="mb-3">
+                            <label for="emailInput" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="emailInput" aria-describedby="emailInput" required>
+                        </div>
+
+                        <!-- student current programme input -->
+                        <div class="mb-3">
+                            <label for="currProgrammeInput" class="form-label">Current programme</label>
+                            <input type="text" class="form-control" id="currProgrammeInput" aria-describedby="currProgrammeInput" required>
+                        </div>
+
+                        <!-- student previous programme input -->
+                        <div class="mb-3">
+                            <label for="prevProgrammeInput" class="form-label">Previous programme</label>
+                            <input type="text" class="form-control" id="prevProgrammeInput" aria-describedby="prevProgrammeInput" required>
+                        </div>
+
+                        <div class="row mb-3">
+
+                            <!-- student study mode input -->
+                            <div class="col">
+                                <label for="studymodeInput" class="form-label">Study mode</label>
+                                <select id="studymodeInput" class="form-select" aria-label="student study mode">
+                                    <option selected></option>
+                                    <option value="online">online</option>
+                                    <option value="in-person">in-person</option>
+                                    <option value="hybrid">hybrid</option>
+                                </select>
+                            </div>
+
+                            <!-- student study pattern input -->
+                            <div class="col">
+                                <label for="studypatternInput" class="form-label">Study pattern</label>
+                                <select id="studypatternInput" class="form-select" aria-label="student study pattern">
+                                    <option selected></option>
+                                    <option value="full-time">Full-time</option>
+                                    <option value="part-time">Part-time</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="row mb-3">
+
+                            <!-- student GPA input -->
+                            <div class="col">
+                                <label for="studentGPAInput" class="form-label">GPA</label>
+                                <input type="number" class="form-control" id="studentGPAInput" aria-describedby="prevProgrammeInput" min=40 max=100 required>
+                            </div>
+
+                            <!-- student desired contract length input -->
+                            <div class="col">
+                                <label for="contractLengthInput" class="form-label">Contract Length</label>
+                                <select id="contractLengthInput" class="form-select" aria-label="student desired contract length">
+                                    <option selected></option>
+                                    <option value="6-w">6 weeks</option>
+                                    <option value="12-w">12 weeks</option>
+                                    <option value="6-m">6 months</option>
+                                    <option value="9-m">9 months</option>
+                                    <option value="1-y">1 year</option>
+                                </select>
+                            </div>
+
+                            <!-- student willing-to-relocate input -->
+                            <div class="col">
+                                <label for="willingRelocation" class="form-label">Willing to relocate</label>
+                                <select id="willingRelocation" class="form-select" aria-label="willing to relocate">
+                                    <option selected></option>
+                                    <option value="yes">yes</option>
+                                    <option value="no">no</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <!-- student aspirations input -->
+                        <div class="row mb-3">
+                            <label for="aspirations">Aspirations</label>
+                            <textarea class="form-control" id="aspirations" rows="2"></textarea>
+                        </div>
+
+                        {% endcomment %}
+
+                        <div class="row mb-3">
+                            <button type="submit" class="btn btn-primary col-3">Submit</button>
+                        </div>
+
+                    </form>
                 </div>
 
-                <!-- student email input -->
-                <div class="mb-3">
-                    <label for="emailInput" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="emailInput" aria-describedby="emailInput" required>
-                </div>
+                <div class="col-md-6">
+                    <!-- 
+                        here students will be able to see their upcoming interviews if they have any
+                    -->
+                    <h3 class="display-6 mt-5 mb-4">Your upcoming interviews</h3>
+                    <p>Looks like you have no upcoming interviews, keep waiting for a match and we will notify you as soon as we find one!</p>
 
-                <!-- student current programme input -->
-                <div class="mb-3">
-                    <label for="currProgrammeInput" class="form-label">Current programme</label>
-                    <input type="text" class="form-control" id="currProgrammeInput" aria-describedby="currProgrammeInput" required>
-                </div>
-
-                <!-- student previous programme input -->
-                <div class="mb-3">
-                    <label for="prevProgrammeInput" class="form-label">Previous programme</label>
-                    <input type="text" class="form-control" id="prevProgrammeInput" aria-describedby="prevProgrammeInput" required>
-                </div>
-
-                <div class="row mb-3">
-
-                    <!-- student study mode input -->
-                    <div class="col">
-                        <label for="studymodeInput" class="form-label">Study mode</label>
-                        <select id="studymodeInput" class="form-select" aria-label="student study mode">
-                            <option selected></option>
-                            <option value="online">online</option>
-                            <option value="in-person">in-person</option>
-                            <option value="hybrid">hybrid</option>
-                        </select>
+                    <!-- 
+                        this is what an interview looks like on the student page 
+                        the recruiter name is a link to the recruiter's profile page on skillpilot
+                    -->
+                    <div class="card p-3" style="width: 35rem;">
+                        <div class="card-body d-flex flex-column justify-content-between">
+                            <div>
+                                <h5 class="card-title mb-3">Fake Interview with NHS</h5>
+                            </div>
+                            <p class="text-body-secondary">
+                                01/01/2050 at Primark Union Street, with 
+                                <a href="#">John McDeeznuts<a>
+                            </p>
+                            <div class="d-flex">
+                                <button class="btn btn-primary me-3">Reschedule</button>
+                                <button class="btn btn-danger">Cancel</button>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- student study pattern input -->
-                    <div class="col">
-                        <label for="studypatternInput" class="form-label">Study pattern</label>
-                        <select id="studypatternInput" class="form-select" aria-label="student study pattern">
-                            <option selected></option>
-                            <option value="full-time">Full-time</option>
-                            <option value="part-time">Part-time</option>
-                        </select>
-                    </div>
-
                 </div>
 
-                <div class="row mb-3">
-
-                    <!-- student GPA input -->
-                    <div class="col">
-                        <label for="studentGPAInput" class="form-label">GPA</label>
-                        <input type="number" class="form-control" id="studentGPAInput" aria-describedby="prevProgrammeInput" min=40 max=100 required>
-                    </div>
-
-                    <!-- student desired contract length input -->
-                    <div class="col">
-                        <label for="contractLengthInput" class="form-label">Contract Length</label>
-                        <select id="contractLengthInput" class="form-select" aria-label="student desired contract length">
-                            <option selected></option>
-                            <option value="6-w">6 weeks</option>
-                            <option value="12-w">12 weeks</option>
-                            <option value="6-m">6 months</option>
-                            <option value="9-m">9 months</option>
-                            <option value="1-y">1 year</option>
-                        </select>
-                    </div>
-
-                    <!-- student willing-to-relocate input -->
-                    <div class="col">
-                        <label for="willingRelocation" class="form-label">Willing to relocate</label>
-                        <select id="willingRelocation" class="form-select" aria-label="willing to relocate">
-                            <option selected></option>
-                            <option value="yes">yes</option>
-                            <option value="no">no</option>
-                        </select>
-                    </div>
-
-                </div>
-
-                <!-- student aspirations input -->
-                <div class="row mb-3">
-                    <label for="aspirations">Aspirations</label>
-                    <textarea class="form-control" id="aspirations" rows="2"></textarea>
-                </div>
-
-                {% endcomment %}
-
-                <div class="row mb-3">
-                    <button type="submit" class="btn btn-primary col-3">Submit</button>
-                </div>
-
-            </form>
+            </div>
+            
         </div>
     </body>
 
