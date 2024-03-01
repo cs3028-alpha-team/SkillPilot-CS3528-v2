@@ -28,8 +28,75 @@
 
                         {% csrf_token %}
 
-                        {{ form.as_p }}
+                        <!-- student fullname input -->
+                        <div class="mb-3">
+                            <label for="fullnameInput" class="form-label">Full name</label>
+                            {{ form.fullName }}
+                        </div>
 
+                        <!-- student email input -->
+                        <div class="mb-3">
+                            <label for="emailInput" class="form-label">Email</label>
+                            {{ form.email }}
+                        </div>
+
+                        <!-- student current programme input -->
+                        <div class="mb-3">
+                            <label for="currProgrammeInput" class="form-label">Current programme</label>
+                            {{ form.currProgramme }}
+                        </div>
+
+                        <!-- student previous programme input -->
+                        <div class="mb-3">
+                            <label for="prevProgrammeInput" class="form-label">Previous programme</label>
+                            {{ form.prevProgramme }}
+                        </div>
+
+                        <div class="row mb-3">
+
+                            <!-- student study mode input -->
+                            <div class="col">
+                                <label for="studymodeInput" class="form-label">Study mode</label>
+                                {{ form.studyMode }}
+                            </div>
+
+                            <!-- student study pattern input -->
+                            <div class="col">
+                                <label for="studypatternInput" class="form-label">Study pattern</label>
+                                {{ form.studyPattern }}
+                            </div>
+
+                        </div>
+
+                        <div class="row mb-3">
+
+                            <!-- student GPA input -->
+                            <div class="col">
+                                <label for="studentGPAInput" class="form-label">GPA</label>
+                                {{ form.GPA }}
+                            </div>
+
+                            <!-- student desired contract length input -->
+                            <div class="col">
+                                <label for="contractLengthInput" class="form-label">Contract Length</label>
+                                {{ form.desiredContractLength }}
+                            </div>
+
+                            <!-- student willing-to-relocate input -->
+                            <div class="col">
+                                <label for="willingRelocation" class="form-label">Willing to relocate</label>
+                                {{ form.willingRelocate }}
+                            </div>
+
+                        </div>
+
+                        <!-- student aspirations input -->
+                        <div class="row mb-3">
+                            <label for="aspirations">Aspirations</label>
+                            {{ form.aspirations }}
+                        </div>
+
+                        <!-- button for form submission -->
                         <div class="row mb-3">
                             <button type="submit" class="btn btn-primary col-3">Submit</button>
                         </div>

@@ -18,7 +18,7 @@ class StudentForm(forms.ModelForm):
             'studyPattern': forms.Select(attrs={'class': 'form-select', 'id': 'studypatternInput'}),
             'GPA': forms.NumberInput(attrs={'class': 'form-control', 'id': 'studentGPAInput', 'min': 40, 'max': 100, 'required': True}),
             'desiredContractLength': forms.Select(attrs={'class': 'form-select', 'id': 'contractLengthInput'}),
-            'willingRelocate': forms.Select(attrs={'class': 'form-select', 'id': 'willingRelocation'}, choices=[(True, 'Yes'), (False, 'No')]),
+            'willingRelocate': forms.Select(attrs={'class': 'form-select', 'id': 'willingRelocation', 'required': True}, choices=[(True, 'Yes'), (False, 'No')]),
             'aspirations': forms.Textarea(attrs={'class': 'form-control', 'id': 'aspirations', 'rows': 2}),
         }
 
