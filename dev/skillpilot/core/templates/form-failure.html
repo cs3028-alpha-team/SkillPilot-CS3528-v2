@@ -1,0 +1,15 @@
+{% extends "base.html" %}  
+{% load static %} <!-- NOTE : this line is needed on ALL templates -->
+
+{% block content %}
+
+    <div class="container mt-4 col-6 offset-3 my-3">
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">Failed Submission</h4>
+            <p>Looks like something went wrong while sending your submission</p>
+            <hr>
+            <p class="mb-0">Please try again</p>
+        </div>
+    </div>
+
+{% endblock %}

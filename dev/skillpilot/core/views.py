@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
-
+from . models import *
+from . forms import *
 
 # view for the route '/home' 
 def home(request):
@@ -9,6 +10,9 @@ def home(request):
 # render view upon form submission to notify user of success
 def formSuccess(request):
     return render(request, 'form-success.html')
+
+def formFailure(request):
+    return render(request, 'form-failure.html')
 
 # render view for admin page
 def admin(request):
@@ -20,14 +24,25 @@ def contacts(request):
 
 # view for the route '/student'
 def student(request):
+
+    form = StudentForm()
+    context = { 'form' : form }
+
     # POST request sent on '/student', trigger registration procedure
     if request.method == 'POST':
 
-        return redirect('form-success')
+        form = StudentForm(request.POST)
+
+        if form.is_valid():
+            form.save() 
+            return redirect('form-success')
+
+        else:
+            return redirect('form-failure')
 
     # serve the registration form for new students
     else:
-        return render(request, 'student.html')
+        return render(request, 'student.html', context)
 
 
 # view for the route '/internship'

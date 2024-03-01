@@ -8,11 +8,13 @@
 
             <header class="display-5 mb-3">Student Internship Application</header>
 
-            <form method="POST" action="{% url 'student' %}">
+            <form method="POST" action="{% url 'student' %}" autocomplete="off" enctype="multipart/form-data">
 
                 {% csrf_token %}
 
-                <!-- student fullname input -->
+                {{ form.as_p }}
+
+                {% comment %} <!-- student fullname input -->
                 <div class="mb-3">
                     <label for="fullnameInput" class="form-label">Full Name</label>
                     <input type="text" class="form-control" id="fullnameInput" aria-describedby="fullnameInput" required>
@@ -99,6 +101,8 @@
                     <label for="aspirations">Aspirations</label>
                     <textarea class="form-control" id="aspirations" rows="2"></textarea>
                 </div>
+
+                {% endcomment %}
 
                 <div class="row mb-3">
                     <button type="submit" class="btn btn-primary col-3">Submit</button>
