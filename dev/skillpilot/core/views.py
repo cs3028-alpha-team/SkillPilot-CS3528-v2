@@ -6,16 +6,22 @@ from django.http import HttpResponse, HttpResponseRedirect
 def home(request):
     return render(request, 'home.html')
 
-
+# render view upon form submission to notify user of success
 def formSuccess(request):
     return render(request, 'form-success.html')
+
+# render view for admin page
+def admin(request):
+    return render(request, 'admin.html')
+
+# render view with admin contact details
+def contacts(request):
+    return render(request, 'contacts.html')
 
 # view for the route '/student'
 def student(request):
     # POST request sent on '/student', trigger registration procedure
     if request.method == 'POST':
-
-        # process data and register student to database        
 
         return redirect('form-success')
 
