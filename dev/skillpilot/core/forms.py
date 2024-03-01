@@ -3,10 +3,24 @@ from . models import *
 from django.forms import ModelForm
 
 # create form for the Student model
-class StudentForm(ModelForm):
+class StudentForm(forms.ModelForm):
     class Meta:
-        model = Student 
+        model = Student
         fields = '__all__'
+
+        # use Widgets to apply bootstrap styles to dynamically loaded form
+        widgets = {
+            'fullName': forms.TextInput(attrs={'class': 'form-control', 'id': 'fullnameInput', 'required': True}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'id': 'emailInput', 'required': True}),
+            'currProgramme': forms.TextInput(attrs={'class': 'form-control', 'id': 'currProgrammeInput', 'required': True}),
+            'prevProgramme': forms.TextInput(attrs={'class': 'form-control', 'id': 'prevProgrammeInput', 'required': True}),
+            'studyMode': forms.Select(attrs={'class': 'form-select', 'id': 'studymodeInput'}),
+            'studyPattern': forms.Select(attrs={'class': 'form-select', 'id': 'studypatternInput'}),
+            'GPA': forms.NumberInput(attrs={'class': 'form-control', 'id': 'studentGPAInput', 'min': 40, 'max': 100, 'required': True}),
+            'desiredContractLength': forms.Select(attrs={'class': 'form-select', 'id': 'contractLengthInput'}),
+            'willingRelocate': forms.Select(attrs={'class': 'form-select', 'id': 'willingRelocation'}, choices=[(True, 'Yes'), (False, 'No')]),
+            'aspirations': forms.Textarea(attrs={'class': 'form-control', 'id': 'aspirations', 'rows': 2}),
+        }
 
 # create form for the Internship model
 class InternshipForm(ModelForm):
