@@ -3,18 +3,22 @@
 
 {% block content %}
 
-    <div class="container mt-5 ms-5">
+    <div class="container-fluid">
 
-        <p class="display-4 ">Internship details page here...</p>
+        <p class="display-5 mt-5 ms-5">Internship details page here...</p>
 
+        <!-- 
+            this will be a dynamic URL which takes in the recruiter ID to return to the recruiter dashboard 
+        -->
+        <a class="text-muted mt-5 ms-5" href="{% url 'internship' %}">Back to your recruiter profile</a>
         <!-- 
             In this view, the recruiter will be able to edit the internship's listing and
             view all the upcoming interview for the advertised position
         -->
 
-        <div class="my-4 row">
+        <div class="row mt-5 justify-content-center">
 
-            <div class="col-md-6">
+            <div class="col-md-auto mx-5">
                 <!-- 
                     render the filled-in form for this page's internship
                 -->
@@ -90,7 +94,7 @@
                 </form>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-auto mx-5">
                 <!-- 
                     render all the interviews booked in for this internship
                 -->

@@ -88,6 +88,7 @@ def internshipDetails(request):
     form = InternshipForm()
     context = { 'form' : form }
 
+    # ============================================ EDIT INTERNSHIP LISTING =========================================
     # POST request sent on '/internship', trigger registration procedure
     if request.method == 'POST':
         

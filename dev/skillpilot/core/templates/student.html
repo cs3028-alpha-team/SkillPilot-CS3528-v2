@@ -7,17 +7,17 @@
         once students have created an account with username and password, they will be able to access their dashboard 
     -->
     <body>
-        <div class="container mt-5 ms-5">
+        <div class="container-fluid">
 
             <!-- 
                 StudentName will be replaced with username once student log-in is successfull 
                 Also, the dashboard should not be accessible to unauthorized users
             -->
-            <header class="display-5 mb-3">Welcome back, StudentName</header>
+            <header class="display-5 mt-5 ms-5">Welcome back, StudentName</header>
 
-            <div class="my-4 row">
+            <div class="row my-5 justify-content-center">
 
-                <div class="col-md-6">
+                <div class="col-md-auto mx-5">
                     <!-- 
                         here they can configure their profile, and if they have done so already then form will be replaced by a paragraph 
                         saying something along the lines of "looks like you have configured your application 
@@ -104,18 +104,18 @@
                     </form>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-auto mx-5">
                     <!-- 
                         here students will be able to see their upcoming interviews if they have any
                     -->
                     <h3 class="display-6 mt-5 mb-4">Your upcoming interviews</h3>
-                    <p>Looks like you have no upcoming interviews, keep waiting for a match and we will notify you as soon as we find one!</p>
+                    <p>Looks like you have no upcoming interviews.</p>
 
                     <!-- 
                         this is what an interview looks like on the student page 
                         the recruiter name is a link to the recruiter's profile page on skillpilot
                     -->
-                    <div class="card p-3" style="width: 35rem;">
+                    <div class="card p-2 mb-4" style="width: 35rem;">
                         <div class="card-body d-flex flex-column justify-content-between">
                             <div>
                                 <h5 class="card-title mb-3">Fake Interview with NHS</h5>
@@ -123,6 +123,22 @@
                             <p class="text-body-secondary">
                                 01/01/2050 at Primark Union Street, with 
                                 <a href="#">John McDeeznuts<a>
+                            </p>
+                            <div class="d-flex">
+                                <button class="btn btn-primary me-3">Reschedule</button>
+                                <button class="btn btn-danger">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card p-2 mb-4" style="width: 35rem;">
+                        <div class="card-body d-flex flex-column justify-content-between">
+                            <div>
+                                <h5 class="card-title mb-3">Fake Interview with GSK</h5>
+                            </div>
+                            <p class="text-body-secondary">
+                                02/01/2420 at St. Machar Bar, with 
+                                <a href="#">Garfield<a>
                             </p>
                             <div class="d-flex">
                                 <button class="btn btn-primary me-3">Reschedule</button>
