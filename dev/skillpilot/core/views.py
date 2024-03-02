@@ -60,22 +60,14 @@ def internship(request):
 
         if form.is_valid():
 
-            # create an instance of internship Model
-            internship = form.save(commit=False)
-
-            # obtain the Model instances for Recruiter and Company
-            companyID = Company.objects.get(id='c1')
-            recruiterID = Recruiter.objects.get(id='r1')
-
-            # manually set the company ID and recruiter ID for now
-            # but in the future these will be dynamically acquired by checking the user logged-in session
-            internship.companyID = companyID
-            internship.recruiterID = recruiterID
-
             form.save() 
+
             return redirect('form-success')
 
         else:
+            print("=================== errors ========================")
+            print(form.errors)
+            print(request.POST)
             return redirect('form-failure')
 
     # serve the registration form for new internships

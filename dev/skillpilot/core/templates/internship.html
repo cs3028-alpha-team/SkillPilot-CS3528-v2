@@ -48,6 +48,26 @@
 
                         </div>
 
+                    <!-- 
+                        pre-populate these fields and disable them, this is done to show the recruiter the full
+                        request payload 
+                    -->
+                    <div class="row">
+
+                        <!-- internship recruiter ID input -->
+                        <div class="mb-3 col">
+                            <label for="recruiterIDInput" class="form-label">Recruiter ID</label>
+                            {{ form.recruiterID }}
+                        </div>
+
+                        <!-- company ID input -->
+                        <div class="mb-3 col">
+                            <label for="companyIDInput" class="form-label">Company ID</label>
+                            {{ form.companyID }}
+                        </div>
+
+                    </div>
+
                         <div class="row mb-3">
 
                             <!-- internship contract length input -->

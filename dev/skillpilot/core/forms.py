@@ -31,6 +31,8 @@ class InternshipForm(ModelForm):
         # use Widgets to apply bootstrap styles to dynamically loaded form
         widgets = {
             'internshipID': forms.TextInput(attrs={'class': 'form-control', 'id': 'internshipIDInput', 'required': True}),
+            'recruiterID': forms.TextInput(attrs={'class': 'form-control', 'id': 'recruiterIDInput', 'required': True,}),
+            'companyID': forms.TextInput(attrs={'class': 'form-control', 'id': 'companyIDInput', 'required': True,}),
             'title': forms.TextInput(attrs={'class': 'form-control', 'id': 'titleInput', 'required': True}),
             'field': forms.TextInput(attrs={'class': 'form-control', 'id': 'fieldInput', 'required': True}),
             'contractMode': forms.Select(attrs={'class': 'form-select', 'id': 'contractmodeInput'}),
