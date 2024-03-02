@@ -3,75 +3,121 @@
 
 {% block content %}
 
+    <!--
+        once recruiiters have created an account with username and password, they will be able to access their dashboard 
+    -->
     <body>
-        <div class="container col-6 offset-3 my-3">
+        <div class="container mt-5 ms-5">
 
-            <header class="display-5 mb-3">Internship Registration Form</header>
+            <!-- 
+                RecruiterName will be replaced with username once recruiter log-in is successfull 
+                Also, the dashboard should not be accessible to unauthorized users
+            -->
+            <header class="display-5 mb-3">Welcome back, RecruiterName</header>
 
-            <form method="POST" action="{% url 'internship' %}">
+            <div class="my-4 col-11 offset-3 row">
 
-                {% csrf_token %}
+                <div class="col-md-6">
+                    <!-- 
+                       
+                    -->
+                    <h3 class="display-6 mt-5 mb-4">Upload new opportunities</h3>
+                    <form method="POST" action="{% url 'internship' %}" autocomplete="off" enctype="multipart/form-data">
 
-                {{ form.as_p }}
+                        {% csrf_token %}
 
-                {% comment %} <!-- internship title input -->
-                <div class="mb-3">
-                    <label for="titleInput" class="form-label">Title</label>
-                    <input type="text" class="form-control" id="titleInput" aria-describedby="titleInput" required>
+                        <!-- internship title input -->
+                        <div class="mb-3">
+                            <label for="titleInput" class="form-label">Title</label>
+                            {{ form.title }}
+                        </div>
+
+                        <div class="row">
+
+                            <!-- internship field input -->
+                            <div class="mb-3 col">
+                                <label for="fieldInput" class="form-label">Field</label>
+                                {{ form.field }}
+                            </div>
+
+                            <!-- internship ID input -->
+                            <div class="mb-3 col">
+                                <label for="internshipIDInput" class="form-label">Oppotunity ID</label>
+                                {{ form.internshipID }}
+                            </div>
+
+                        </div>
+
+                        <div class="row mb-3">
+
+                            <!-- internship contract length input -->
+                            <div class="col">
+                                <label for="contractmodeInput" class="form-label">Contract mode</label>
+                                {{ form.contractMode }}
+                            </div>
+
+                            <!-- internship contract pattern input -->
+                            <div class="col">
+                                <label for="contractpatternInput" class="form-label">Contract pattern</label>
+                                {{ form.contractPattern }}
+                            </div>
+
+                        </div>
+
+                        <div class="row mb-3">
+
+                            <!-- internship min GPA input -->
+                            <div class="col">
+                                <label for="minGPAInput" class="form-label">Min GPA</label>
+                                {{ form.minGPA }}
+                            </div>
+
+                            <!-- internship number of positions input -->
+                            <div class="col">
+                                <label for="numberPositionsInput" class="form-label">Positions</label>
+                                {{ form.numberPositions }}
+                            </div>
+
+                        </div>
+
+                        <!-- button for form submission -->
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary col-3">Submit</button>
+                        </div>
+
+
+                    </form>
                 </div>
 
-                <!-- internship field input -->
-                <div class="mb-3">
-                    <label for="fieldInput" class="form-label">Field</label>
-                    <input type="text" class="form-control" id="fieldInput" aria-describedby="fieldInput" required>
-                </div>
+                <div class="col-md-6">
+                    <!-- 
+                        
+                    -->
+                    <h3 class="display-6 mt-5 mb-4">Published opportunities</h3>
+                    <p>Looks like you haven't published any recruitment opportunities yet.</p>
 
-                <div class="row mb-3">
-
-                    <!-- internship contract length input -->
-                    <div class="col">
-                        <label for="contractmodeInput" class="form-label">Contract mode</label>
-                        <select id="contractmodeInput" class="form-select" aria-label="internship contract mode">
-                            <option selected></option>
-                            <option value="online">online</option>
-                            <option value="in-person">in-person</option>
-                            <option value="hybrid">hybrid</option>
-                        </select>
+                    <!-- 
+                        
+                    -->
+                    <div class="card mb-3">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <p class="mb-0 text-muted"><span class="fw-bold" style="color : black;">NHS job opportunity</span> - job subtitle here</p>
+                            <button type="button" class="btn btn-success fw-bold">Details</button>
+                        </div>
                     </div>
 
-                    <!-- internship contract pattern input -->
-                    <div class="col">
-                        <label for="contractpatternInput" class="form-label">Contract pattern</label>
-                        <select id="contractpatternInput" class="form-select" aria-label="stcontract study pattern">
-                            <option selected></option>
-                            <option value="full-time">Full-time</option>
-                            <option value="part-time">Part-time</option>
-                        </select>
+                    <div class="card">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <p class="mb-0 text-muted"><span class="fw-bold" style="color : black;">GSK traineeship</span> - job subtitle here</p>
+                            <button type="button" class="btn btn-success fw-bold">Details</button>
+                        </div>
                     </div>
+
 
                 </div>
 
-                <div class="row mb-3">
-
-                    <!-- internship min GPA input -->
-                    <div class="col">
-                        <label for="internshipGPAInput" class="form-label">Min GPA</label>
-                        <input type="number" class="form-control" id="internshipGPAInput" aria-describedby="internshipGPAInput" min="40" max="90" required>
-                    </div>
-
-                    <!-- internship number of positions input -->
-                    <div class="col">
-                        <label for="internshipPositions" class="form-label">Positions</label>
-                        <input type="number" class="form-control" id="internshipPositions" aria-describedby="internshipPositions" min="1" max="10" required>
-                    </div>
-
-                </div> {% endcomment %}
-
-                <div class="row mb-3">
-                    <button type="submit" class="btn btn-primary col-3">Submit</button>
-                </div>
-
-            </form>
+            </div>
+            
         </div>
     </body>
 

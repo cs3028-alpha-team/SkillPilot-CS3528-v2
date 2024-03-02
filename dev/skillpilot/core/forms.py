@@ -26,15 +26,15 @@ class StudentForm(forms.ModelForm):
 class InternshipForm(ModelForm):
     class Meta:
         model = Internship
-        exclude = [ 'internshipID', 'companyID', 'recruiterID', ]
+        fields = '__all__'
 
-    # internshipID = models.CharField(max_length = 10, primary_key= True)
-    # companyID = models.ForeignKey('core.Company', on_delete = models.CASCADE)
-    # recruiterID = models.ForeignKey('core.Recruiter', on_delete = models.CASCADE)
-    # contractMode = models.CharField(max_length=10, choices= mode.choices)
-    # contractPattern = models.CharField(max_length = 2, choices= pattern.choices)
-    # # number of internships availables in the company for that internship type
-    # numberPositions = models.SmallIntegerField() 
-    # field = models.CharField(max_length = 20)
-    # title = models.CharField(max_length = 30)
-    # minGPA = models.SmallIntegerField()
+        # use Widgets to apply bootstrap styles to dynamically loaded form
+        widgets = {
+            'internshipID': forms.TextInput(attrs={'class': 'form-control', 'id': 'internshipIDInput', 'required': True}),
+            'title': forms.TextInput(attrs={'class': 'form-control', 'id': 'titleInput', 'required': True}),
+            'field': forms.TextInput(attrs={'class': 'form-control', 'id': 'fieldInput', 'required': True}),
+            'contractMode': forms.Select(attrs={'class': 'form-select', 'id': 'contractmodeInput'}),
+            'contractPattern': forms.Select(attrs={'class': 'form-select', 'id': 'contractpatternInput'}),
+            'minGPA': forms.NumberInput(attrs={'class': 'form-control', 'id': 'minGPAInput', 'min': 40, 'max': 100, 'required': True}),
+            'numberPositions': forms.NumberInput(attrs={'class': 'form-control', 'id': 'numberPositionsInput', 'min': 1, 'max': 10, 'required': True}),
+        }

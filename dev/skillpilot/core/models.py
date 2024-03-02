@@ -68,8 +68,7 @@ class Company(models.Model):
     companyID = models.CharField(max_length = 10, primary_key = True)
     companyName = models.CharField(max_length = 50)
     industrySector = models.CharField(max_length = 30)
-    recruiterID = models.ForeignKey('core.Recruiter', on_delete = models.CASCADE)
-    internshipID = models.ForeignKey('core.Internship', on_delete = models.CASCADE)
+    #recruiterID = models.ForeignKey('core.Recruiter', on_delete = models.CASCADE)
     websiteURL = models.CharField(max_length = 300)
 
 
