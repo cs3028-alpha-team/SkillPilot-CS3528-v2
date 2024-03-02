@@ -9,6 +9,9 @@ urlpatterns = [
 
     path('internship', views.internship, name='internship'),
 
+    # this view will take in an internship ID and then dynamically load the contents from the database
+    path('internship-details', views.internshipDetails, name='internship-details'),
+
     path('admin', views.admin, name='admin'),
 
     path('contacts', views.contacts, name='contacts'),

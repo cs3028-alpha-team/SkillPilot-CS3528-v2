@@ -15,7 +15,7 @@
             -->
             <header class="display-5 mb-3">Welcome back, RecruiterName</header>
 
-            <div class="my-4 col-11 offset-3 row">
+            <div class="my-4 row">
 
                 <div class="col-md-6">
                     <!-- 
@@ -102,23 +102,32 @@
                     <div class="card mb-3">
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <p class="mb-0 text-muted"><span class="fw-bold" style="color : black;">NHS job opportunity</span> - job subtitle here</p>
-                            <button type="button" class="btn btn-success fw-bold position-relative">
+
+                            <!-- 
+                                later on we will pass in a dynamic URL into the a-tag, with the internship ID embedded within this URL
+                            -->
+                            <a href="{% url 'internship-details' %}" class="btn btn-success fw-bold position-relative">
                                 Details
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"> 1 </span>
-                            </button>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"> 2 </span>
+                            </a>
+
                         </div>
                     </div>
 
                     <div class="card">
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <p class="mb-0 text-muted"><span class="fw-bold" style="color : black;">GSK traineeship</span> - job subtitle here</p>
-                            <button type="button" class="btn btn-success fw-bold position-relative">
+
+                            <!-- 
+                                later on we will pass in a dynamic URL into the a-tag, with the internship ID embedded within this URL
+                            -->
+                            <a href="{% url 'internship-details' %}" class="btn btn-success fw-bold position-relative">
                                 Details
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"> 3 </span>
-                            </button>
+                            </a>
+
                         </div>
                     </div>
-
 
                 </div>
 

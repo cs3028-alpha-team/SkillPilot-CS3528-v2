@@ -81,3 +81,8 @@ def internship(request):
     # serve the registration form for new internships
     else:
         return render(request, 'internship.html', context)
+
+# view to render the details of a specific internship opportunity
+def internshipDetails(request):
+    
+    return render(request, 'internship-details.html')
