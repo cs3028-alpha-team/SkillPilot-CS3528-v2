@@ -85,4 +85,25 @@ def internship(request):
 # view to render the details of a specific internship opportunity
 def internshipDetails(request):
     
-    return render(request, 'internship-details.html')
+    form = InternshipForm()
+    context = { 'form' : form }
+
+    # POST request sent on '/internship', trigger registration procedure
+    if request.method == 'POST':
+        
+        # process data and register internship to database
+        form = InternshipForm(request.POST)
+
+        if form.is_valid():
+
+            # update the internship with ID of internshipID using the request payload 
+
+            form.save() 
+            return redirect('form-success')
+
+        else:
+            return redirect('form-failure')
+
+    # serve the registration form for new internships
+    else:
+        return render(request, 'internship-details.html', context)

@@ -23,7 +23,7 @@
                 <!--
                     the recruiter can submit the internship form again to modify the details
                 -->
-                {% comment %} <form method="POST" action="{% url 'internship' %}" autocomplete="off" enctype="multipart/form-data">
+                <form method="POST" action="{% url 'internship' %}" autocomplete="off" enctype="multipart/form-data">
 
                     {% csrf_token %}
 
@@ -87,7 +87,7 @@
                     </div>
 
 
-                </form> {% endcomment %}
+                </form>
             </div>
 
             <div class="col-md-6">
