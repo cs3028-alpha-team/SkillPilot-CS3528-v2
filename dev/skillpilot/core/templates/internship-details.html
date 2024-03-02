@@ -1,0 +1,152 @@
+{% extends "base.html" %}  
+{% load static %} <!-- NOTE : this line is needed on ALL templates -->
+
+{% block content %}
+
+    <div class="container-fluid">
+
+        <p class="display-5 mt-5 ms-5">Internship details page here...</p>
+
+        <!-- 
+            this will be a dynamic URL which takes in the recruiter ID to return to the recruiter dashboard 
+        -->
+        <a class="text-muted mt-5 ms-5" href="{% url 'internship' %}">Back to your recruiter profile</a>
+        <!-- 
+            In this view, the recruiter will be able to edit the internship's listing and
+            view all the upcoming interview for the advertised position
+        -->
+
+        <div class="row mt-5 justify-content-center">
+
+            <div class="col-md-auto mx-5">
+                <!-- 
+                    render the filled-in form for this page's internship
+                -->
+                <h3 class="display-6 mt-5 mb-4">Edit opportunity</h3>
+
+                <!--
+                    the recruiter can submit the internship form again to modify the details
+                -->
+                <form method="POST" action="{% url 'internship' %}" autocomplete="off" enctype="multipart/form-data">
+
+                    {% csrf_token %}
+
+                    <!-- internship title input -->
+                    <div class="mb-3">
+                        <label for="titleInput" class="form-label">Title</label>
+                        {{ form.title }}
+                    </div>
+
+                    <div class="row">
+
+                        <!-- internship field input -->
+                        <div class="mb-3 col">
+                            <label for="fieldInput" class="form-label">Field</label>
+                            {{ form.field }}
+                        </div>
+
+                        <!-- internship ID input -->
+                        <div class="mb-3 col">
+                            <label for="internshipIDInput" class="form-label">Oppotunity ID</label>
+                            {{ form.internshipID }}
+                        </div>
+
+                    </div>
+
+                    <!-- 
+                        pre-populate these fields and disable them, this is done to show the recruiter the full
+                        request payload 
+                    -->
+                    <div class="row">
+
+                        <!-- internship recruiter ID input -->
+                        <div class="mb-3 col">
+                            <label for="recruiterIDInput" class="form-label">Recruiter ID</label>
+                            {{ form.recruiterID }}
+                        </div>
+
+                        <!-- company ID input -->
+                        <div class="mb-3 col">
+                            <label for="companyIDInput" class="form-label">Company ID</label>
+                            {{ form.companyID }}
+                        </div>
+
+                    </div>
+
+                    <div class="row mb-3">
+
+                        <!-- internship contract length input -->
+                        <div class="col">
+                            <label for="contractmodeInput" class="form-label">Contract mode</label>
+                            {{ form.contractMode }}
+                        </div>
+
+                        <!-- internship contract pattern input -->
+                        <div class="col">
+                            <label for="contractpatternInput" class="form-label">Contract pattern</label>
+                            {{ form.contractPattern }}
+                        </div>
+
+                    </div>
+
+                    <div class="row mb-3">
+
+                        <!-- internship min GPA input -->
+                        <div class="col">
+                            <label for="minGPAInput" class="form-label">Min GPA</label>
+                            {{ form.minGPA }}
+                        </div>
+
+                        <!-- internship number of positions input -->
+                        <div class="col">
+                            <label for="numberPositionsInput" class="form-label">Positions</label>
+                            {{ form.numberPositions }}
+                        </div>
+
+                    </div>
+
+                    <!-- button for form submission -->
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary col-3">Submit</button>
+                    </div>
+
+
+                </form>
+            </div>
+
+            <div class="col-md-auto mx-5">
+                <!-- 
+                    render all the interviews booked in for this internship
+                -->
+                <h3 class="display-6 mt-5 mb-4">Upcoming interviews</h3>
+                <p>Looks like there are no booked interviews yet.</p>
+
+                <!-- 
+                    interview card where the recruiter can modify the interview details and contact the student  
+                -->
+                <div class="card p-3" style="width: 35rem;">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <div>
+                            <h5 class="card-title mb-3">Fake Interview</h5>
+                        </div>
+                        <p class="text-body-secondary">
+                            06/09/2069, with 
+                            <!-- 
+                                link to the student's profile page
+                            -->
+                            <a href="#">Eugene Krabs<a>
+                        </p>
+                        <div class="d-flex">
+                            <button class="btn btn-primary me-3">Reschedule</button>
+                            <button class="btn btn-danger">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}

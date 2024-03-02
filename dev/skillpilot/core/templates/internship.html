@@ -7,17 +7,17 @@
         once recruiiters have created an account with username and password, they will be able to access their dashboard 
     -->
     <body>
-        <div class="container mt-5 ms-5">
+        <div class="container-fluid">
 
             <!-- 
                 RecruiterName will be replaced with username once recruiter log-in is successfull 
                 Also, the dashboard should not be accessible to unauthorized users
             -->
-            <header class="display-5 mb-3">Welcome back, RecruiterName</header>
+            <header class="display-5 mt-5 ms-5 mb-3">Welcome back, RecruiterName</header>
 
-            <div class="my-4 col-11 offset-3 row">
+            <div class="row mt-5 justify-content-center">
 
-                <div class="col-md-6">
+                <div class="col-md-auto mx-5">
                     <!-- 
                        
                     -->
@@ -47,6 +47,26 @@
                             </div>
 
                         </div>
+
+                    <!-- 
+                        pre-populate these fields and disable them, this is done to show the recruiter the full
+                        request payload 
+                    -->
+                    <div class="row">
+
+                        <!-- internship recruiter ID input -->
+                        <div class="mb-3 col">
+                            <label for="recruiterIDInput" class="form-label">Recruiter ID</label>
+                            {{ form.recruiterID }}
+                        </div>
+
+                        <!-- company ID input -->
+                        <div class="mb-3 col">
+                            <label for="companyIDInput" class="form-label">Company ID</label>
+                            {{ form.companyID }}
+                        </div>
+
+                    </div>
 
                         <div class="row mb-3">
 
@@ -89,7 +109,7 @@
                     </form>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-auto mx-5">
                     <!-- 
                         
                     -->
@@ -102,23 +122,32 @@
                     <div class="card mb-3">
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <p class="mb-0 text-muted"><span class="fw-bold" style="color : black;">NHS job opportunity</span> - job subtitle here</p>
-                            <button type="button" class="btn btn-success fw-bold position-relative">
+
+                            <!-- 
+                                later on we will pass in a dynamic URL into the a-tag, with the internship ID embedded within this URL
+                            -->
+                            <a href="{% url 'internship-details' %}" class="btn btn-success fw-bold position-relative">
                                 Details
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"> 1 </span>
-                            </button>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"> 2 </span>
+                            </a>
+
                         </div>
                     </div>
 
                     <div class="card">
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <p class="mb-0 text-muted"><span class="fw-bold" style="color : black;">GSK traineeship</span> - job subtitle here</p>
-                            <button type="button" class="btn btn-success fw-bold position-relative">
+
+                            <!-- 
+                                later on we will pass in a dynamic URL into the a-tag, with the internship ID embedded within this URL
+                            -->
+                            <a href="{% url 'internship-details' %}" class="btn btn-success fw-bold position-relative">
                                 Details
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"> 3 </span>
-                            </button>
+                            </a>
+
                         </div>
                     </div>
-
 
                 </div>
 
