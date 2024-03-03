@@ -3,8 +3,127 @@
 
 {% block content %}
 
-    <div class="container text-center">
-        <h1 class="display-2 mt-5">Admin Page</h1>
-    </div>
+        <div class="container-fluid">
+
+            <!-- 
+                AdminName will be replaced with username once admin log-in is successfull 
+            -->
+            <header class="display-5 mt-5 ms-5 mb-3">Welcome back, AdminName</header>
+
+            <div class="row my-5 justify-content-center">
+
+                <div class="col-md-auto mx-5">
+                    <!-- 
+                       
+                    -->
+                    <h3 class="display-6 mt-5 mb-4">Upload new opportunities</h3>
+                    <form method="POST" action="{% url 'internship' %}" autocomplete="off" enctype="multipart/form-data">
+
+                        {% csrf_token %}
+
+                        <!-- internship title input -->
+                        <div class="mb-3">
+                            <label for="titleInput" class="form-label">Title</label>
+                            {{ form.title }}
+                        </div>
+
+                        <div class="row">
+
+                            <!-- internship field input -->
+                            <div class="mb-3 col">
+                                <label for="fieldInput" class="form-label">Field</label>
+                                {{ form.field }}
+                            </div>
+
+                            <!-- internship ID input -->
+                            <div class="mb-3 col">
+                                <label for="internshipIDInput" class="form-label">Oppotunity ID</label>
+                                {{ form.internshipID }}
+                            </div>
+
+                        </div>
+
+                    <!-- 
+                        pre-populate these fields and disable them, this is done to show the recruiter the full
+                        request payload 
+                    -->
+                    <div class="row">
+
+                        <!-- internship recruiter ID input -->
+                        <div class="mb-3 col">
+                            <label for="recruiterIDInput" class="form-label">Recruiter ID</label>
+                            {{ form.recruiterID }}
+                        </div>
+
+                        <!-- company ID input -->
+                        <div class="mb-3 col">
+                            <label for="companyIDInput" class="form-label">Company ID</label>
+                            {{ form.companyID }}
+                        </div>
+
+                    </div>
+
+                        <div class="row mb-3">
+
+                            <!-- internship contract length input -->
+                            <div class="col">
+                                <label for="contractmodeInput" class="form-label">Contract mode</label>
+                                {{ form.contractMode }}
+                            </div>
+
+                            <!-- internship contract pattern input -->
+                            <div class="col">
+                                <label for="contractpatternInput" class="form-label">Contract pattern</label>
+                                {{ form.contractPattern }}
+                            </div>
+
+                        </div>
+
+                        <div class="row mb-3">
+
+                            <!-- internship min GPA input -->
+                            <div class="col">
+                                <label for="minGPAInput" class="form-label">Min GPA</label>
+                                {{ form.minGPA }}
+                            </div>
+
+                            <!-- internship number of positions input -->
+                            <div class="col">
+                                <label for="numberPositionsInput" class="form-label">Positions</label>
+                                {{ form.numberPositions }}
+                            </div>
+
+                        </div>
+
+                        <!-- button for form submission -->
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary col-3">Submit</button>
+                        </div>
+
+
+                    </form>
+                </div>
+
+                <div class="col-md-auto mx-5">
+                    <!-- 
+                        
+                    -->
+                    <h3 class="display-6 mt-5 mb-4">Analytics</h3>
+                    <div class="card mb-3" style="width:25rem;">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <p class="mb-0 text-muted"><span class="fw-bold" style="color:black;">92% </span> of students are matched </p>
+
+                            <a href="{% url 'internship-details' %}" class="btn btn-primary fw-bold">
+                                Dashboard
+                            </a>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            
+        </div>
 
 {% endblock %}
