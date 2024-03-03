@@ -10,7 +10,7 @@
             -->
             <header class="display-5 mt-5 ms-5 mb-3">Welcome back, AdminName</header>
 
-            <div class="row my-5 justify-content-center">
+            <div class="row my-5 justify-content-evenly">
 
                 <!-- 
         
@@ -19,92 +19,94 @@
                     <!-- 
                        
                     -->
-                    <h3 class="display-6 mt-5 mb-4">Upload new opportunities</h3>
-                    <form method="POST" action="{% url 'internship' %}" autocomplete="off" enctype="multipart/form-data">
+                    <h3 class="display-6 mt-5 mb-4">Search Database</h3>
+            
+                    <!--
 
-                        {% csrf_token %}
-
-                        <!-- internship title input -->
-                        <div class="mb-3">
-                            <label for="titleInput" class="form-label">Title</label>
-                            {{ form.title }}
-                        </div>
-
-                        <div class="row">
-
-                            <!-- internship field input -->
-                            <div class="mb-3 col">
-                                <label for="fieldInput" class="form-label">Field</label>
-                                {{ form.field }}
-                            </div>
-
-                            <!-- internship ID input -->
-                            <div class="mb-3 col">
-                                <label for="internshipIDInput" class="form-label">Oppotunity ID</label>
-                                {{ form.internshipID }}
-                            </div>
-
-                        </div>
-
-                    <!-- 
-                        pre-populate these fields and disable them, this is done to show the recruiter the full
-                        request payload 
                     -->
-                    <div class="row">
+                    <div class="mt-5 mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-5">
+                            <h3 class="display-6 me-5">Compute Matches</h3>
+                            <div class="ms-5"> 
+                                <!--
 
-                        <!-- internship recruiter ID input -->
-                        <div class="mb-3 col">
-                            <label for="recruiterIDInput" class="form-label">Recruiter ID</label>
-                            {{ form.recruiterID }}
+                                -->
+                                <a href="#" class="btn btn-primary fw-bold">Compute offers</a>
+
+                            </div>
                         </div>
 
-                        <!-- company ID input -->
-                        <div class="mb-3 col">
-                            <label for="companyIDInput" class="form-label">Company ID</label>
-                            {{ form.companyID }}
+                        <!--
+
+                        -->
+                        <div class="d-flex flex-column align-items-center mb-5">
+                            <!--
+                                example cards
+                            -->
+                            <div class="card mb-3" style="width:45rem;">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+
+                                    <!--
+
+                                    -->
+                                   <p class="mb-0 text-muted"><a href="#" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">Peter Griffin</a> matched to <a href="#" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">Nothing</a></p>
+
+                                    <div> 
+                                        <!--
+
+                                        -->
+                                        <span class="fw-bold text-success me-2">Likely to Succeed</span>
+
+                                        <!--
+
+                                        -->
+                                        <a href="#" class="btn btn-light fw-bold">Approve and Save</a>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="card mb-3" style="width:45rem;">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <p class="mb-0 text-muted"><a href="#" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">Nigel</a> matched to <a href="#" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">Papa Johns internship</a></p>
+
+                                    <div> 
+                                        <!--
+
+                                        -->
+                                        <span class="fw-bold text-danger me-2">Likely to Fail</span>
+
+                                        <!--
+
+                                        -->
+                                        <a href="#" class="btn btn-light fw-bold">Approve and Save</a>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="card mb-3" style="width:45rem;">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <p class="mb-0 text-muted"><a href="#" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">Bruh</a> matched to <a href="#" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">NHS cleaner traineeship</a></p>
+
+                                    <div> 
+                                        <!--
+
+                                        -->
+                                        <span class="fw-bold text-success me-2">Likely to Succeed</span>
+
+                                        <!--
+
+                                        -->
+                                        <a href="#" class="btn btn-light fw-bold">Approve and Save</a>
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
 
                     </div>
 
-                        <div class="row mb-3">
-
-                            <!-- internship contract length input -->
-                            <div class="col">
-                                <label for="contractmodeInput" class="form-label">Contract mode</label>
-                                {{ form.contractMode }}
-                            </div>
-
-                            <!-- internship contract pattern input -->
-                            <div class="col">
-                                <label for="contractpatternInput" class="form-label">Contract pattern</label>
-                                {{ form.contractPattern }}
-                            </div>
-
-                        </div>
-
-                        <div class="row mb-3">
-
-                            <!-- internship min GPA input -->
-                            <div class="col">
-                                <label for="minGPAInput" class="form-label">Min GPA</label>
-                                {{ form.minGPA }}
-                            </div>
-
-                            <!-- internship number of positions input -->
-                            <div class="col">
-                                <label for="numberPositionsInput" class="form-label">Positions</label>
-                                {{ form.numberPositions }}
-                            </div>
-
-                        </div>
-
-                        <!-- button for form submission -->
-                        <div class="mb-3">
-                            <button type="submit" class="btn btn-primary col-3">Submit</button>
-                        </div>
-
-
-                    </form>
                 </div>
 
                 <!-- 
@@ -129,7 +131,7 @@
                     <!-- 
 
                     -->
-                    <h3 class="display-6 mt-5 mb-4">Listing activity</h3>
+                    <h3 class="display-6 mt-5 mb-4">Listing Activity</h3>
 
                     <div class="card mb-3" style="width:30rem;">
                         <div class="card-body d-flex justify-content-between align-items-center">
