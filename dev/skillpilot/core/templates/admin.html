@@ -15,12 +15,84 @@
                 <!-- 
         
                 -->
-                <div class="col-md-auto mx-5">
+                <div class="col ms-5 me-2">
+
                     <!-- 
                        
                     -->
-                    <h3 class="display-6 mt-5 mb-4">Search Database</h3>
-            
+                    <div class="mt-5 d-flex justify-content-between align-items-center">
+                        <h3 class="display-6 me-5">Search Database</h3>
+                        
+                            <!--
+
+                            -->
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Query Options
+                                </button>
+                                <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Students</a></li>
+                                    <li><a class="dropdown-item" href="#">Internships</a></li>
+                                    <li><a class="dropdown-item" href="#">Recruiters</a></li>
+                                    <li><a class="dropdown-item" href="#">Computed Matches</a></li>
+                                </ul>
+                            </div>
+
+                    </div>
+
+                    <!-- 
+
+                    -->
+                    <p class="fs-5 mt-3">Students</p>
+                    <form method="GET" action="#" autocomplete="off" enctype="multipart/form-data">
+
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <input type="text" class="form-control" id="studentNameInput" placeholder="full name">
+                        </div>
+
+                        <div class="mb-3">
+                            <input type="text" class="form-control" id="studentEmailInput"  placeholder="email">
+                        </div>
+
+                        <div class="mb-3">
+                            <input type="text" class="form-control" id="studentIDInput" placeholder="student ID">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary fw-bold mb-4">Search</button>
+                    </form>
+
+
+                    <!--
+
+                    -->
+                    <p class="fs-5 mt-3">Your query returned the results below</p>
+
+                    <!--
+
+                    -->
+                    <div class="card my-3" style="width:30rem;">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <p class="mb-0 text-muted"><span class="fw-bold me-2" style="color:black;">Mr Beast</span> mb1K0 </p>
+                            <a href="{% url 'student' %}" class="btn btn-light fw-bold">student details</a>
+                        </div>
+                    </div>
+
+                    <div class="card my-3" style="width:30rem;">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <p class="mb-0 text-muted"><span class="fw-bold me-2" style="color:black;">Lebron James</span> lj9X1 </p>
+                            <a href="{% url 'student' %}" class="btn btn-light fw-bold">student details</a>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- 
+        
+                -->
+                <div class="col mx-3">
+
                     <!--
 
                     -->
@@ -43,7 +115,7 @@
                             <!--
                                 example cards
                             -->
-                            <div class="card mb-3" style="width:45rem;">
+                            <div class="card mb-3" style="width:40rem;">
                                 <div class="card-body d-flex justify-content-between align-items-center">
 
                                     <!--
@@ -55,18 +127,18 @@
                                         <!--
 
                                         -->
-                                        <span class="fw-bold text-success me-2">Likely to Succeed</span>
+                                        <span class="fw-bold text-success me-2">Low risk</span>
 
                                         <!--
 
                                         -->
-                                        <a href="#" class="btn btn-light fw-bold">Approve and Save</a>
+                                        <a href="#" class="btn btn-light fw-bold">Approve & Save</a>
                                     </div>
 
                                 </div>
                             </div>
 
-                            <div class="card mb-3" style="width:45rem;">
+                            <div class="card mb-3" style="width:40rem;">
                                 <div class="card-body d-flex justify-content-between align-items-center">
                                     <p class="mb-0 text-muted"><a href="#" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">Nigel</a> matched to <a href="#" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">Papa Johns internship</a></p>
 
@@ -74,18 +146,18 @@
                                         <!--
 
                                         -->
-                                        <span class="fw-bold text-danger me-2">Likely to Fail</span>
+                                        <span class="fw-bold text-danger me-2">High risk</span>
 
                                         <!--
 
                                         -->
-                                        <a href="#" class="btn btn-light fw-bold">Approve and Save</a>
+                                        <a href="#" class="btn btn-light fw-bold">Approve & Save</a>
                                     </div>
 
                                 </div>
                             </div>
 
-                            <div class="card mb-3" style="width:45rem;">
+                            <div class="card mb-3" style="width:40rem;">
                                 <div class="card-body d-flex justify-content-between align-items-center">
                                     <p class="mb-0 text-muted"><a href="#" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">Bruh</a> matched to <a href="#" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">NHS cleaner traineeship</a></p>
 
@@ -93,12 +165,12 @@
                                         <!--
 
                                         -->
-                                        <span class="fw-bold text-success me-2">Likely to Succeed</span>
+                                        <span class="fw-bold text-success me-2">Low risk</span>
 
                                         <!--
 
                                         -->
-                                        <a href="#" class="btn btn-light fw-bold">Approve and Save</a>
+                                        <a href="#" class="btn btn-light fw-bold">Approve & Save</a>
                                     </div>
 
                                 </div>
@@ -112,12 +184,12 @@
                 <!-- 
         
                 -->
-                <div class="col-md-auto mx-5">
+                <div class="col ms-3 me-5">
                     <!-- 
                         
                     -->
-                    <h3 class="display-6 mt-5 mb-4">Analytics</h3>
-                    <div class="card mb-3" style="width:25rem;">
+                    <h3 class="display-6 my-5">Analytics</h3>
+                    <div class="card my-3" style="width:30rem;">
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <p class="mb-0 text-muted"><span class="fw-bold" style="color:black;">92% </span> of students are matched </p>
 
@@ -135,7 +207,7 @@
 
                     <div class="card mb-3" style="width:30rem;">
                         <div class="card-body d-flex justify-content-between align-items-center">
-                            <p class="mb-0 text-muted"><span class="fw-bold" style="color:black;">NHS</span> - job subtitle here </p>
+                            <p class="mb-0 text-muted"><span class="fw-bold" style="color:black;">NHS</span> - title changed </p>
 
                             <div> 
                                 <!--
@@ -146,7 +218,7 @@
                                 <!--
 
                                 -->
-                                <a href="#" class="btn btn-light fw-bold">Mark as read</a>
+                                <a href="#" class="btn btn-light fw-bold ms-2">Mark as read</a>
                             </div>
 
                         </div>
@@ -164,7 +236,7 @@
                                 <!--
 
                                 -->
-                                <a href="#" class="btn btn-light fw-bold">Mark as read</a>
+                                <a href="#" class="btn btn-light fw-bold ms-2">Mark as read</a>
                             </div>
 
                         </div>
@@ -182,7 +254,7 @@
                                 <!--
 
                                 -->
-                                <a href="#" class="btn btn-light fw-bold">Mark as read</a>
+                                <a href="#" class="btn btn-light fw-bold ms-2">Mark as read</a>
                             </div>
 
                         </div>
