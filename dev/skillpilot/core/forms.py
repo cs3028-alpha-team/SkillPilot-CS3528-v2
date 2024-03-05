@@ -1,6 +1,8 @@
 from django import forms
 from . models import *
 from django.forms import ModelForm
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
 # create form for the Student model
 class StudentForm(forms.ModelForm):
@@ -40,3 +42,8 @@ class InternshipForm(ModelForm):
             'minGPA': forms.NumberInput(attrs={'class': 'form-control', 'id': 'minGPAInput', 'min': 40, 'max': 100, 'required': True}),
             'numberPositions': forms.NumberInput(attrs={'class': 'form-control', 'id': 'numberPositionsInput', 'min': 1, 'max': 10, 'required': True}),
         }
+
+class CreateUserForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email','password1', 'password2']
