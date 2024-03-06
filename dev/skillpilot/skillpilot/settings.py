@@ -77,33 +77,14 @@ WSGI_APPLICATION = 'skillpilot.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'd4pscn2jmoq7aj',
-        'USER': 'tcayebojaotjug',
-        'PASSWORD': 'b4c06072246b775834bf36c556368557bd7613ad8ee157248fd663518908ff7b',
-        'HOST': 'ec2-44-194-65-158.compute-1.amazonaws.com',
-        'PORT': '5432',
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-#The following code is used to detect test environment and use a different database
-if 'test' in sys.argv:
-    DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'db.sqlite3',
-}
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 
 
 # Password validation
