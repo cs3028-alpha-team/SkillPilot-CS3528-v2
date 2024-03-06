@@ -1,1 +1,1 @@
-web: gunicorn skillpilot.wsgi
+web: gunicorn skillpilot-v2.wsgi
