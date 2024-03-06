@@ -1,0 +1,60 @@
+name: Django Github Action
+
+# specify what action triggers the workflow
+on: [ push, pull_request, workflow_dispatch ]
+
+jobs:
+
+  # pull repository code, install dependencies and package the application
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      # matrix building strategy allows to build the app in parallel for the versions specified
+      max-parallel: 2
+      matrix:
+        python-version: [ 3.8, 3.9 ]
+
+    steps:
+      - uses: actions/checkout@v3 
+      - name: Setup Python Version ${{ matrix.python-version }} 
+        uses: actions/setup-python@v4.1.0 # use the built-in action for setting up python
+        with:
+          # apply setup action with version of python currently used by the matrix
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies 
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run migrations 
+        run: |
+          python manage.py makemigrations
+          python manage.py migrate
+
+      # run any test contained within the project's applications
+      - name: Run tests
+        run: |
+          python manage.py collectstatic
+          python manage.py test
+
+  # once the app is packaged and successfully tested, deploy it to heroku
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    name: Deploy application to Heroku
+
+    steps:
+        # use the checkout built-in action to retrieve repository code
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: deploy
+        # use built-in action from marketplace to deploy app to heroku
+        uses: akhileshns/heroku-deploy@v3.12.12 
+        with:
+          # specify envirnoment variables and secrets required for deployment job
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_SKILLPILOT_V2 }}
+          heroku_email: "u03.fp.21@abdn.ac.uk"
+          branch: "main"
