@@ -65,7 +65,7 @@ def login_admin(request):
 def student(request):
 
     form = StudentForm()
-    context = { 'form' : form }
+    context = {'form' : form}
 
     # POST request sent on '/student', trigger registration procedure
     if request.method == 'POST':
@@ -91,7 +91,7 @@ def student(request):
 def internship(request):
 
     form = InternshipForm()
-    context = { 'form' : form }
+    context = {'form' : form}
 
     # POST request sent on '/internship', trigger registration procedure
     if request.method == 'POST':
@@ -121,7 +121,7 @@ def internship(request):
 def internshipDetails(request):
     
     form = InternshipForm()
-    context = { 'form' : form }
+    context = {'form' : form}
 
     # ============================================ EDIT INTERNSHIP LISTING =========================================
     # POST request sent on '/internship', trigger registration procedure
@@ -155,7 +155,7 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            if next_url:  #if 'next' parameter exists, redirect to that URL
+            if next_url:  # if 'next' parameter exists, redirect to that URL
                 return HttpResponseRedirect(next_url)
             else:  # redirect to a default URL
                 return render(request, 'student.html')
@@ -178,7 +178,7 @@ def login_admin(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            if next_url:  #if 'next' parameter exists, redirect to that URL
+            if next_url:  # if 'next' parameter exists, redirect to that URL
                 return HttpResponseRedirect(next_url)
             else:  # redirect to a default URL
                 return render(request, 'admin.html')
@@ -200,7 +200,7 @@ def login_internship(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            if next_url:  #if 'next' parameter exists, redirect to that URL
+            if next_url:  # if 'next' parameter exists, redirect to that URL
                 return HttpResponseRedirect(next_url)
             else:  # redirect to a default URL
                 return render(request, 'internship.html')
@@ -220,7 +220,7 @@ def logout_user(request):
 from django.shortcuts import redirect
 from django.shortcuts import redirect
 
-#handle registration of companies
+# handle registration of companies
 @unauthenticated_user   
 def registering_company(request):
     if request.method == "POST":
@@ -228,7 +228,7 @@ def registering_company(request):
         if form.is_valid():
             user = form.save()
             username = form.cleaned_data.get('username')
-            group = Group.objects.get(name = 'Companies') #assigning user to group when the account is created 
+            group = Group.objects.get(name = 'Companies') # assigning user to group when the account is created 
             user.groups.add(group)
 
             messages.success(request, 'Account was created for ' + username)
@@ -247,7 +247,7 @@ def registering_user(request):
         if form.is_valid():
             user = form.save()
             username = form.cleaned_data.get('username') 
-            group = Group.objects.get(name = 'Students') #assigning user to group when the account is created
+            group = Group.objects.get(name = 'Students') # assigning user to group when the account is created
             user.groups.add(group)
             messages.success(request, 'Account was created for ' + username)
             return redirect('Login-page')  # Redirect to the Login page after successful registration
