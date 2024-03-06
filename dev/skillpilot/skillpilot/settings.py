@@ -151,4 +151,5 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # URL to redirect to when the authentication is required
-LOGIN_URL = '/logadmin/'
+LOGIN_URL = '/home'  # or '/login_user' depending on your login view URL
+
