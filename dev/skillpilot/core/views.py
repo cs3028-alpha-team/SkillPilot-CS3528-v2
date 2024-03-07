@@ -3,8 +3,10 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group
 from . models import *
 from . forms import *
+from . decorators import *
 from django.contrib.auth.forms import UserCreationForm
 
 # view for the route '/home' 
@@ -20,6 +22,7 @@ def formFailure(request):
 
 # render view for admin page
 @login_required
+@allowed_users(allowed_roles=['Admin'])
 def admin(request):
     return render(request, 'admin.html')
 
@@ -33,25 +36,36 @@ def contacts(request):
 
 # render view for login page
 def Login(request):
-    return render(request, 'Login-page.html')
+    if request.user.is_authenticated:
+        return redirect('student')
+    else:
+        return render(request, 'Login-page.html')
 
 # render view for registration page
+@unauthenticated_user  
 def registration_user(request):
     return render(request, 'student-registration.html')
 
 # render view for registration page
+@unauthenticated_user  
 def registration_company2(request):
     return render(request, 'company-registration.html')
 
-# render view for Login page
+# render view for Login page 
 def employer_Login(request):
-    return render(request, 'Login-company.html')
+    if request.user.is_authenticated:
+        return redirect('internship')
+    else:
+        return render(request, 'Login-company.html')
 
-# render view for Login
+# render view for Login  
 def login_admin(request):
     return render(request, 'Login-admin.html')
 
+
 # view for the route '/student'
+@login_required
+@allowed_users(allowed_roles=['Students'])
 def student(request):
 
     form = StudentForm()
@@ -76,6 +90,8 @@ def student(request):
         return render(request, 'student.html', context)
 
 # view for the route '/internship'
+@login_required
+@allowed_users(allowed_roles=['Companies'])
 def internship(request):
 
     form = InternshipForm()
@@ -105,6 +121,7 @@ def internship(request):
 
 # view to render the details of a specific internship opportunity
 @login_required
+@allowed_users(allowed_roles=['Companies'])
 def internshipDetails(request):
     
     form = InternshipForm()
@@ -132,6 +149,7 @@ def internshipDetails(request):
         return render(request, 'internship-details.html', context)
     
  # view to handle login
+@unauthenticated_user  
 def login_user(request):
     if request.method == "POST":
         username = request.POST.get('user_name')
@@ -151,8 +169,10 @@ def login_user(request):
 
     else:
         # render the login form for GET requests
-        return render(request, 'Login-page.html')#
+        return render(request, 'Login-page.html')
     
+
+@unauthenticated_user 
 def login_admin(request):
     if request.method == "POST":
         username = request.POST.get('user_name')
@@ -173,7 +193,8 @@ def login_admin(request):
     else:
         # render the login form for GET requests
         return render(request, 'Login-admin.html')
-    
+
+@unauthenticated_user      
 def login_internship(request):
     if request.method == "POST":
         username = request.POST.get('user_name')
@@ -203,17 +224,42 @@ def logout_user(request):
 from django.shortcuts import redirect
 from django.shortcuts import redirect
 
+#handle registration of companies
+@unauthenticated_user   
 def registering_company(request):
     if request.method == "POST":
-        form = CreateUserForm(request.POST)
+        form = CreateCompanyForm(request.POST)
         if form.is_valid():
-            form.save()
-            user = form.cleaned_data.get('username')
-            messages.success(request, 'Account was created for ' + user)
+            user = form.save()
+            username = form.cleaned_data.get('username')
+            group = Group.objects.get(name = 'Companies') #assigning user to group when the account is created 
+            user.groups.add(group)
+
+            messages.success(request, 'Account was created for ' + username)
             return redirect('Login-company')  # Redirect to the Login-company page after successful registration
     else:
         form = UserCreationForm()
     
     context = {'form': form}
     return render(request, 'company-registration.html', context)
+
+
+
+@unauthenticated_user   
+def registering_user(request):
+    if request.method == "POST":
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            username = form.cleaned_data.get('username') 
+            group = Group.objects.get(name = 'Students') #assigning user to group when the account is created
+            user.groups.add(group)
+            messages.success(request, 'Account was created for ' + username)
+            return redirect('Login-page')  # Redirect to the Login page after successful registration
+    else:
+        form = UserCreationForm()
+    
+    print(form.errors)
+    context = {'form': form}
+    return render(request, 'student-registration.html', context)
 
