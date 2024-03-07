@@ -37,5 +37,6 @@ urlpatterns = [
     path('Company-registration', views.registration_company2, name='Company-registration'),
 
     path('registering_company', views.registering_company, name='registering_company'),
-
+    
+    path('dashboard/', views.dashboard, name='dashboard'),
 ]

@@ -23,6 +23,10 @@ def formFailure(request):
 def admin(request):
     return render(request, 'admin.html')
 
+# Lives in the dashboard app
+def dashboard(request):
+    return render(request, 'dashboard/dashboard.html')
+
 # render view with admin contact details
 def contacts(request):
     return render(request, 'contacts.html')
@@ -212,3 +216,4 @@ def registering_company(request):
     
     context = {'form': form}
     return render(request, 'company-registration.html', context)
+
