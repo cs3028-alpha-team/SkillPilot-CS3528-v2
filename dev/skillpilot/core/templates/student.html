@@ -1,157 +1,140 @@
 {% extends "base.html" %}  
-{% load static %} <!-- NOTE : this line is needed on ALL templates -->
+{% load static %} <!-- NOTE: this line is needed on ALL templates -->
 
 {% block content %}
 
-    <!--
-        once students have created an account with username and password, they will be able to access their dashboard 
-    -->
-    <body>
-        <div class="container-fluid">
+<body>
+    <div class="container">
 
-            <!-- 
-                StudentName will be replaced with username once student log-in is successfull 
-                Also, the dashboard should not be accessible to unauthorized users
-            -->
-            <header class="display-5 mt-5 ms-5">Welcome back, {{request.user}}</header>
+        <!-- Once students have created an account with username and password, they will be able to access their dashboard -->
+        <header class="display-5 mt-5 ms-5">Welcome back, {{ request.user }}</header>
 
-            <div class="row my-5 justify-content-center">
+        <div class="row my-5 justify-content-center">
 
-                <div class="col-md-auto mx-5">
-                    <!-- 
-                        here they can configure their profile, and if they have done so already then form will be replaced by a paragraph 
-                        saying something along the lines of "looks like you have configured your application 
-                        profile already, please contact admin for any issue..." 
-                    -->
-                    <h3 class="display-6 mt-5 mb-4">Configure your profile</h3>
-                    <form method="POST" action="{% url 'student' %}" autocomplete="off" enctype="multipart/form-data">
+            <div class="col-md-8 mx-3">
+                <!-- Here they can configure their profile, and if they have done so already then form will be replaced by a paragraph saying something along the lines of "looks like you have configured your application profile already, please contact admin for any issue..." -->
+                <h3 class="display-6 mt-5 mb-4">Configure your profile</h3>
+                <form method="POST" action="{% url 'student' %}" autocomplete="off" enctype="multipart/form-data">
 
-                        {% csrf_token %}
+                    {% csrf_token %}
 
-                        <!-- student fullname input -->
-                        <div class="mb-3">
-                            <label for="fullnameInput" class="form-label">Full name</label>
-                            {{ form.fullName }}
+                    <!-- Student full name input -->
+                    <div class="mb-3">
+                        <label for="fullnameInput" class="form-label">Full name</label>
+                        {{ form.fullName }}
+                    </div>
+
+                    <!-- Student email input -->
+                    <div class="mb-3">
+                        <label for="emailInput" class="form-label">Email</label>
+                        {{ form.email }}
+                    </div>
+
+                    <!-- Student current programme input -->
+                    <div class="mb-3">
+                        <label for="currProgrammeInput" class="form-label">Current programme</label>
+                        {{ form.currProgramme }}
+                    </div>
+
+                    <!-- Student previous programme input -->
+                    <div class="mb-3">
+                        <label for="prevProgrammeInput" class="form-label">Previous programme</label>
+                        {{ form.prevProgramme }}
+                    </div>
+
+                    <div class="row mb-3">
+                        <!-- Student study mode input -->
+                        <div class="col">
+                            <label for="studymodeInput" class="form-label">Study mode</label>
+                            {{ form.studyMode }}
                         </div>
 
-                        <!-- student email input -->
-                        <div class="mb-3">
-                            <label for="emailInput" class="form-label">Email</label>
-                            {{ form.email }}
-                        </div>
-
-                        <!-- student current programme input -->
-                        <div class="mb-3">
-                            <label for="currProgrammeInput" class="form-label">Current programme</label>
-                            {{ form.currProgramme }}
-                        </div>
-
-                        <!-- student previous programme input -->
-                        <div class="mb-3">
-                            <label for="prevProgrammeInput" class="form-label">Previous programme</label>
-                            {{ form.prevProgramme }}
-                        </div>
-
-                        <div class="row mb-3">
-
-                            <!-- student study mode input -->
-                            <div class="col">
-                                <label for="studymodeInput" class="form-label">Study mode</label>
-                                {{ form.studyMode }}
-                            </div>
-
-                            <!-- student study pattern input -->
-                            <div class="col">
-                                <label for="studypatternInput" class="form-label">Study pattern</label>
-                                {{ form.studyPattern }}
-                            </div>
-
-                        </div>
-
-                        <div class="row mb-3">
-
-                            <!-- student GPA input -->
-                            <div class="col">
-                                <label for="studentGPAInput" class="form-label">GPA</label>
-                                {{ form.GPA }}
-                            </div>
-
-                            <!-- student desired contract length input -->
-                            <div class="col">
-                                <label for="contractLengthInput" class="form-label">Contract Length</label>
-                                {{ form.desiredContractLength }}
-                            </div>
-
-                            <!-- student willing-to-relocate input -->
-                            <div class="col">
-                                <label for="willingRelocation" class="form-label">Willing to relocate</label>
-                                {{ form.willingRelocate }}
-                            </div>
-
-                        </div>
-
-                        <!-- student aspirations input -->
-                        <div class="row mb-3">
-                            <label for="aspirations">Aspirations</label>
-                            {{ form.aspirations }}
-                        </div>
-
-                        <!-- button for form submission -->
-                        <div class="row mb-3">
-                            <button type="submit" class="btn btn-primary col-3">Submit</button>
-                        </div>
-
-                    </form>
-                </div>
-
-                <div class="col-md-auto mx-5">
-                    <!-- 
-                        here students will be able to see their upcoming interviews if they have any
-                    -->
-                    <h3 class="display-6 mt-5 mb-4">Your upcoming interviews</h3>
-                    <p>Looks like you have no upcoming interviews.</p>
-
-                    <!-- 
-                        this is what an interview looks like on the student page 
-                        the recruiter name is a link to the recruiter's profile page on skillpilot
-                    -->
-                    <div class="card p-2 mb-4" style="width: 35rem;">
-                        <div class="card-body d-flex flex-column justify-content-between">
-                            <div>
-                                <h5 class="card-title mb-3">Fake Interview with NHS</h5>
-                            </div>
-                            <p class="text-body-secondary">
-                                01/01/2050 at Primark Union Street, with 
-                                <a href="#">John McDeeznuts<a>
-                            </p>
-                            <div class="d-flex">
-                                <button class="btn btn-primary me-3">Reschedule</button>
-                                <button class="btn btn-danger">Cancel</button>
-                            </div>
+                        <!-- Student study pattern input -->
+                        <div class="col">
+                            <label for="studypatternInput" class="form-label">Study pattern</label>
+                            {{ form.studyPattern }}
                         </div>
                     </div>
 
-                    <div class="card p-2 mb-4" style="width: 35rem;">
-                        <div class="card-body d-flex flex-column justify-content-between">
-                            <div>
-                                <h5 class="card-title mb-3">Fake Interview with GSK</h5>
-                            </div>
-                            <p class="text-body-secondary">
-                                02/01/2420 at St. Machar Bar, with 
-                                <a href="#">Garfield<a>
-                            </p>
-                            <div class="d-flex">
-                                <button class="btn btn-primary me-3">Reschedule</button>
-                                <button class="btn btn-danger">Cancel</button>
-                            </div>
+                    <div class="row mb-3">
+                        <!-- Student GPA input -->
+                        <div class="col">
+                            <label for="studentGPAInput" class="form-label">GPA</label>
+                            {{ form.GPA }}
+                        </div>
+
+                        <!-- Student desired contract length input -->
+                        <div class="col">
+                            <label for="contractLengthInput" class="form-label">Contract Length</label>
+                            {{ form.desiredContractLength }}
+                        </div>
+
+                        <!-- Student willing-to-relocate input -->
+                        <div class="col">
+                            <label for="willingRelocation" class="form-label">Willing to relocate</label>
+                            {{ form.willingRelocate }}
                         </div>
                     </div>
 
-                </div>
+                    <!-- Student aspirations input -->
+                    <div class="row mb-3">
+                        <label for="aspirations">Aspirations</label>
+                        {{ form.aspirations }}
+                    </div>
 
+                    <!-- Button for form submission -->
+                    <div class="row mb-3">
+                        <button type="submit" class="btn btn-primary col-12">Submit</button>
+                    </div>
+
+                </form>
             </div>
-            
+
+            <div class="col-md-8 mx-3">
+                <!-- Here students will be able to see their upcoming interviews if they have any -->
+                <h3 class="display-6 mt-5 mb-4">Your upcoming interviews</h3>
+
+                <!-- This is what an interview looks like on the student page. The recruiter name is a link to the recruiter's profile page on Skillpilot -->
+                <div class="card p-2 mb-4">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <div>
+                            <h5 class="card-title mb-3">Fake Interview with NHS</h5>
+                        </div>
+                        <p class="text-body-secondary">
+                            01/01/2050 at Primark Union Street, with 
+                            <a href="#">John McDeeznuts</a>
+                        </p>
+                        <div class="d-flex">
+                            <button class="btn btn-danger">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card p-2 mb-4">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <div>
+                            <h5 class="card-title mb-3">Fake Interview with GSK</h5>
+                        </div>
+                        <p class="text-body-secondary">
+                            02/01/2420 at St. Machar Bar, with 
+                            <a href="#">Garfield</a>
+                        </p>
+                        <div class="d-flex">
+                            <button class="btn btn-danger">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </body>
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-8">
+                <form method="POST" action="{% url 'delete_user' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger col-12">Delete My Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
 
 {% endblock %}

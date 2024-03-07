@@ -12,7 +12,7 @@ urlpatterns = [
     path('internship', views.internship, name='internship'),
 
     # this view will take in an internship ID and then dynamically load the contents from the database
-    path('internship-details', views.internshipDetails, name='internship-details'),
+    path('internship-details/<str:internshipID>/', views.internshipDetails, name='internship-details'),
 
     path('admin', views.admin, name='admin'),
 
@@ -42,4 +42,9 @@ urlpatterns = [
 
     path('registering_user', views.registering_user, name='registering_user'),
 
+    path('delete-user/', views.delete_user, name='delete_user'),
+
+    path('current-internships', views.CurrentInternship, name='current-internships'),
+
+    path('cancel_internship/<str:internshipID>/', views.cancel_internship, name='cancel_internship'),
 ]
