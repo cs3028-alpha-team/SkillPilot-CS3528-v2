@@ -28,6 +28,10 @@ def admin(request):
     current_internships = Internship.objects.all()  # Fetch all internships from the database
     return render(request, 'admin.html', {'current_internships': current_internships})
 
+# Lives in the dashboard app
+def dashboard(request):
+    return render(request, 'dashboard/dashboard.html')
+
 # render view with admin contact details
 def contacts(request):
     return render(request, 'contacts.html')
@@ -230,6 +234,7 @@ def registering_company(request):
     return render(request, 'company-registration.html', context)
 
 
+
 @unauthenticated_user   
 def registering_user(request):
     if request.method == "POST":
@@ -271,3 +276,4 @@ def cancel_internship(request, internshipID):
     internship = Internship.objects.get(pk=internshipID)
     internship.delete()
     return redirect('admin')  # Redirect back to the admin page after deletion
+

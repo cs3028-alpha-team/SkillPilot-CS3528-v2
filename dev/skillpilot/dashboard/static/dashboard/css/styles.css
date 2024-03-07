@@ -1,0 +1,107 @@
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+}
+
+.sidebar {
+    height: 100%;
+    width: 250px;
+    position: fixed;
+    background-color: #242a30; 
+    padding-top: 20px;
+    color: #ecf0f1; 
+}
+
+.sidebar h1 {
+    font-size: 1.5em;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #ecf0f1; 
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar li {
+    padding: 15px;
+    text-align: left;
+}
+
+.sidebar a {
+    text-decoration: none;
+    color: #ecf0f1; 
+    font-size: 16px;
+    transition: color 0.3s; /* Smooth color transition on hover */
+}
+
+.sidebar a:hover {
+    color: #d8900b; /* Change color on hover to a light orange */
+}
+
+.content {
+    margin-left: 250px;
+    padding: 16px;
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+    border-bottom: 1px solid rgb(215, 214, 216); /* Add your desired border style  */
+    padding-bottom: 28px; /* Add padding to the bottom if needed */
+}
+
+.action-button {
+    background-color: #1a5074; /* Blue button color */
+    color: #ecf0f1; 
+    padding: 20px 40px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s; /* Smooth background color transition on hover */
+}
+
+.action-button:hover {
+    background-color: #497fa2; /* Darker blue on hover */
+}
+
+.custom-nav {
+    text-align: left;
+}
+
+.custom-nav h1 {
+    border-bottom: 1px solid rgb(96, 95, 97);
+    padding-bottom: 10px; 
+}
+
+
+
+.content form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.content form button {
+    width: 100%;
+    margin-bottom: 10px;
+    background-color: #1a5074; 
+    color: #ecf0f1; 
+    padding: 15px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s; /* Smooth background color transition on hover */
+}
+
+.content form button:hover {
+    background-color: #497fa2; /* Darker blue on hover */
+}
+
+.content form,
+.content img {
+    display: block;
+    margin: 0 auto;
+}
