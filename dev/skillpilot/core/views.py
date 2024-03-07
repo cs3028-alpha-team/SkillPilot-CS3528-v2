@@ -26,6 +26,10 @@ def formFailure(request):
 def admin(request):
     return render(request, 'admin.html')
 
+# Lives in the dashboard app
+def dashboard(request):
+    return render(request, 'dashboard/dashboard.html')
+
 # render view with admin contact details
 def contacts(request):
     return render(request, 'contacts.html')
@@ -240,6 +244,7 @@ def registering_company(request):
     return render(request, 'company-registration.html', context)
 
 
+
 @unauthenticated_user   
 def registering_user(request):
     if request.method == "POST":
@@ -257,3 +262,4 @@ def registering_user(request):
     print(form.errors)
     context = {'form': form}
     return render(request, 'student-registration.html', context)
+
