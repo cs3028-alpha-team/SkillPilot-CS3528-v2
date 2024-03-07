@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -8,6 +8,7 @@ from . models import *
 from . forms import *
 from . decorators import *
 from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import render, get_object_or_404
 
 # view for the route '/home' 
 def home(request):
@@ -24,7 +25,8 @@ def formFailure(request):
 @login_required
 @allowed_users(allowed_roles=['Admin'])
 def admin(request):
-    return render(request, 'admin.html')
+    current_internships = Internship.objects.all()  # Fetch all internships from the database
+    return render(request, 'admin.html', {'current_internships': current_internships})
 
 # Lives in the dashboard app
 def dashboard(request):
@@ -39,7 +41,7 @@ def Login(request):
     if request.user.is_authenticated:
         return redirect('student')
     else:
-        return render(request, 'Login-page.html')
+        return render(request, 'Login-Page.html')
 
 # render view for registration page
 @unauthenticated_user  
@@ -67,31 +69,30 @@ def login_admin(request):
 @login_required
 @allowed_users(allowed_roles=['Students'])
 def student(request):
-
-    form = StudentForm()
-    context = { 'form' : form }
-
-    # POST request sent on '/student', trigger registration procedure
     if request.method == 'POST':
-
         form = StudentForm(request.POST)
 
-        # process data and register student to database
-
         if form.is_valid():
-            form.save() 
-            return redirect('form-success')
-
+            email = form.cleaned_data['email']  # Retrieve email address from the form data
+            
+            # Check if a student with the same email already exists
+            if Student.objects.filter(email=email).exists():
+                # If student with same email exists, display a message to the user
+                return render(request, 'form-duplication.html')
+            else:
+                # If student with same email does not exist, proceed with form submission
+                form.save() 
+                return redirect('form-success')
         else:
             return redirect('form-failure')
-
-    # serve the registration form for new students
     else:
+        form = StudentForm()
+        context = {'form': form}
         return render(request, 'student.html', context)
 
 # view for the route '/internship'
 @login_required
-@allowed_users(allowed_roles=['Companies'])
+@allowed_users(allowed_roles=['Admin']) #change back to companies 
 def internship(request):
 
     form = InternshipForm()
@@ -118,35 +119,24 @@ def internship(request):
     # serve the registration form for new internships
     else:
         return render(request, 'internship.html', context)
-
-# view to render the details of a specific internship opportunity
-@login_required
-@allowed_users(allowed_roles=['Companies'])
-def internshipDetails(request):
     
-    form = InternshipForm()
-    context = { 'form' : form }
+# view to render the details of a specific internship opportunity
+def internshipDetails(request, internshipID):
+    # Fetch the internship object using the provided ID
+    internship = get_object_or_404(Internship, pk=internshipID)
 
-    # ============================================ EDIT INTERNSHIP LISTING =========================================
-    # POST request sent on '/internship', trigger registration procedure
     if request.method == 'POST':
-        
-        # process data and register internship to database
-        form = InternshipForm(request.POST)
-
+        # Process form submission if it's a POST request
+        form = InternshipForm(request.POST, instance=internship)
         if form.is_valid():
-
-            # update the internship with ID of internshipID using the request payload 
-
-            form.save() 
-            return redirect('form-success')
-
-        else:
-            return redirect('form-failure')
-
-    # serve the registration form for new internships
+            form.save()
+            # Redirect to a success page or render the same page with a success message
     else:
-        return render(request, 'internship-details.html', context)
+        # Render the form with the internship object
+        form = InternshipForm(instance=internship)
+
+    context = {'form': form, 'internship': internship}
+    return render(request, 'internship-details.html', context)
     
  # view to handle login
 @unauthenticated_user  
@@ -262,4 +252,28 @@ def registering_user(request):
     print(form.errors)
     context = {'form': form}
     return render(request, 'student-registration.html', context)
+
+@login_required
+def delete_user(request):
+    if request.method == 'POST':
+        user = request.user
+        user.delete()
+        logout(request)
+        return redirect('home')
+    else:
+        # Handle GET request, if needed
+        return redirect('home')
+   
+@login_required
+@allowed_users(allowed_roles=['Admin'])
+def CurrentInternship(request):
+    current_internships = Internship.objects.all()
+    return render(request, 'internship.html', {'current_internships': current_internships}) 
+
+@login_required
+@allowed_users(allowed_roles=['Admin'])
+def cancel_internship(request, internshipID):
+    internship = Internship.objects.get(pk=internshipID)
+    internship.delete()
+    return redirect('admin')  # Redirect back to the admin page after deletion
 
