@@ -29,14 +29,14 @@ jobs:
 
       - name: Run migrations 
         run: |
-          python dev/skillpilot\manage.py makemigrations
-          python manage.py migrate
+          python dev/skillpilot/manage.py makemigrations
+          python dev/skillpilot/manage.py migrate
 
       # run any test contained within the project's applications
       - name: Run tests
         run: |
-          python dev/skillpilotmanage.py collectstatic
-          python dev/skillpilotmanage.py test
+          python dev/skillpilot/manage.py collectstatic
+          python dev/skillpilot/manage.py test
 
   # once the app is packaged and successfully tested, deploy it to heroku
   deploy:
