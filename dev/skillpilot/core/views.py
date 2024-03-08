@@ -276,4 +276,3 @@ def cancel_internship(request, internshipID):
     internship = Internship.objects.get(pk=internshipID)
     internship.delete()
     return redirect('admin')  # Redirect back to the admin page after deletion
-
