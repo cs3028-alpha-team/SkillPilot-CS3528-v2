@@ -1,0 +1,15 @@
+{% extends "base.html" %}  
+{% load static %} <!-- NOTE : this line is needed on ALL templates -->
+
+{% block content %}
+
+    <div class="container mt-4 col-6 offset-3 my-3">
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">Profile Already Configured</h4>
+            <p>Looks like you have already configured your application profile.</p>
+            <hr>
+            <p class="mb-0">If you need any assistance, please contact the admin.</p>
+        </div>
+    </div>
+
+{% endblock %}

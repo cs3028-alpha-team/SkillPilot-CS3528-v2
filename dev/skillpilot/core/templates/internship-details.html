@@ -10,7 +10,7 @@
         <!-- 
             this will be a dynamic URL which takes in the recruiter ID to return to the recruiter dashboard 
         -->
-        <a class="text-muted mt-5 ms-5" href="{% url 'internship' %}">Back to your recruiter profile</a>
+        <a class="text-muted mt-5 ms-5" href="{% url 'admin' %}">Return</a>
         <!-- 
             In this view, the recruiter will be able to edit the internship's listing and
             view all the upcoming interview for the advertised position
@@ -27,7 +27,7 @@
                 <!--
                     the recruiter can submit the internship form again to modify the details
                 -->
-                <form method="POST" action="{% url 'internship' %}" autocomplete="off" enctype="multipart/form-data">
+                <form method="POST" action="{% url 'internship-details' internship.internshipID %}" autocomplete="off" enctype="multipart/form-data">
 
                     {% csrf_token %}
 
