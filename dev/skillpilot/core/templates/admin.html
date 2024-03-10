@@ -124,6 +124,8 @@
             <div class="mt-5 mb-4">
                 <div class="d-flex justify-content-between align-items-center">
                     <h3 class="display-6">Published Opportunities</h3>
+                    <li><a href="{% url 'clean_data' %}">Process data</a></li>
+                    <li><a href="{% url 'run_matching_algorithm' %}">RUN</a></li>
                 </div>
                 {% if current_internships %}
                 {% for internship in current_internships %}
@@ -148,6 +150,11 @@
             </div>
 
         </div>
+
+        <form method="post" action="{% url 'matching' %}">
+            {% csrf_token %}
+            <button type="submit">Matching views</button>
+        </form>
 
     </div>
 

@@ -1,114 +1,211 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+Wy6p4Po5mmiEMyuPeR/4aF7gGJkL6b6U6U" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"
-        integrity="sha384-o5d2euuVOMLLBx6j8Bmt8M0hFVZQ+K9TSPx8TG/dLYeaK4YfRmj3plCz4+OCnAkq"
-        crossorigin="anonymous"></script>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+Wy6p4Po5mmiEMyuPeR/4aF7gGJkL6b6U6U"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.6.4.min.js"
+      integrity="sha384-o5d2euuVOMLLBx6j8Bmt8M0hFVZQ+K9TSPx8TG/dLYeaK4YfRmj3plCz4+OCnAkq"
+      crossorigin="anonymous"
+    ></script>
 
     {% load static %}
-    <link rel="stylesheet" href="{% static 'dashboard/css/styles.css' %}">
-</head>
+    <link rel="stylesheet" href="{% static 'dashboard/css/styles.css' %}" />
+  </head>
 
-<body>
+  <body>
     <script>
-        $(document).ready(function () {
-            // Initially hide all images and buttons
-            $('.content div').hide();
+      $(document).ready(function () {
+        // Initially hide all images and buttons
+        $(".content div").hide();
 
-            // Show/hide elements based on button clicks
-            $('.btn-primary, .btn-success, .btn-warning, .btn-info').click(function () {
-                $('.content div').hide(); // Hide all 
-            });
+        // Show/hide elements based on button clicks
+        $(".btn-primary, .btn-success, .btn-warning, .btn-info").click(
+          function () {
+            $(".content div").hide(); // Hide all
+          }
+        );
 
-            $('#run_candidate_histogram').click(function () {
-                $('#candidate_histogram').show(); // Show Candidate Histogram img
-            });
-
-            $('#run_course_count').click(function () {
-                $('#course_count_call').show(); // Show Course Count img
-            });
-
-            $('#run_job_min_score_count').click(function () {
-                $('#job_min_score_count_call').show(); // Show Job Min Score Count img
-            });
+        $("#run_candidate_histogram").click(function () {
+          $("#candidate_histogram").show(); // Show Candidate Histogram img
         });
+
+        $("#run_course_count").click(function () {
+          $("#course_count_call").show(); // Show Course Count img
+        });
+
+        $("#run_job_min_score_count").click(function () {
+          $("#job_min_score_count_call").show(); // Show Job Min Score Count img
+        });
+      });
     </script>
 
     <!-- Black Sidebar -->
-    <div class="sidebar bg-dark text-white p-4 custom-nav" data-active-tab="{% if active_tab %}{{ active_tab }}{% endif %}">
-        <h1 class="text-center mb-4 border-bottom pb-3">SkillPilot <br> Dashboard</h1>
-        <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link btn-primary" href="{% url 'candidate_histogram' %}">Candidate
-                    Histogram</a></li>
-            <li class="nav-item"><a class="nav-link btn-success" href="{% url 'course_count_call' %}">Course Count</a>
-            </li>
-            <li class="nav-item"><a class="nav-link btn-warning" href="{% url 'job_min_score_count_call' %}">Job Min
-                    Score Count</a></li>
-            <li class="nav-item"><a class="nav-link btn-info" href="{% url 'generate_plot' %}">Generate Plot</a></li>
-        </ul>
+    <div
+      class="sidebar bg-dark text-white p-4 custom-nav"
+      data-active-tab="{% if active_tab %}{{ active_tab }}{% endif %}"
+    >
+      <h1 class="text-center mb-4 border-bottom pb-3">
+        SkillPilot <br />
+        Dashboard
+      </h1>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link btn-primary" href="{% url 'candidate_histogram' %}"
+            >Candidate Histogram</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link btn-success" href="{% url 'course_count_call' %}"
+            >Course Count</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link btn-warning"
+            href="{% url 'job_min_score_count_call' %}"
+            >Job Min Score Count</a
+          >
+        </li>
+        <!--    <li class="nav-item"><a class="nav-link btn-info" href="{% url 'admin' %}">Generate Plot</a></li>  -->
+      </ul>
     </div>
 
-    <!-- Page Content -->
-<div class="content d-flex justify-content-center">
-    <h1 class="text-center mt-4 border-bottom pb-3">Welcome to the Admin Dashboard</h1>
+    <div class="content d-flex justify-content-center">
+      <h1 class="text-center mt-4 border-bottom pb-3">
+        Welcome to the Admin Dashboard
+      </h1>
 
-    <!-- Candidate Histogram Form -->
-    <form action="{% url 'candidate_histogram' %}" method="post" enctype="multipart/form-data" class="mx-auto">
+      <!-- Candidate Histogram Form -->
+      <form
+        action="{% url 'candidate_histogram' %}"
+        method="post"
+        enctype="multipart/form-data"
+        class="mx-auto"
+      >
         {% csrf_token %}
-        <input type="hidden" name="active_tab" value="run_candidate_histogram"> 
-        <button type="submit" class="btn btn-primary mt-3" {% if active_tab != 'candidate_histogram' %}style="display: none;"{% endif %} >Run Candidate Histogram</button>
-    </form>
+        <input
+          type="hidden"
+          name="active_tab"
+          value="run_candidate_histogram"
+        />
+        <button
+          type="submit"
+          class="btn btn-primary mt-3"
+          {%
+          if
+          active_tab
+          !="candidate_histogram"
+          %}style="display: none;"
+          {%
+          endif
+          %}
+        >
+          Run Candidate Histogram
+        </button>
+      </form>
 
-    <!-- Histogram Image -->
-    <div id="candidate_histogram" class="mt-4">
+      <!-- Histogram Image -->
+      <div id="candidate_histogram" class="mt-4">
         {% if chart_path and active_tab == 'run_candidate_histogram' %}
-        <img src="/data/histogram_chart.png" alt="Histogram" class="img-fluid">
+        <img
+          src="/data/histogram_chart.png"
+          alt="Histogram"
+          class="img-fluid"
+        />
         {% endif %}
-    </div>
+      </div>
 
-    <!-- Course Count Form -->
-    <form action="{% url 'course_count_call' %}" method="post" enctype="multipart/form-data" class="mx-auto">
+      <!-- Course Count Form -->
+      <form
+        action="{% url 'course_count_call' %}"
+        method="post"
+        enctype="multipart/form-data"
+        class="mx-auto"
+      >
         {% csrf_token %}
-        <button type="submit" class="btn btn-success mt-3" {% if active_tab != 'course_count' %}style="display: none;"{% endif %} >Run Course Count</button>
-        <input type="hidden" name="active_tab" value="run_course_count"> 
-    </form>
+        <button
+          type="submit"
+          class="btn btn-success mt-3"
+          {%
+          if
+          active_tab
+          !="course_count"
+          %}style="display: none;"
+          {%
+          endif
+          %}
+        >
+          Run Course Count
+        </button>
+        <input type="hidden" name="active_tab" value="run_course_count" />
+      </form>
 
-    <!-- Course Count Image -->
-    <div id="course_count_call" class="mt-4">
+      <!-- Course Count Image -->
+      <div id="course_count_call" class="mt-4">
         {% if chart_path and active_tab == 'run_course_count' %}
-        <img src="/data/course_count_chart.png" alt="course_count" class="img-fluid">
+        <img
+          src="/data/course_count_chart.png"
+          alt="course_count"
+          class="img-fluid"
+        />
         {% endif %}
-    </div>
+      </div>
 
-    <!-- Job Min Score Count Form -->
-    <form action="{% url 'job_min_score_count_call' %}" method="post" enctype="multipart/form-data" class="mx-auto">
+      <!-- Job Min Score Count Form -->
+      <form
+        action="{% url 'job_min_score_count_call' %}"
+        method="post"
+        enctype="multipart/form-data"
+        class="mx-auto"
+      >
         {% csrf_token %}
-        <button type="submit" class="btn btn-warning mt-3"{% if active_tab != 'job_min_score_count' %}style="display: none;"{% endif %} >Run Job Min Score Count</button>
-        <input type="hidden" name="active_tab" value="run_job_min_score_count"> 
-    </form>
+        <button
+          type="submit"
+          class="btn btn-warning mt-3"
+          {%
+          if
+          active_tab
+          !="job_min_score_count"
+          %}style="display: none;"
+          {%
+          endif
+          %}
+        >
+          Run Job Min Score Count
+        </button>
+        <input
+          type="hidden"
+          name="active_tab"
+          value="run_job_min_score_count"
+        />
+      </form>
 
-    <!-- Job Min Score Count Image -->
-    <div id="job_min_score_count_call" class="mt-4">
+      <!-- Job Min Score Count Image -->
+      <div id="job_min_score_count_call" class="mt-4">
         {% if chart_path and active_tab == 'run_job_min_score_count' %}
-        <img src="/data/job_min_score_count_chart.png" alt="job_min_score_count" class="img-fluid">
+        <img
+          src="/data/job_min_score_count_chart.png"
+          alt="job_min_score_count"
+          class="img-fluid"
+        />
         {% endif %}
-    </div>
+      </div>
 
-    <!-- Generate Plot Form -->
-    <form action="{% url 'generate_plot' %}" method="post" class="mx-auto">
+      <!-- Generate Plot Form 
+    <form action="{% url 'admin' %}" method="post" class="mx-auto">
         {% csrf_token %}
         <button type="submit" class="btn btn-info mt-3"
             {% if active_tab != 'generate_plot' %}style="display: none;"{% endif %}>Generate Plot</button>
     </form>
-</div>
-
-    
-</body>
-
+        -->
+    </div>
+  </body>
 </html>
