@@ -9,6 +9,13 @@ from . forms import *
 from . decorators import *
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, get_object_or_404
+from  .gale_shapley import *
+from .data_pipeline import *
+import subprocess
+import csv
+import os
+
+
 
 # view for the route '/home' 
 def home(request):
@@ -67,7 +74,7 @@ def login_admin(request):
 
 # view for the route '/student'
 @login_required
-@allowed_users(allowed_roles=['Students'])
+@allowed_users(allowed_roles=['Admin']) #change back to companies 
 def student(request):
     if request.method == 'POST':
         form = StudentForm(request.POST)
@@ -276,4 +283,64 @@ def cancel_internship(request, internshipID):
     internship = Internship.objects.get(pk=internshipID)
     internship.delete()
     return redirect('admin')  # Redirect back to the admin page after deletion
+
+@login_required
+@allowed_users(allowed_roles=['Admin'])
+def clean_data(request):
+
+    # Call the data processing function
+    jobs, candidates = process_data()
+
+    # Save the processed dataframes to CSV files
+    jobs.to_csv('data/processed_jobs.csv', index=False)
+    candidates.to_csv('data/processed_candidates.csv', index=False)
+
+    return HttpResponse('Data processed successfully')
+
+@login_required
+@allowed_users(allowed_roles=['Admin']) 
+def matching_view(request):
+    if request.method == 'POST':
+        # Call the compute_compatibility_matrix function
+        compatibility_matrix = compute_compatibility_matrix(students, internships)
+        
+        # Save compatibility_matrix to a CSV file
+        csv_file_path = 'data/compatibility_matrix.csv'
+        with open(csv_file_path, 'w', newline='') as csvfile:  # Open in write mode ('w')
+            writer = csv.writer(csvfile)
+            
+            # Write header row
+            writer.writerow(['Candidate IDs'] + [str(job_id) for job_id in compatibility_matrix.columns])
+            
+            # Write compatibility data
+            for index, row in compatibility_matrix.iterrows():
+                writer.writerow([index] + row.tolist())
+                
+        return HttpResponse('Matching process completed. Compatibility matrix saved to CSV file.')
+    else:
+        return HttpResponse('Error: POST request expected.')
+
+@login_required
+@allowed_users(allowed_roles=['Admin']) 
+def run_matching_algorithm(request):
+    candidates = pd.read_csv('data/processed_candidates.csv')
+    jobs = pd.read_csv('data/processed_jobs.csv')
+    number_of_candidates = len(candidates)
+    number_of_jobs = len(jobs)
+    compatibility_matrix = compute_compatibility_matrix2(candidates, jobs) 
+
+    print(compatibility_matrix)
+    print(f"Number of candidates: {number_of_candidates}")
+    print(f"Number of jobs: {number_of_jobs}")
+
+    offers = run_gale_shapley(candidates, jobs, number_of_candidates, number_of_jobs) # error here 
+    print("offersssssssw")
+    print(offers)
+    print(" ================ offers ========================")
+    formatted_pairings = format_pairings(offers, candidates, jobs)
+   
+    # save_results_to_csv function is in the matching.py file
+    output_file = 'data/offers.csv'
+    save_results_to_csv(formatted_pairings, output_file)
+    return HttpResponse('Matching algorithm executed successfully. Results saved to CSV file.')
 

@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views 
+from .views import clean_data
 
 urlpatterns = [
 
@@ -47,6 +48,12 @@ urlpatterns = [
     path('delete-user/', views.delete_user, name='delete_user'),
 
     path('current-internships', views.CurrentInternship, name='current-internships'),
+
+    path('clean-data/', views.clean_data, name='clean_data'),
+
+    path('matching', views.matching_view, name='matching'),
+
+    path('run_matching_algorithm', views.run_matching_algorithm, name='run_matching_algorithm'),
 
     path('cancel_internship/<str:internshipID>/', views.cancel_internship, name='cancel_internship'),
 ]

@@ -3,13 +3,17 @@ from django.conf import settings
 from .candidate_analysis import candidate_histogram_code, course_count, job_min_score_count, plot_jobs_remaining_vs_iterations
 from django.shortcuts import render
 import os
+from django.contrib.auth.decorators import login_required
 import tempfile
+from . decorators import *
 
-
+@login_required
+@allowed_users(allowed_roles=['Admin'])
 def dashboard(request):
     return render(request, 'dashboard.html')
 
-
+@login_required
+@allowed_users(allowed_roles=['Admin'])
 def candidate_histogram(request):
     # Data is taken form processed_candidates.py in the data folder
     # Set file path to get the information for the histogram
@@ -38,7 +42,8 @@ def candidate_histogram(request):
 
 
 
-
+@login_required
+@allowed_users(allowed_roles=['Admin'])
 def course_count_call(request):
     # Data is taken from processed_candidates.py in the data folder
     # Set file path to get the information for the histogram
@@ -73,7 +78,8 @@ def course_count_call(request):
 
 
 
-
+@login_required
+@allowed_users(allowed_roles=['Admin'])
 def job_min_score_count_call(request):
     file_path = 'data/processed_jobs.csv'
     jobs = pd.read_csv(file_path)

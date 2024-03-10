@@ -1,0 +1,7 @@
+internshipID,companyID_id,recruiterID_id,contractMode,contractPattern,numberPositions,field,title,minGPA
+6,c1,r1,online,FT,4,1,saca,80
+1,c1,r1,online,FT,3,2,saad,80
+8,c1,r1,online,FT,5,1,english,80
+4,c1,r1,online,FT,4,2,english,80
+google ltd,c1,r1,online,FT,2,2,computing,80
+11,c1,r1,online,FT,4,1,saca,80
