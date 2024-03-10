@@ -343,4 +343,3 @@ def run_matching_algorithm(request):
     output_file = 'data/offers.csv'
     save_results_to_csv(formatted_pairings, output_file)
     return HttpResponse('Matching algorithm executed successfully. Results saved to CSV file.')
-

@@ -97,7 +97,7 @@ class Interview(models.Model):
     companyID = models.ForeignKey('core.Company', on_delete = models.CASCADE)
     studentID = models.ForeignKey('core.Student', on_delete = models.CASCADE)
     recruiterID = models.ForeignKey('core.Recruiter', on_delete = models.CASCADE)
-    outcome =  models.CharField(max_length = 15, choices = outcomes.choices)
+    outcome = models.CharField(max_length = 15, choices = outcomes.choices)
 
 
 # computedMatch Table
@@ -124,4 +124,4 @@ class SuperUser(models.Model):
     # attributes
     superUserID = models.CharField(max_length = 10, primary_key = True)
     fullName = models.CharField(max_length=50)
-    privileges =  models.CharField(max_length = 1, choices = privileges.choices)
+    privileges = models.CharField(max_length = 1, choices = privileges.choices)
