@@ -12,18 +12,25 @@ def candidate_histogram_code(candidates):
     sns.color_palette("PuOr", as_cmap=True)
     plt.figure(figsize=(10, 4))
     
-    chart = sns.histplot(
-        data=candidates, 
-        x="Score", 
-        multiple="stack", 
-        hue='StudyProgram',
-        edgecolor=".3", 
-        bins=50, 
-        linewidth=.5, 
-        kde=True
+    # Check and remove leading/trailing whitespaces in column names
+    candidates.columns = candidates.columns.str.strip()
+    
 
-    )
-    return chart
+    # Confirm column existence
+    if 'GPA' in candidates.columns:
+        chart = sns.histplot(
+            data=candidates,
+            x="GPA",
+            multiple="stack",
+            hue='StudyProgram',
+            edgecolor=".3",
+            bins=50,
+            linewidth=.5,
+            kde=True
+        )
+        return chart
+    else:
+        print("Error: 'Score' column not found in DataFrame.")
     
 
 # Integrate chat to display job count
@@ -34,7 +41,7 @@ def course_count(candidates):
     # histogram plot of scores split between different study-programs
     chart = sns.countplot(
         data=candidates, 
-        x='Course', 
+        x='currProgramme', 
         palette='RdBu', 
         orient="v"
     )
@@ -57,7 +64,7 @@ def job_min_score_count(jobs):
     # countplot of companies grouped according to the minimum scored required for their positions
     chart = sns.countplot(
         data=jobs, 
-        x='MinScore', 
+        x='minGPA', 
         palette='Set2',
         orient="v"
     )
@@ -67,7 +74,7 @@ def job_min_score_count(jobs):
 
 
 
-def jobs_remaining_vs_iterations_call(request):
+#def jobs_remaining_vs_iterations_call(request):
     # Load data from CSV files
     # For example, assuming you have CSV files named candidates.csv and jobs.csv
     candidates_df = pd.read_csv('data/processed_candidates.csv')

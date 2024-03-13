@@ -1,211 +1,85 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard</title>
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-      integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+Wy6p4Po5mmiEMyuPeR/4aF7gGJkL6b6U6U"
-      crossorigin="anonymous"
-    />
-    <script
-      src="https://code.jquery.com/jquery-3.6.4.min.js"
-      integrity="sha384-o5d2euuVOMLLBx6j8Bmt8M0hFVZQ+K9TSPx8TG/dLYeaK4YfRmj3plCz4+OCnAkq"
-      crossorigin="anonymous"
-    ></script>
+{% extends "base.html" %}
+{% load static %}
 
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'dashboard/css/styles.css' %}" />
-  </head>
+{% block content %}
 
-  <body>
-    <script>
-      $(document).ready(function () {
-        // Initially hide all images and buttons
-        $(".content div").hide();
+<div class="container">
 
-        // Show/hide elements based on button clicks
-        $(".btn-primary, .btn-success, .btn-warning, .btn-info").click(
-          function () {
-            $(".content div").hide(); // Hide all
-          }
-        );
+    <!-- AdminName will be replaced with username once admin log-in is successful -->
+    <header class="display-5 mt-5 mb-3">Welcome to the Dashboard, {{ request.user }}</header>
 
-        $("#run_candidate_histogram").click(function () {
-          $("#candidate_histogram").show(); // Show Candidate Histogram img
-        });
+    <div class="row justify-content-center">
 
-        $("#run_course_count").click(function () {
-          $("#course_count_call").show(); // Show Course Count img
-        });
+        <div class="col-lg-8 col-md-10">
 
-        $("#run_job_min_score_count").click(function () {
-          $("#job_min_score_count_call").show(); // Show Job Min Score Count img
-        });
-      });
-    </script>
+            <h3 class="display-6 my-5">Analytics</h3>
 
-    <!-- Black Sidebar -->
-    <div
-      class="sidebar bg-dark text-white p-4 custom-nav"
-      data-active-tab="{% if active_tab %}{{ active_tab }}{% endif %}"
-    >
-      <h1 class="text-center mb-4 border-bottom pb-3">
-        SkillPilot <br />
-        Dashboard
-      </h1>
-      <ul class="nav flex-column">
-        <li class="nav-item">
-          <a class="nav-link btn-primary" href="{% url 'candidate_histogram' %}"
-            >Candidate Histogram</a
-          >
-        </li>
-        <li class="nav-item">
-          <a class="nav-link btn-success" href="{% url 'course_count_call' %}"
-            >Course Count</a
-          >
-        </li>
-        <li class="nav-item">
-          <a
-            class="nav-link btn-warning"
-            href="{% url 'job_min_score_count_call' %}"
-            >Job Min Score Count</a
-          >
-        </li>
-        <!--    <li class="nav-item"><a class="nav-link btn-info" href="{% url 'admin' %}">Generate Plot</a></li>  -->
-      </ul>
+            <div class="card my-3">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <p class="mb-0 text-muted"><span class="fw-bold" style="color:black;">Candidate Histogram</span></p>
+                    <button id="run_candidate_histogram" class="btn btn-primary fw-bold">
+                        Run
+                    </button>
+                </div>
+            </div>
+            <div id="candidate_histogram_img" class="chart-img" style="display: none;">
+                <img src="" alt="Candidate Histogram" class="img-fluid" id="candidate_histogram_image">
+            </div>
+
+            <div class="card my-3">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <p class="mb-0 text-muted"><span class="fw-bold" style="color:black;">Course Count</span></p>
+                    <button id="run_course_count" class="btn btn-primary fw-bold">
+                        Run
+                    </button>
+                </div>
+            </div>
+            <div id="course_count_img" class="chart-img" style="display: none;">
+                <img src="" alt="Course Count" class="img-fluid" id="course_count_image">
+            </div>
+
+            <div class="card my-3">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <p class="mb-0 text-muted"><span class="fw-bold" style="color:black;">Job Min Score Count</span></p>
+                    <button id="run_job_min_score_count" class="btn btn-primary fw-bold">
+                        Run
+                    </button>
+                </div>
+            </div>
+            <div id="job_min_score_count_img" class="chart-img" style="display: none;">
+                <img src="" alt="Job Min Score Count" class="img-fluid" id="job_min_score_count_image">
+            </div>
+
+        </div>
+
     </div>
 
-    <div class="content d-flex justify-content-center">
-      <h1 class="text-center mt-4 border-bottom pb-3">
-        Welcome to the Admin Dashboard
-      </h1>
+</div>
 
-      <!-- Candidate Histogram Form -->
-      <form
-        action="{% url 'candidate_histogram' %}"
-        method="post"
-        enctype="multipart/form-data"
-        class="mx-auto"
-      >
-        {% csrf_token %}
-        <input
-          type="hidden"
-          name="active_tab"
-          value="run_candidate_histogram"
-        />
-        <button
-          type="submit"
-          class="btn btn-primary mt-3"
-          {%
-          if
-          active_tab
-          !="candidate_histogram"
-          %}style="display: none;"
-          {%
-          endif
-          %}
-        >
-          Run Candidate Histogram
-        </button>
-      </form>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#run_candidate_histogram').click(function() {
+            $.getJSON("{% url 'candidate_histogram' %}", function(data) {
+                $('#candidate_histogram_image').attr('src', data.chart_path);
+                $('#candidate_histogram_img').show();
+            });
+        });
 
-      <!-- Histogram Image -->
-      <div id="candidate_histogram" class="mt-4">
-        {% if chart_path and active_tab == 'run_candidate_histogram' %}
-        <img
-          src="/data/histogram_chart.png"
-          alt="Histogram"
-          class="img-fluid"
-        />
-        {% endif %}
-      </div>
+        $('#run_course_count').click(function() {
+            $.getJSON("{% url 'course_count_call' %}", function(data) {
+                $('#course_count_image').attr('src', data.chart_path);
+                $('#course_count_img').show();
+            });
+        });
 
-      <!-- Course Count Form -->
-      <form
-        action="{% url 'course_count_call' %}"
-        method="post"
-        enctype="multipart/form-data"
-        class="mx-auto"
-      >
-        {% csrf_token %}
-        <button
-          type="submit"
-          class="btn btn-success mt-3"
-          {%
-          if
-          active_tab
-          !="course_count"
-          %}style="display: none;"
-          {%
-          endif
-          %}
-        >
-          Run Course Count
-        </button>
-        <input type="hidden" name="active_tab" value="run_course_count" />
-      </form>
+        $('#run_job_min_score_count').click(function() {
+            $.getJSON("{% url 'job_min_score_count_call' %}", function(data) {
+                $('#job_min_score_count_image').attr('src', data.chart_path);
+                $('#job_min_score_count_img').show();
+            });
+        });
+    });
+</script>
 
-      <!-- Course Count Image -->
-      <div id="course_count_call" class="mt-4">
-        {% if chart_path and active_tab == 'run_course_count' %}
-        <img
-          src="/data/course_count_chart.png"
-          alt="course_count"
-          class="img-fluid"
-        />
-        {% endif %}
-      </div>
-
-      <!-- Job Min Score Count Form -->
-      <form
-        action="{% url 'job_min_score_count_call' %}"
-        method="post"
-        enctype="multipart/form-data"
-        class="mx-auto"
-      >
-        {% csrf_token %}
-        <button
-          type="submit"
-          class="btn btn-warning mt-3"
-          {%
-          if
-          active_tab
-          !="job_min_score_count"
-          %}style="display: none;"
-          {%
-          endif
-          %}
-        >
-          Run Job Min Score Count
-        </button>
-        <input
-          type="hidden"
-          name="active_tab"
-          value="run_job_min_score_count"
-        />
-      </form>
-
-      <!-- Job Min Score Count Image -->
-      <div id="job_min_score_count_call" class="mt-4">
-        {% if chart_path and active_tab == 'run_job_min_score_count' %}
-        <img
-          src="/data/job_min_score_count_chart.png"
-          alt="job_min_score_count"
-          class="img-fluid"
-        />
-        {% endif %}
-      </div>
-
-      <!-- Generate Plot Form 
-    <form action="{% url 'admin' %}" method="post" class="mx-auto">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-info mt-3"
-            {% if active_tab != 'generate_plot' %}style="display: none;"{% endif %}>Generate Plot</button>
-    </form>
-        -->
-    </div>
-  </body>
-</html>
+{% endblock %}

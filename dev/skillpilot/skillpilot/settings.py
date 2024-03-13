@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import sys
-
+import os
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -134,4 +134,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # URL to redirect to when the authentication is required
 LOGIN_URL = '/home'  # or '/login_user' depending on your login view URL
+
+# Setting to assist with loading the png files from the data folder to the html
+MEDIA_URL = '/data/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'data')
 
