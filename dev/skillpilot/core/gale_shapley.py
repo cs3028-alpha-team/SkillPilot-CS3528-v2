@@ -133,13 +133,14 @@ def format_pairings(offers, candidates, jobs, display=False):
     for i in range(len(offers.keys()) - 1):
         candidate_id = i
         candidate_name = candidates.loc[candidate_id, "fullName"]
+        candidate_field = candidates.loc[candidate_id, "currProgramme"]
         job_title = "N/A" if offers[candidate_id][0] == None else jobs.loc[offers[candidate_id][0], "title"]
-
+        job_field = "N/A" if offers[candidate_id][0] == None else jobs.loc[offers[candidate_id][0], "field"]
         # display parameter default to False
         if display:
             print(f'{candidate_name} -> {job_title}')
 
-        pairing = (candidate_name, job_title)
+        pairing = (candidate_name, candidate_field, job_title, job_field)
         pairings.append(pairing)
     return pairings
 
@@ -147,7 +148,7 @@ def format_pairings(offers, candidates, jobs, display=False):
 def save_results_to_csv(pairings, path):
     with open(path, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow(['Student', 'Internship'])
+        writer.writerow(['Student', 'Student course', 'Internship', 'Internship-Position'])
         writer.writerows(pairings)
     print('Matching algorithm executed successfully. Results saved to CSV file.')
 
@@ -183,7 +184,7 @@ def run_gale_shapley(candidates, jobs, number_of_candidates, number_of_jobs):
     
     # compute the compatibility matrix
     compatibility_matrix = compute_compatibility_matrix2(candidates_dataframe, jobs_dataframe)
-    print("jaskdgshldfhaljfihdsijlefioodslihoajufjohusl")
+    print("Compatibility matrix")
     print(compatibility_matrix)
     # keeps track of companies with job offers to still give out 
     company_ids = compatibility_matrix.columns.tolist()

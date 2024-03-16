@@ -344,3 +344,18 @@ def run_matching_algorithm(request):
     save_results_to_csv(formatted_pairings, output_file)
     return HttpResponse('Matching algorithm executed successfully. Results saved to CSV file.')
 
+@login_required
+@allowed_users(allowed_roles=['Admin'])
+def execute_matching_process(request):
+    # Call clean_data function
+    clean_data_response = clean_data(request)
+    if clean_data_response.status_code == 200:# checks if successful
+        # Call matching_view function
+        matching_view_response = matching_view(request)
+        if matching_view_response.status_code == 200:
+            # Call run_matching_algorithm function
+            return run_matching_algorithm(request)
+        else:
+            return matching_view_response
+    else:
+        return clean_data_response
