@@ -1,7 +1,7 @@
-studentID,fullName,email,currProgramme,prevProgramme,GPA,desiredContractLength,willingRelocate,aspirations,StudyProgram,CleanedStudyProgram
-3,mattia,mattia.diprofio@gmail.com,computing,maths,69,12-W,True,i love money - mr. krabs,online-FT,Online-FT
-4,bruh,bruh@gmail.com,english,engineering,99,9-M,True,i love cookies and cakes,in-person-FT,In-person
-5,mjebfejbg,ekbrjbgj3bgb3g3b@gmail.com,krjw ggk,rkjbgj4bgkj4b,43,12-W,True,ekrb gkjr3gkbr gjb3 kjgbj3bg,in-person-FT,In-person
-6,Ibrahim Alkali,Ibraalkali@outlook.com,english,english,80,1-Y,True,happy days,in-person-FT,In-person
-7,ibra,asdasd@hajsda.com,english,english,79,12-W,True,fewefs,online-PT,Online-PT
-8,ibra,asldashd@gmail.com,enlgish,english,60,12-W,True,asdads,in-person-PT,In-person
+studentID,fullName,email,currProgramme,prevProgramme,studyMode,studyPattern,GPA,desiredContractLength,willingRelocate,aspirations
+3,mattia,mattia.diprofio@gmail.com,computing,maths,online,FT,69,12-W,True,i love money - mr. krabs
+4,bruh,bruh@gmail.com,english,engineering,in-person,FT,99,9-M,True,i love cookies and cakes
+5,mjebfejbg,ekbrjbgj3bgb3g3b@gmail.com,krjw ggk,rkjbgj4bgkj4b,in-person,FT,43,12-W,True,ekrb gkjr3gkbr gjb3 kjgbj3bg
+6,Ibrahim Alkali,Ibraalkali@outlook.com,english,english,in-person,FT,80,1-Y,True,happy days
+7,ibra,asdasd@hajsda.com,english,english,online,PT,79,12-W,True,fewefs
+8,ibra,asldashd@gmail.com,enlgish,english,in-person,PT,60,12-W,True,asdads

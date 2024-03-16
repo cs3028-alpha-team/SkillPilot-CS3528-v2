@@ -66,13 +66,13 @@ def process_data():
     candidates.fillna("N/A", inplace=True)
 
     # Create the "StudyProgram" column by concatenating "StudyMode" and "StudyPattern"
-    candidates['StudyProgram'] = candidates[["studyMode", "studyPattern"]].agg('-'.join, axis=1)
+    #candidates['StudyProgram'] = candidates[["studyMode", "studyPattern"]].agg('-'.join, axis=1)
 
     # Drop the unified columns
-    candidates.drop(["studyMode", "studyPattern"], axis=1, inplace=True)
+    #candidates.drop(["studyMode", "studyPattern"], axis=1, inplace=True)
 
     # Handle null-values in the StudyProgram column
-    candidates["CleanedStudyProgram"] = candidates["StudyProgram"].apply(clean)
+    #candidates["CleanedStudyProgram"] = candidates["StudyProgram"].apply(clean)
 
     # Round the values in the MinScore column to the nearest 5%
     jobs['minGPA'] = jobs['minGPA'].apply(roundGPA)

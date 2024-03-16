@@ -56,4 +56,6 @@ urlpatterns = [
     path('run_matching_algorithm', views.run_matching_algorithm, name='run_matching_algorithm'),
 
     path('cancel_internship/<str:internshipID>/', views.cancel_internship, name='cancel_internship'),
+
+    path('execute_matching_process/', views.execute_matching_process, name='execute_matching_process'),
 ]
