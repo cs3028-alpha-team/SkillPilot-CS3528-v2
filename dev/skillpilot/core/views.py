@@ -32,8 +32,16 @@ def formFailure(request):
 @login_required
 @allowed_users(allowed_roles=['Admin'])
 def admin(request):
+    
+    csv_data = []
+    with open('data/offers.csv', 'r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            csv_data.append(row)
+    print(csv_data)
+            
     current_internships = Internship.objects.all()  # Fetch all internships from the database
-    return render(request, 'admin.html', {'current_internships': current_internships})
+    return render(request, 'admin.html', {'current_internships': current_internships, 'csv_data': csv_data})
 
 # Lives in the dashboard app
 def dashboard(request):
@@ -340,7 +348,7 @@ def run_matching_algorithm(request):
     formatted_pairings = format_pairings(offers, candidates, jobs)
    
     # save_results_to_csv function is in the matching.py file
-    output_file = 'data/offers.csv'
+    output_file = 'data/offers.csv' 
     save_results_to_csv(formatted_pairings, output_file)
     return HttpResponse('Matching algorithm executed successfully. Results saved to CSV file.')
 
@@ -359,3 +367,10 @@ def execute_matching_process(request):
             return matching_view_response
     else:
         return clean_data_response
+
+#only shows student details for now, need internship id in offers.csv, also need the student_id to match the id in the database
+#this code searches student by their name, which can cause errors
+#in csv_data the student ids don't match the actual ids, so maybe add in another field that holds the actual student ids
+def match_detail(request, student):
+    studentNam = get_object_or_404(Student, fullName=student)
+    return render(request, 'match_detail.html', {'student': studentNam})   

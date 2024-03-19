@@ -134,13 +134,15 @@ def format_pairings(offers, candidates, jobs, display=False):
         candidate_id = i
         candidate_name = candidates.loc[candidate_id, "fullName"]
         candidate_field = candidates.loc[candidate_id, "currProgramme"]
+        #internship_id = jobs.loc[offers[candidate_id][0], "internshipID"]
         job_title = "N/A" if offers[candidate_id][0] == None else jobs.loc[offers[candidate_id][0], "title"]
         job_field = "N/A" if offers[candidate_id][0] == None else jobs.loc[offers[candidate_id][0], "field"]
         # display parameter default to False
         if display:
             print(f'{candidate_name} -> {job_title}')
-
-        pairing = (candidate_name, candidate_field, job_title, job_field)
+            
+        #pairing = (candidate_id, candidate_name, candidate_field, internship_id, job_title, job_field)
+        pairing = (candidate_id, candidate_name, candidate_field, job_title, job_field)
         pairings.append(pairing)
     return pairings
 
@@ -148,7 +150,8 @@ def format_pairings(offers, candidates, jobs, display=False):
 def save_results_to_csv(pairings, path):
     with open(path, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow(['Student', 'Student course', 'Internship', 'Internship-Position'])
+        #writer.writerow(['Student_id', 'Student', 'Student_course', 'Internship_Id', 'Internship', 'Internship-Position'])
+        writer.writerow(['Student_id', 'Student', 'Student_course', 'Internship', 'Internship-Position'])
         writer.writerows(pairings)
     print('Matching algorithm executed successfully. Results saved to CSV file.')
 

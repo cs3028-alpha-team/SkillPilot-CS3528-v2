@@ -58,4 +58,8 @@ urlpatterns = [
     path('cancel_internship/<str:internshipID>/', views.cancel_internship, name='cancel_internship'),
 
     path('execute_matching_process/', views.execute_matching_process, name='execute_matching_process'),
+
+    path('admin/<str:student>/', views.match_detail, name='match_detail'),
+    
+
 ]
