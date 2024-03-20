@@ -22,9 +22,11 @@ def home(request):
     return render(request, 'home.html')
 
 # render view upon form submission to notify user of success
+@login_required
 def formSuccess(request):
     return render(request, 'form-success.html')
 
+@login_required
 def formFailure(request):
     return render(request, 'form-failure.html')
 
@@ -36,6 +38,8 @@ def admin(request):
     return render(request, 'admin.html', {'current_internships': current_internships})
 
 # Lives in the dashboard app
+@login_required
+@allowed_users(allowed_roles=['Admin'])
 def dashboard(request):
     return render(request, 'dashboard/dashboard.html')
 
@@ -60,7 +64,7 @@ def registration_user(request):
 def registration_company2(request):
     return render(request, 'company-registration.html')
 
-# render view for Login page 
+# render view for Login page  
 def employer_Login(request):
     if request.user.is_authenticated:
         return redirect('internship')
@@ -68,6 +72,7 @@ def employer_Login(request):
         return render(request, 'Login-company.html')
 
 # render view for Login  
+@unauthenticated_user  
 def login_admin(request):
     return render(request, 'Login-admin.html')
 
