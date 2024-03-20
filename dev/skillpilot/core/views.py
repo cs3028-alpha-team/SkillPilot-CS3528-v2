@@ -1,9 +1,15 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
+from django.urls import reverse
+from django.core.mail import send_mail, EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.conf import settings
+
 from . models import *
 from . forms import *
 from . decorators import *
@@ -34,8 +40,16 @@ def formFailure(request):
 @login_required
 @allowed_users(allowed_roles=['Admin'])
 def admin(request):
+    
+    csv_data = []
+    with open('data/offers.csv', 'r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            csv_data.append(row)
+    print(csv_data)
+            
     current_internships = Internship.objects.all()  # Fetch all internships from the database
-    return render(request, 'admin.html', {'current_internships': current_internships})
+    return render(request, 'admin.html', {'current_internships': current_internships, 'csv_data': csv_data})
 
 # Lives in the dashboard app
 @login_required
@@ -345,9 +359,14 @@ def run_matching_algorithm(request):
     formatted_pairings = format_pairings(offers, candidates, jobs)
    
     # save_results_to_csv function is in the matching.py file
-    output_file = 'data/offers.csv'
+    output_file = 'data/offers.csv' 
     save_results_to_csv(formatted_pairings, output_file)
-    return HttpResponse('Matching algorithm executed successfully. Results saved to CSV file.')
+    
+#    return JsonResponse({'status': 'success'})
+    
+    # Construct the HTML string with the link
+    html = "Matching algorithm executed successfully. Results saved to CSV file. <a href='/admin_page'>Admin</a>"
+    return HttpResponse(html)
 
 @login_required
 @allowed_users(allowed_roles=['Admin'])
@@ -364,3 +383,58 @@ def execute_matching_process(request):
             return matching_view_response
     else:
         return clean_data_response
+
+#only shows student details for now, need internship id in offers.csv, also need the student_id to match the id in the database
+#this code searches student by their name, which can cause errors
+#in csv_data the student ids don't match the actual ids, so maybe add in another field that holds the actual student ids
+def match_detail(request, student):
+    studentNam = get_object_or_404(Student, fullName=student)
+    return render(request, 'match_detail.html', {'student': studentNam})   
+
+#function to send an email
+def send_email(request): 
+    internships = Internship.objects.all() #get data from database
+    students = Student.objects.all()
+        
+    subject = "Successful application match"
+
+    for student in students:
+        name = student.fullName
+        context = {'name': name}
+        
+        html_message = render_to_string('email.html', context)
+        text_message = strip_tags(html_message)
+        
+        mail = EmailMultiAlternatives(
+                    subject = subject, #subject
+                    body = text_message, #plain text version of message
+                    from_email = settings.EMAIL_HOST_USER, #from email display name
+                    to = [student.email] #recipient's email      
+                )
+        
+        mail.attach_alternative(html_message, 'text/html')
+        mail.send()
+        
+    return HttpResponse('Email sent')
+
+def search_student(request):
+    context_object_name = 'all_search_results'
+    template = 'search_student.html'
+    
+    student_name_input = request.GET.get('studentNameInput')
+    student_email_input = request.GET.get('studentEmailInput')
+    student_id_input = request.GET.get('studentIDInput')
+    object_list = Student.objects.all()
+    
+    if student_name_input:
+        object_list = object_list.filter(fullName__icontains=student_name_input)
+    if student_email_input:
+        object_list = object_list.filter(email__icontains=student_email_input)
+    if student_id_input:
+        object_list = object_list.filter(studentID__icontains=student_id_input)    
+    
+    return render(request, template, {context_object_name: object_list})
+
+def student_detail(request, student):
+    student_id = get_object_or_404(Student, pk=student)
+    return render(request, 'student_detail.html', {'student': student_id})   

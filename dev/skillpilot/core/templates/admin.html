@@ -19,14 +19,14 @@
                         Query Options
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Students</a></li>
+                        <li><a class="dropdown-item" href="{% url 'search_student' %}">Students</a></li>
                         <li><a class="dropdown-item" href="#">Internships</a></li>
                         <li><a class="dropdown-item" href="#">Recruiters</a></li>
                         <li><a class="dropdown-item" href="#">Computed Matches</a></li>
                     </ul>
                 </div>
             </div>
-
+<!--
             <p class="fs-5 mt-3">Students</p>
             <form method="GET" action="#" autocomplete="off" enctype="multipart/form-data">
                 {% csrf_token %}
@@ -41,23 +41,7 @@
                 </div>
                 <button type="submit" class="btn btn-primary fw-bold mb-4">Search</button>
             </form>
-
-            <p class="fs-5 mt-3">Your query returned the results below</p>
-
-            <div class="card my-3">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <p class="mb-0 text-muted"><span class="fw-bold me-2" style="color:black;">Mr Beast</span> mb1K0 </p>
-                    <a href="{% url 'student' %}" class="btn btn-light fw-bold">student details</a>
-                </div>
-            </div>
-
-            <div class="card my-3">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <p class="mb-0 text-muted"><span class="fw-bold me-2" style="color:black;">Lebron James</span> lj9X1 </p>
-                    <a href="{% url 'student' %}" class="btn btn-light fw-bold">student details</a>
-                </div>
-            </div>
-
+-->
         </div>
 
         <div class="col-lg-8 col-md-10">
@@ -70,8 +54,13 @@
                     </div>
                 </div>
 
+                <div class="container" style="height: 400px; overflow-y: auto;">
+                    {% include 'matches.html' with csv_data=csv_data %}
+
+                </div>
+
                 <div class="d-flex flex-column align-items-center mb-5">
-                    <!-- example cards -->
+
                 </div>
 
             </div>
