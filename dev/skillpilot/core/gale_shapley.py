@@ -17,6 +17,8 @@ def __init__(self):
 internships = Internship.objects.all()
 students = Student.objects.all()
 
+#find students and internships in approved matches and remove them from variables
+
 def populate_compatibility_matrix(matrix, candidates, jobs):
     for i in range(len(candidates)):
         for j in range(len(jobs)):

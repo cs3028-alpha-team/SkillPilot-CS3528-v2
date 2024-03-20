@@ -88,7 +88,7 @@ def login_admin(request):
 
 # view for the route '/student'
 @login_required
-@allowed_users(allowed_roles=['Admin']) #change back to companies 
+#@allowed_users(allowed_roles=['Admin']) #change back to companies 
 def student(request):
     if request.method == 'POST':
         form = StudentForm(request.POST)
@@ -97,9 +97,22 @@ def student(request):
             email = form.cleaned_data['email']  # Retrieve email address from the form data
             
             # Check if a student with the same email already exists
-            if Student.objects.filter(email=email).exists():
-                # If student with same email exists, display a message to the user
-                return render(request, 'form-duplication.html')
+            existing_student = Student.objects.filter(email=email).first()
+            if existing_student:
+                # If student with same email exists, update its fields with the new data
+                form_data = form.cleaned_data
+                existing_student.fullName = form_data['fullName']
+                existing_student.currProgramme = form_data['currProgramme']
+                existing_student.prevProgramme = form_data['prevProgramme']
+                existing_student.studyMode = form_data['studyMode']
+                existing_student.studyPattern = form_data['studyPattern']
+                existing_student.GPA = form_data['GPA']
+                existing_student.desiredContractLength = form_data['desiredContractLength']
+                existing_student.willingRelocate = form_data['willingRelocate']
+                existing_student.aspirations = form_data['aspirations']
+
+                existing_student.save()  # Save the updated instance
+                return redirect('form-success')
             else:
                 # If student with same email does not exist, proceed with form submission
                 form.save() 
