@@ -59,7 +59,7 @@ urlpatterns = [
 
     path('execute_matching_process/', views.execute_matching_process, name='execute_matching_process'),
 
-    path('admin/<str:student>/', views.match_detail, name='match_detail'),
+    path('admin_page/<str:student>/', views.match_detail, name='match_detail'),
     
     path('send-email', views.send_email, name="send-email"),
     
