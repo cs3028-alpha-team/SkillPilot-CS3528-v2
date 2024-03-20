@@ -28,9 +28,11 @@ def home(request):
     return render(request, 'home.html')
 
 # render view upon form submission to notify user of success
+@login_required
 def formSuccess(request):
     return render(request, 'form-success.html')
 
+@login_required
 def formFailure(request):
     return render(request, 'form-failure.html')
 
@@ -50,6 +52,8 @@ def admin(request):
     return render(request, 'admin.html', {'current_internships': current_internships, 'csv_data': csv_data})
 
 # Lives in the dashboard app
+@login_required
+@allowed_users(allowed_roles=['Admin'])
 def dashboard(request):
     return render(request, 'dashboard/dashboard.html')
 
@@ -74,7 +78,7 @@ def registration_user(request):
 def registration_company2(request):
     return render(request, 'company-registration.html')
 
-# render view for Login page 
+# render view for Login page  
 def employer_Login(request):
     if request.user.is_authenticated:
         return redirect('internship')
@@ -82,13 +86,14 @@ def employer_Login(request):
         return render(request, 'Login-company.html')
 
 # render view for Login  
+@unauthenticated_user  
 def login_admin(request):
     return render(request, 'Login-admin.html')
 
 
 # view for the route '/student'
 @login_required
-@allowed_users(allowed_roles=['Admin']) #change back to companies 
+#@allowed_users(allowed_roles=['Admin']) #change back to companies 
 def student(request):
     if request.method == 'POST':
         form = StudentForm(request.POST)
@@ -105,6 +110,7 @@ def student(request):
                 form.save() 
                 return redirect('form-success')
         else:
+            print(form.errors)
             return redirect('form-failure')
     else:
         form = StudentForm()
@@ -113,7 +119,6 @@ def student(request):
 
 # view for the route '/internship'
 @login_required
-@allowed_users(allowed_roles=['Admin']) #change back to companies 
 def internship(request):
 
     form = InternshipForm()
@@ -278,13 +283,19 @@ def registering_user(request):
 def delete_user(request):
     if request.method == 'POST':
         user = request.user
+
+        # Delete forms connected to the user
+        Student.objects.filter(email=user.email).delete()
+
+        # Delete the user
         user.delete()
+
         logout(request)
         return redirect('home')
     else:
         # Handle GET request, if needed
         return redirect('home')
-   
+    
 @login_required
 @allowed_users(allowed_roles=['Admin'])
 def CurrentInternship(request):
@@ -383,8 +394,8 @@ def execute_matching_process(request):
 #this code searches student by their name, which can cause errors
 #in csv_data the student ids don't match the actual ids, so maybe add in another field that holds the actual student ids
 def match_detail(request, student):
-    studentNam = get_object_or_404(Student, fullName=student)
-    return render(request, 'match_detail.html', {'student': studentNam})   
+    studentNum = get_object_or_404(Student, pk=student)
+    return render(request, 'match_detail.html', {'student': studentNum})   
 
 #function to send an email
 def send_email(request): 
