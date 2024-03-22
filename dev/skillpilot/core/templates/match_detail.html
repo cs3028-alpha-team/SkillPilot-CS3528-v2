@@ -1,13 +1,21 @@
-<h1>{{ student.fullName }} Details</h1>
-<p>ID: {{ student.studentID }}</p>
-<p>Name: {{ student.fullName }}</p>
-<p>Email: {{ student.email }}</p>
-<p>Current program: {{ student.currProgramme }}</p>
-</p>add more details here </p>
+{% extends "base.html" %}
 
-<h1>{{ student.fullName }} Details</h1>
-<p>ID: {{ student.studentID }}</p>
-<p>Name: {{ student.fullName }}</p>
-<p>Email: {{ student.email }}</p>
-<p>Current program: {{ student.currProgramme }}</p>
-</p>pretend this bit is talking about internships </p>
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <h1>{{ student.fullName }} Details</h1>
+            <p>ID: {{ student.studentID }}</p>
+            <p>Name: {{ student.fullName }}</p>
+            <p>Email: {{ student.email }}</p>
+            <p>Current program: {{ student.currProgramme }}</p>
+            <p>Add more details here</p>
+        </div>
+        <div class="col-md-6">
+            <h1>{{ student.fullName }} Internship Details</h1>
+            <p>Insert details about internships here</p>
+            <p>Pretend this bit is talking about internships</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
