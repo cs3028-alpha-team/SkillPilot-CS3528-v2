@@ -20,18 +20,19 @@ def populate_compatibility_matrix(matrix, candidates, jobs):
             print(f"i: {i}, j: {j}")
             matrix.loc[(i, j)] = compute_compatibility(candidates[i], jobs[j])
 
-#for run algorithm
+#for run algorithm (going through each candidate and job and giving a compatibility score)
 def populate_compatibility_matrix2(matrix, candidates, jobs):
     for i in range(len(candidates)):
         for j in range(len(jobs)):
             matrix.loc[(i, j)] = compute_compatibility2(candidates.loc[i], jobs.loc[j])
             
-
+#for matche views function 
 def compute_compatibility_matrix(students, internships):
     student_indices = [i for i in range(len(students))]
     internship_indices = [i for i in range(len(internships))]
 
-    print("Student Indices:", student_indices)
+    #debugging
+    print("Student Indices:", student_indices)  
     print("Internship Indices:", internship_indices)
 
     compatibility = pd.DataFrame(0.0, index=student_indices, columns=internship_indices)
@@ -47,7 +48,7 @@ def compute_compatibility_matrix(students, internships):
 def compute_compatibility_matrix2(students, internships):
     student_indices = [i for i in range(len(students))]
     internship_indices = [i for i in range(len(internships))]
-
+    #debugging 
     print("Student Indices:", student_indices)
     print("Internship Indices:", internship_indices)
 
@@ -59,17 +60,17 @@ def compute_compatibility_matrix2(students, internships):
     print("Population operation completed.")
 
     return compatibility
-
+#for match views function uses database information 
 def compute_compatibility(student, internship):
     compatibility_score = 0
-
+    #debugging
     print("Student Data:")
     print(student)
 
     print("Internship Data:")
     print(internship)
 
-    # Check if student's field of study matches with the internship field
+    # Check if students field of study matches with the internship field
     if student.currProgramme == internship.field:
         compatibility_score += 1
     else:
@@ -84,6 +85,7 @@ def compute_compatibility(student, internship):
     student_gpa = student.GPA
     internship_min_gpa = internship.minGPA
 
+    # Candidate will prefer job whose MinScore is closer to their achieved grade
     if student_gpa <= 0.9 * internship_min_gpa or student_gpa >= 1.1 * internship_min_gpa:
         compatibility_score += 1
     elif student_gpa <= 0.75 * internship_min_gpa or student_gpa >= 1.25 * internship_min_gpa:
@@ -96,7 +98,7 @@ def compute_compatibility(student, internship):
 
     return round(compatibility_score, 2)
 
-#for run algorithm 
+#for run algorithm uses csv data
 def compute_compatibility2(candidate, job):
     compatibility_score = 0
 

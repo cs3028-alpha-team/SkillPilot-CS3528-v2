@@ -11,6 +11,7 @@ def unauthenticated_user(view_func):
     
     return wrapper_func
 
+#function to give access to pages based on group of user 
 def allowed_users(allowed_roles=[]):
     def decorator(view_func):
         def wrapper_func(request, *args, **kwargs):
