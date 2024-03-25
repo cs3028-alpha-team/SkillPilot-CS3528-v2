@@ -9,6 +9,7 @@ from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
+from django.views import View
 
 from . models import *
 from . forms import *
@@ -20,6 +21,7 @@ from .data_pipeline import *
 import subprocess
 import csv
 import os
+import pandas as pd
 
 
 
@@ -250,8 +252,6 @@ def login_internship(request):
 def logout_user(request):
     logout(request)
     return redirect('home') 
-from django.shortcuts import redirect
-from django.shortcuts import redirect
 
 #handle registration of companies
 @unauthenticated_user   
@@ -293,7 +293,7 @@ def registering_user(request):
     return render(request, 'student-registration.html', context)
 
 @login_required
-def delete_user(request):
+def delete_user(request): 
     if request.method == 'POST':
         user = request.user
 
@@ -403,13 +403,35 @@ def execute_matching_process(request):
     else:
         return clean_data_response
 
-#only shows student details for now, need internship id in offers.csv, also need the student_id to match the id in the database
-#this code searches student by their name, which can cause errors
-#in csv_data the student ids don't match the actual ids, so maybe add in another field that holds the actual student ids
-def match_detail(request, student):
-    studentNum = get_object_or_404(Student, pk=student)
-    return render(request, 'match_detail.html', {'student': studentNum})   
+#only shows student details
+def match_detail(request, student, internship):
+    student_num = get_object_or_404(Student, pk=student)
+    internship_num = get_object_or_404(Internship, pk=internship)
 
+    return render(request, 'match_detail.html', {'student': student_num, 'internship': internship_num})    
+
+def approve_match(request, id):
+    approved_matches = pd.read_csv('data/approved_offers.csv')
+    matches = pd.read_csv('data/offers.csv')
+    approved_match = matches[matches['Candidate_id'] == int(id)]
+    approved_matches = pd.concat([approved_matches, approved_match], ignore_index=True)
+    matches.drop(approved_match.index, inplace=True)
+
+    matches.to_csv('data/offers.csv', index=False, header=["Student_num","Candidate_id","Student","Student_course","Internship_id","Internship","Internship-Position"])
+    approved_matches.to_csv('data/approved_offers.csv', index=False, header=["Student_num","Candidate_id","Student","Student_course","Internship_id","Internship","Internship-Position"])
+    
+    html = "Match approved successfully. Results saved to CSV file. <a href='/admin_page'>Admin</a>"
+    return HttpResponse(html)
+
+def disapprove_match(request, id):
+    matches = pd.read_csv('data/offers.csv')
+    match = matches[matches['Candidate_id'] == int(id)]
+    matches.drop(match.index, inplace=True)
+    matches.to_csv('data/offers.csv', index=False, header=["Student_num","Candidate_id","Student","Student_course","Internship_id","Internship","Internship-Position"])
+    
+    html = "Match dispproved successfully. Results saved to CSV file. <a href='/admin_page'>Admin</a>"
+    return HttpResponse(html)
+    
 #function to send an email
 def send_email(request): 
     internships = Internship.objects.all() #get data from database
