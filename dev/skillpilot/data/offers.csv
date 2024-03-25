@@ -1,8 +1,6 @@
 Student_num,Candidate_id,Student,Student_course,Internship_id,Internship,Internship-Position
-0,3,mattia,computing,6,Bastonia Ltd,computing
-1,4,bruh,english,8,slavs ltd,english
+0,3,mattia,computing,google ltd,Apple.com,computing
+1,4,bruh,english,11,saca ltd,english
 2,5,mjebfejbg,krjw ggk,1,barca FC,krjw ggk
 3,6,Ibrahim Alkali,english,213123,Google ltd2,Maths
-4,7,ibra,english,6,Bastonia Ltd,computing
-5,8,ibra,enlgish,11,saca ltd,english
-
+5,8,ibra,enlgish,6,Bastonia Ltd,computing

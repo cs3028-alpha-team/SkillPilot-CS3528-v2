@@ -14,9 +14,6 @@ def __init__(self):
 
     pass
 
-internships = Internship.objects.all() #getting information from database
-students = Student.objects.all()  #getting information from database
-#for match views function (going through each candidate and job and giving a compatibility score)
 def populate_compatibility_matrix(matrix, candidates, jobs):
     for i in range(len(candidates)):
         for j in range(len(jobs)):

@@ -51,7 +51,21 @@ def process_data():
     # Load internships and students data from the database
     internships = Internship.objects.all()
     students = Student.objects.all()
+    
+    #remove approved matches from queryset
+    approved_matches = pd.read_csv('data/approved_offers.csv')
 
+    for index, row in approved_matches.iterrows():
+        if row['Candidate_id'] == id:
+            student_id = row['Candidate_id']
+            internship_id = row['Internship_id']
+            students = students.exclude(pk=student_id)
+            internship = internships.filter(pk=internship_id).first()
+            if internship:
+                internship.numberPositions -= 1
+                if internship.numberPositions <= 0:
+                    internships = internships.exclude(pk=internship_id)
+    
     # Create DataFrames from the queryset data
     jobs = pd.DataFrame(list(internships.values()))
     candidates = pd.DataFrame(list(students.values()))

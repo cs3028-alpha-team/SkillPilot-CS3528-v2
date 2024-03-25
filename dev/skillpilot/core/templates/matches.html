@@ -5,10 +5,8 @@
       <span class="fw-bold me-2" style="color: black">{{ item.Student }}</span
       >{{ item.Internship }}
     </p>
-    <a href="#" class="btn btn-light fw-bold">approve</a>
-    <a href="#" class="btn btn-light fw-bold">disapprove</a>
     <a
-      href="{% url 'match_detail' item.Candidate_id %}"
+      href="{% url 'match_detail' item.Candidate_id item.Internship_id %}"
       class="btn btn-light fw-bold"
       >match details</a
     >
