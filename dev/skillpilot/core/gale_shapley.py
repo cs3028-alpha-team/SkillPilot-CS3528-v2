@@ -143,9 +143,9 @@ def format_pairings(offers, candidates, jobs, display=False):
         if display:
             print(f'{candidate_name} -> {job_title}')
             
-        #pairing = (candidate_id, candidate_name, candidate_field, internship_id, job_title, job_field)
-        pairing = (candidate_id,  candidate_id2, candidate_name, candidate_field, job_id, job_title, job_field)
-        pairings.append(pairing)
+        if job_id != "N/A":
+            pairing = (candidate_id,  candidate_id2, candidate_name, candidate_field, job_id, job_title, job_field)
+            pairings.append(pairing)
     return pairings
 
 # # Save final prodecced data to the offers csv

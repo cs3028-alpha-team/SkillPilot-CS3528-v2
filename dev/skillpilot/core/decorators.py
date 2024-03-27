@@ -7,7 +7,7 @@ def unauthenticated_user(view_func):
         if request.user.is_authenticated: # check if authenticated
             return redirect('home')
         else:
-            return view_func(request, *args, **kwargs)  # else will run the attached function code 
+            return view_func(request, *args, **kwargs) # else will run the attached function code 
     
     return wrapper_func
 

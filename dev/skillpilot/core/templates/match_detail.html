@@ -10,12 +10,12 @@
 <p>Current program: {{ student.currProgramme }}</p>
 </p>add more details here </p>
 
-<h1>{{ internship.title }} Details</h1>
+<h1>{{ internship.internshipID }} Details</h1>
 <p>ID: {{ internship.studentID }}</p>
 <p>Title: {{ internship.title }}</p>
 <p>Field: {{ internship.field }}</p>
 <p>Min GPA: {{ internship.minGPA }}</p>
-</p>pretend this bit is talking about internships </p>
+</p>add more details here </p>
 
 <a href="{% url 'approve_match' student.studentID %}" class="btn btn-light fw-bold">approve</a>
 <a href="{% url 'disapprove_match' student.studentID %}" class="btn btn-light fw-bold">disapprove</a>
