@@ -1,0 +1,22 @@
+{% extends "base.html" %}  
+{% load static %} <!-- NOTE : this line is needed on ALL templates -->
+
+{% block content %}
+
+<h1>{{ student.fullName }} Details</h1>
+<p>ID: {{ student.studentID }}</p>
+<p>Name: {{ student.fullName }}</p>
+<p>Email: {{ student.email }}</p>
+<p>Current program: {{ student.currProgramme }}</p>
+</p>add more details here </p>
+
+<h1>{{ internship.internshipID }} Details</h1>
+<p>ID: {{ internship.studentID }}</p>
+<p>Title: {{ internship.title }}</p>
+<p>Field: {{ internship.field }}</p>
+<p>Min GPA: {{ internship.minGPA }}</p>
+</p>add more details here </p>
+
+<a href="{% url 'approve_match' student.studentID %}" class="btn btn-light fw-bold">approve</a>
+<a href="{% url 'disapprove_match' student.studentID %}" class="btn btn-light fw-bold">disapprove</a>
+{% endblock %}

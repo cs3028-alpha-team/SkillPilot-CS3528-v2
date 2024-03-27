@@ -10,7 +10,7 @@
         <!-- 
             this will be a dynamic URL which takes in the recruiter ID to return to the recruiter dashboard 
         -->
-        <a class="text-muted mt-5 ms-5" href="{% url 'admin' %}">Return</a>
+        <a class="text-muted mt-5 ms-5" href="{% url 'admin_page' %}">Return</a>
         <!-- 
             In this view, the recruiter will be able to edit the internship's listing and
             view all the upcoming interview for the advertised position
@@ -113,17 +113,17 @@
 
                 </form>
             </div>
-
+            <!--
             <div class="col-md-auto mx-5">
-                <!-- 
+                
                     render all the interviews booked in for this internship
-                -->
+                
                 <h3 class="display-6 mt-5 mb-4">Upcoming interviews</h3>
                 <p>Looks like there are no booked interviews yet.</p>
 
-                <!-- 
                     interview card where the recruiter can modify the interview details and contact the student  
                 -->
+                <!--
                 <div class="card p-3" style="width: 35rem;">
                     <div class="card-body d-flex flex-column justify-content-between">
                         <div>
@@ -131,9 +131,9 @@
                         </div>
                         <p class="text-body-secondary">
                             06/09/2069, with 
-                            <!-- 
+                         
                                 link to the student's profile page
-                            -->
+                            
                             <a href="#">Eugene Krabs<a>
                         </p>
                         <div class="d-flex">
@@ -144,6 +144,7 @@
                 </div>
 
             </div>
+             -->
 
         </div>
 

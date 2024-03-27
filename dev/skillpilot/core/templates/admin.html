@@ -19,14 +19,13 @@
                         Query Options
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Students</a></li>
+                        <li><a class="dropdown-item" href="{% url 'search_student' %}">Students</a></li>
                         <li><a class="dropdown-item" href="#">Internships</a></li>
                         <li><a class="dropdown-item" href="#">Recruiters</a></li>
-                        <li><a class="dropdown-item" href="#">Computed Matches</a></li>
                     </ul>
                 </div>
             </div>
-
+<!--
             <p class="fs-5 mt-3">Students</p>
             <form method="GET" action="#" autocomplete="off" enctype="multipart/form-data">
                 {% csrf_token %}
@@ -41,23 +40,7 @@
                 </div>
                 <button type="submit" class="btn btn-primary fw-bold mb-4">Search</button>
             </form>
-
-            <p class="fs-5 mt-3">Your query returned the results below</p>
-
-            <div class="card my-3">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <p class="mb-0 text-muted"><span class="fw-bold me-2" style="color:black;">Mr Beast</span> mb1K0 </p>
-                    <a href="{% url 'student' %}" class="btn btn-light fw-bold">student details</a>
-                </div>
-            </div>
-
-            <div class="card my-3">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <p class="mb-0 text-muted"><span class="fw-bold me-2" style="color:black;">Lebron James</span> lj9X1 </p>
-                    <a href="{% url 'student' %}" class="btn btn-light fw-bold">student details</a>
-                </div>
-            </div>
-
+-->
         </div>
 
         <div class="col-lg-8 col-md-10">
@@ -70,8 +53,13 @@
                     </div>
                 </div>
 
+                <div class="container" style="height: 400px; overflow-y: auto;">
+                    {% include 'matches.html' with csv_data=csv_data %}
+
+                </div>
+
                 <div class="d-flex flex-column align-items-center mb-5">
-                    <!-- example cards -->
+
                 </div>
 
             </div>
@@ -90,63 +78,7 @@
                     </a>
                 </div>
             </div>
-
-            <h3 class="display-6 mt-5 mb-4">Listing Activity</h3>
-
-            <div class="card mb-3">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <p class="mb-0 text-muted"><span class="fw-bold" style="color:black;">NHS</span> - title changed </p>
-                    <div>
-                        <a href="#" class="btn btn-secondary fw-bold">Details</a>
-                        <a href="#" class="btn btn-light fw-bold ms-2">Mark as read</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card mb-3">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <p class="mb-0 text-muted"><span class="fw-bold" style="color:black;">GSK</span> - blah blah </p>
-                    <div>
-                        <a href="#" class="btn btn-secondary fw-bold">Details</a>
-                        <a href="#" class="btn btn-light fw-bold ms-2">Mark as read</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card mb-3">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <p class="mb-0 text-muted"><span class="fw-bold" style="color:black;">Pfizer</span> - pluuuhhhh! </p>
-                    <div>
-                        <a href="#" class="btn btn-secondary fw-bold">Details</a>
-                        <a href="#" class="btn btn-light fw-bold ms-2">Mark as read</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-5 mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h3 class="display-6">Published Opportunities</h3>
-                </div>
-                {% if current_internships %}
-                {% for internship in current_internships %}
-                <div class="card my-3">
-                    <div class="card-body d-flex justify-content-between align-items-center">
-                        <p class="mb-0 text-muted"><span class="fw-bold" style="color:black;">{{ internship.title }}</span> - {{ internship.field }} </p>
-                        <div>
-                            <form action="{% url 'cancel_internship' internship.internshipID %}" method="post">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger fw-bold">Cancel</button>
-                            </form>
-                            <a href="{% url 'internship-details' internship.internshipID %}" class="btn btn-primary fw-bold">Edit</a>
-                        </div>
-                    </div>
-                </div>
-                    <!-- Debugging: Print the internship id -->
-                    {{ internship.id }}
-                {% endfor %}
-            {% else %}
-                <p class="text-muted">Looks like you haven't published any recruitment opportunities yet.</p>
-            {% endif %}
+           
             </div>
         </div>
     </div>
