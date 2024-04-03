@@ -25,7 +25,7 @@ class StudentForm(forms.ModelForm):
         }
 
 # create form for the Internship model
-class InternshipForm(ModelForm):
+class InternshipForm(forms.ModelForm):
     class Meta:
         model = Internship
         fields = '__all__'
@@ -43,10 +43,18 @@ class InternshipForm(ModelForm):
             'numberPositions': forms.NumberInput(attrs={'class': 'form-control', 'id': 'numberPositionsInput', 'min': 1, 'max': 10, 'required': True}),
         }
 
+
+class CompanyForm(forms.ModelForm):
+    class Meta:
+        model = Company
+        fields = '__all__'
+
+# =================================================== ??????????????????????? =========================
 class CreateCompanyForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username', 'email','password1', 'password2']
+# =====================================================================================================
 
 class CreateUserForm(UserCreationForm):
     class Meta:

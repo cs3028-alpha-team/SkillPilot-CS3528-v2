@@ -25,8 +25,113 @@ import pandas as pd
 
 
 
+from faker import Faker
+import random
+
 # view for the route '/home' 
 def home(request):
+
+    fake = Faker()
+    experience = [ "Surgery", "Dentistry", "Nursing" ,"Nutrition", "Physiotherapy", "Immunology", None ]
+
+    # # populate the database with 100 students 
+    # while len(Student.objects.all()) != 100:
+
+    #     firstname, lastname = fake.first_name(), fake.last_name()
+    #     name = firstname + " " + lastname
+    #     email = f"{firstname.lower()}.{lastname.lower()}@abdn.ac.uk"
+
+    #     degrees = [ 
+    #             "Doctor of Medicine (M.D.)", 
+    #             "Doctor of Osteopathic Medicine (D.O.)", 
+    #             "Doctor of Dental Medicine (D.M.D.)", 
+    #             "Doctor of Dental Surgery (D.D.S.)", 
+    #             "Doctor of Veterinary Medicine (D.V.M.)", 
+    #             "Doctor of Pharmacy (Pharm.D.)", 
+    #             "Doctor of Nursing Practice (D.N.P.)", 
+    #             "Doctor of Physical Therapy (D.P.T.)", 
+    #             "Doctor of Optometry (O.D.)", 
+    #             "Doctor of Podiatric Medicine (D.P.M.)", 
+    #             "Doctor of Chiropractic (D.C.)", 
+    #             "Master of Public Health (M.P.H.)", 
+    #             "Master of Health Administration (M.H.A.)", 
+    #             "Bachelor of Science in Nursing (B.S.N.)", 
+    #             "Bachelor of Science in Biomedical Science (B.S.)" 
+    #         ]       
+
+    #     payload = {
+    #         'fullName': name,
+    #         'email': email, 
+    #         'currProgramme': random.choice(degrees),
+    #         'prevProgramme': random.choice(experience),
+    #         'studyMode': random.choice(["online", "in-person", "hybrid"]),
+    #         'studyPattern': random.choice(["FT", "PT"]),
+    #         'GPA': random.randint(40, 101),
+    #         'desiredContractLength': random.choice(["6-W", "12-W", "6-M", "9-M", "1-Y"]),
+    #         'willingRelocate': random.choice(["Yes", "No"]),
+    #         'aspirations': fake.paragraph(nb_sentences=random.randint(1, 4))
+    #     }
+
+    #     form = StudentForm(payload)
+    #     if form.is_valid():
+    #         form.save()
+
+    # medical_companies = [
+    #     "Pfizer Inc.",
+    #     "Johnson & Johnson",
+    #     "Roche Holding AG",
+    #     "Novartis International AG",
+    #     "Merck & Co., Inc.",
+    #     "GlaxoSmithKline plc",
+    #     "Abbott Laboratories",
+    #     "Sanofi SA",
+    #     "Medtronic plc",
+    #     "Bristol Myers Squibb Company",
+    #     "AbbVie Inc.",
+    #     "Eli Lilly and Company",
+    #     "Biogen Inc.",
+    #     "Gilead Sciences, Inc.",
+    #     "AstraZeneca PLC",
+    #     "Boston Scientific Corporation",
+    #     "Siemens Healthineers AG",
+    #     "Thermo Fisher Scientific Inc.",
+    #     "Stryker Corporation",
+    #     "Vertex Pharmaceuticals Incorporated",
+    #     "Illumina, Inc.",
+    #     "Zimmer Biomet Holdings, Inc.",
+    #     "Baxter International Inc.",
+    #     "Cerner Corporation",
+    #     "Edwards Lifesciences Corporation",
+    #     "National Health Service",
+    #     "Aberdeen University",
+    # ]
+
+    # for company in medical_companies:
+        # id = company.split(" ")[0] + str(random.randint(1, 10))      
+        # handle = company.split(" ")[0].lower()
+        # url = "www." + handle + "infocareers.com"
+
+        # payload = {
+        #     'companyID' : id, 
+        #     'companyName' : company, 
+        #     'industrySector' : random.choice(experience[:-1]),
+        #     'websiteURL' : url,
+        # }  
+
+        # print(payload)
+
+        # form = CompanyForm(payload)
+
+        # if form.is_valid():
+        #     form.save()
+        # else:
+        #     print(company, form.errors)
+
+    # now add a recruiter per company 
+    
+
+    # now for each recruiter, add 2-5 internship listings
+
     return render(request, 'home.html')
 
 # render view upon form submission to notify user of success
