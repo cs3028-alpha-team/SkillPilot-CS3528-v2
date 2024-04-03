@@ -457,20 +457,6 @@ def search_student(request):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # student details page
 def student_details(request, studentID):
     try:
