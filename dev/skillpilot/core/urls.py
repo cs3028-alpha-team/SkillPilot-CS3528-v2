@@ -75,5 +75,6 @@ urlpatterns = [
     path('query-internships', views.query_internships, name='queryInternships'),
 
     path('student-details/<str:studentID>/', views.student_details, name='studentDetails'),
+    path('recruiter-details/<str:recruiterID>/', views.recruiter_details, name='recruiterDetails'),
 
 ]

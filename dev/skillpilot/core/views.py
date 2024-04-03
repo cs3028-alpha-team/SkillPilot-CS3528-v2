@@ -476,7 +476,15 @@ def student_details(request, studentID):
         student = Student.objects.get(studentID = studentID)
         return render(request, 'student_details.html', context={ 'student' : student })
     except:
-        return redirect('admin')
+        return redirect('home') # ====================================== WILL BE REPLACED BY 404 OR ERROR PAGE LATER ON ==========================================
+
+# recruiter details page
+def recruiter_details(request, recruiterID):
+    try:
+        recruiter = Recruiter.objects.get(recruiterID = recruiterID)
+        return render(request, 'recruiter_details.html', context={ 'recruiter' : recruiter })
+    except:
+        return redirect('home') # ====================================== WILL BE REPLACED BY 404 OR ERROR PAGE LATER ON ==========================================
 
 
 # ==================================== Views related to admin page search functionality ======================================= 
@@ -503,16 +511,38 @@ def query_students(request):
         # if form is empty, return the entire student table othewise query db using form parameters
         context['students'] = Student.objects.all().order_by(filterby) if empty_form else Student.objects.filter( Q(fullName=student_name) | Q(currProgramme=curr_programme) | Q(prevProgramme=prev_programme) ).order_by(filterby)
 
-        # render the student query page again, displaying the search results in the template
-        return render(request, 'students_db_query.html', context=context)
-
     return render(request, 'students_db_query.html', context=context)
 
 
 
-
 def query_recruiters(request):
-    return render(request, 'recruiters_db_query.html')
+
+    # fetch all the company names stored in the recruiters database using the recruiter.companyID attribute
+    ids = [ recruiter.companyID for recruiter in Recruiter.objects.all() ]
+    all_companies = { Company.objects.get(companyID = id.companyID).companyName for id in ids }
+
+    context = { 'allCompanies' : sorted(all_companies) }
+
+    if request.method == 'POST':
+
+        # extract the form payload
+        recruiter_fullname = request.POST.get('recruiterFullname')
+        recruiter_jobtitle = request.POST.get('recruiterJobTitle')
+        # only fetch the company name if company is not the default empty placeholder 
+        recruiter_company = Company.objects.get(companyName = request.POST.get('recruiterCompany')).companyID if request.POST.get('recruiterCompany') != "" else ""
+
+        # check whether all fields in the POST request are empty
+        empty_form = True if "".join([recruiter_fullname, recruiter_jobtitle, recruiter_company]) == "" else False
+
+        # if form is empty, return the entire recruiter table othewise query db using form parameters
+        if empty_form:
+            context['recruiters'] = Recruiter.objects.all()
+        else:
+            context['recruiters'] = Recruiter.objects.filter( Q(fullName=recruiter_fullname) | Q(companyID=recruiter_company) | Q(jobTitle=recruiter_jobtitle) )
+
+    return render(request, 'recruiters_db_query.html', context=context)
+
+
 
 def query_internships(request):
     return render(request, 'internships_db_query.html')
