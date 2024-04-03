@@ -58,7 +58,7 @@ class Internship(models.Model):
     # number of internships availables in the company for that internship type
     numberPositions = models.SmallIntegerField() 
     field = models.CharField(max_length = 20)
-    title = models.CharField(max_length = 30)
+    title = models.CharField(max_length = 50)
     minGPA = models.SmallIntegerField()
 
 # companies table
