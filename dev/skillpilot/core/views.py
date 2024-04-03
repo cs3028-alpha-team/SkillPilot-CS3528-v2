@@ -127,11 +127,51 @@ def home(request):
         # else:
         #     print(company, form.errors)
 
-    # now add a recruiter per company 
-    
+    # recruiterID = models.CharField(max_length = 10, primary_key = True)
+    # fullName = models.CharField(max_length=50)
+    # email = models.EmailField()
+    # companyID = models.ForeignKey('core.Company', on_delete = models.CASCADE)
+    # jobTitle = models.CharField(max_length = 40)
 
+    # now add a recruiter per company 
+
+    # rjt = [
+    #     "Healthcare Recruiter",
+    #     "Talent Acquisition Specialist (Medical)",
+    #     "Physician Recruiter",
+    #     "Nurse Recruiter",
+    #     "Allied Health Recruiter",
+    #     "Recruitment Coordinator (Medical)",
+    #     "Healthcare Staffing Consultant",
+    #     "Medical Recruitment Manager",
+    #     "Healthcare Recruitment Coordinator",
+    #     "Recruitment Specialist (Medical)"
+    # ]
+
+    # for company in Company.objects.all():
+
+    #     firstname, lastname = fake.first_name(), fake.last_name()
+    #     name = firstname + " " + lastname
+    #     email = f"{firstname.lower()}.{lastname.lower()}@careers.com"
+
+    #     payload = {
+    #         'recruiterID' : list(firstname.lower())[0] + list(lastname.lower())[0] + "Rec" + str(random.randint(1,10)),
+    #         'fullName' : name,
+    #         'email' : email,
+    #         'companyID' : company.companyID, 
+    #         'jobTitle' : random.choice(rjt),
+    #     }
+
+    #     print(payload)
+
+    #     form = RecruiterForm(payload)
+    #     if form.is_valid():
+    #         form.save()
+    #     else:
+    #         print(form.errors)
     # now for each recruiter, add 2-5 internship listings
 
+    # print("recruiters are" + str(len(Recruiter.objects.all())))
     return render(request, 'home.html')
 
 # render view upon form submission to notify user of success

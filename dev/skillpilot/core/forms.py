@@ -49,6 +49,13 @@ class CompanyForm(forms.ModelForm):
         model = Company
         fields = '__all__'
 
+
+class RecruiterForm(forms.ModelForm):
+    class Meta:
+        model = Recruiter
+        fields = '__all__'
+
+
 # =================================================== ??????????????????????? =========================
 class CreateCompanyForm(UserCreationForm):
     class Meta:
