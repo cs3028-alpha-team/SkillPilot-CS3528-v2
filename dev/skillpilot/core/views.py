@@ -157,26 +157,7 @@ def internship(request):
     else:
         return render(request, 'internship.html', context)
     
-# view to render the details of a specific internship opportunity#
-@login_required
-@allowed_users(allowed_roles=['Admin']) 
-def internshipDetails(request, internshipID):
-    # Fetch the internship object using the provided ID
-    internship = get_object_or_404(Internship, pk=internshipID)
 
-    if request.method == 'POST':
-        # Process form submission if it's a POST request
-        form = InternshipForm(request.POST, instance=internship)
-        if form.is_valid():
-            form.save()
-            # Redirect to a success page or render the same page with a success message
-    else:
-        # Render the form with the internship object
-        form = InternshipForm(instance=internship)
-
-    context = {'form': form, 'internship': internship}
-    return render(request, 'internship-details.html', context)
-    
  # view to handle login of students
 @unauthenticated_user  
 def login_user(request):
@@ -470,6 +451,26 @@ def search_student(request):
     return render(request, template, {context_object_name: object_list})
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # student details page
 def student_details(request, studentID):
     try:
@@ -483,6 +484,14 @@ def recruiter_details(request, recruiterID):
     try:
         recruiter = Recruiter.objects.get(recruiterID = recruiterID)
         return render(request, 'recruiter_details.html', context={ 'recruiter' : recruiter })
+    except:
+        return redirect('home') # ====================================== WILL BE REPLACED BY 404 OR ERROR PAGE LATER ON ==========================================
+
+# internship details page
+def internship_details(request, internshipID):
+    try:    
+        internship = Internship.objects.get(internshipID = internshipID)
+        return render(request, 'internship_details.html', context={ 'internship' : internship })
     except:
         return redirect('home') # ====================================== WILL BE REPLACED BY 404 OR ERROR PAGE LATER ON ==========================================
 
@@ -545,6 +554,57 @@ def query_recruiters(request):
 
 
 def query_internships(request):
-    return render(request, 'internships_db_query.html')
 
+    # fetch all the company names stored in the recruiters database using the recruiter.companyID attribute
+    company_ids = [ internship.companyID for internship in Internship.objects.all() ]
+    all_companies = { Company.objects.get(companyID = id.companyID).companyName for id in company_ids }
 
+    
+    # fetch all recruiters which have posted at least one internship
+    recruiter_ids = [ internship.recruiterID for internship in Internship.objects.all() ]
+    all_recruiters = { Recruiter.objects.get(recruiterID = id.recruiterID).fullName for id in recruiter_ids }
+
+    # fetch all internship fields in the database
+    fields = { internship.field for internship in Internship.objects.all() }
+
+    # fetch all internship titles in the database
+    titles = { internship.title for internship in Internship.objects.all() }
+
+    # get the range of positons offered across all internships
+    positions = { internship.numberPositions for internship in Internship.objects.all() }
+
+    context = { 
+        'allCompanies' : sorted(all_companies),
+        'allRecruiters' : sorted(all_recruiters),
+        'fields' : sorted(fields),
+        'titles' : sorted(titles),
+        'positions' : sorted(positions), 
+    }
+
+    if request.method == 'POST':
+
+        # extract the form payload
+        internship_company = request.POST.get('internshipCompany')
+        internship_field = request.POST.get('internshipField')
+        internship_title = request.POST.get('internshipTitle')
+        sortby = '-minGPA' if request.POST.get('internshipMinGPA') == 'desc' else 'minGPA'
+
+        # check whether all fields in the POST request are empty
+        empty_form = True if "".join([internship_company, internship_field, internship_title]) == "" or internship_company == "" else False
+
+        # if form is empty, return the entire recruiter table othewise query db using form parameters
+        if empty_form:
+            context['internships'] = Internship.objects.all().order_by(sortby)
+
+        else:
+            company_id = Company.objects.get(companyName = internship_company).companyID
+
+            context['internships'] = Internship.objects.filter( 
+                Q(companyID=company_id) | Q(title=internship_title) | Q(field=internship_field)
+            ).order_by(sortby)
+
+        # attach the company name to the internship object, since we only have the internship's company ID for now
+        for internship in context['internships']:
+            internship.company_name = Company.objects.get(companyID=internship.companyID.companyID).companyName
+
+    return render(request, 'internships_db_query.html', context=context)
