@@ -71,7 +71,11 @@ urlpatterns = [
     
     path('search_student/<int:student>/', views.student_detail, name='student_detail'),
 
-
     
+
+    # ================== URLs related to admin page search functionality =========================
+    path('queryStudents', views.query_students, name='queryStudents'),
+    path('queryRecruiters', views.query_recruiters, name='queryRecruiters'),
+    path('queryInternships', views.query_internships, name='queryInternships'),
 
 ]

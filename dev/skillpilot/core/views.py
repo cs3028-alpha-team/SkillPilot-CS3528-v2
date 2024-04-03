@@ -23,14 +23,8 @@ import csv
 import os
 import pandas as pd
 
-
-
-from faker import Faker
-import random
-
 # view for the route '/home' 
 def home(request):
-            
     return render(request, 'home.html')
 
 # render view upon form submission to notify user of success
@@ -497,3 +491,15 @@ def search_student(request):
 def student_detail(request, student):
     student_id = get_object_or_404(Student, pk=student)
     return render(request, 'student_detail.html', {'student': student_id})   
+
+
+
+# ==================================== Views related to admin page search functionality ======================================= 
+def query_students(request):
+    return render(request, 'students_db_query.html')
+
+def query_recruiters(request):
+    return render(request, 'recruiters_db_query.html')
+
+def query_internships(request):
+    return render(request, 'internships_db_query.html')

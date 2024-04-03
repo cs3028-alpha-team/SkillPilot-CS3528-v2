@@ -12,17 +12,12 @@
 
         <div class="col-lg-8 col-md-10">
 
-            <div class="mt-5 d-flex justify-content-between align-items-center">
+            <div class="my-5 d-flex justify-content-between align-items-center">
                 <h3 class="display-6 me-5">Search Database</h3>
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Query Options
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'search_student' %}">Students</a></li>
-                        <li><a class="dropdown-item" href="#">Internships</a></li>
-                        <li><a class="dropdown-item" href="#">Recruiters</a></li>
-                    </ul>
+                <div>
+                    <a href="{% url 'queryStudents' %}" class="btn btn-primary btn-lg">Students</a>
+                    <a href="{% url 'queryRecruiters' %}" class="btn btn-primary btn-lg">Recruiters</a>
+                    <a href="{% url 'queryInternships' %}" class="btn btn-primary btn-lg">Internships</a>
                 </div>
             </div>
 <!--
