@@ -22,6 +22,7 @@ import subprocess
 import csv
 import os
 import pandas as pd
+from django.db.models import Q
 
 # view for the route '/home' 
 def home(request):
@@ -47,7 +48,6 @@ def admin(request):
         reader = csv.DictReader(file)
         for row in reader:
             csv_data.append(row)
-    print(csv_data)
             
     current_internships = Internship.objects.all()  # Fetch all internships from the database
     return render(request, 'admin.html', {'current_internships': current_internships, 'csv_data': csv_data})
@@ -124,7 +124,6 @@ def student(request):
                 form.save() 
                 return redirect('form-success')
         else:
-            print(form.errors)
             return redirect('form-failure')
     else:
         form = StudentForm()
@@ -152,9 +151,6 @@ def internship(request):
             return redirect('form-success')
 
         else:
-            print("=================== errors ========================")
-            print(form.errors)
-            print(request.POST)
             return redirect('form-failure')
 
     # serve the registration form for new internships
@@ -292,7 +288,6 @@ def registering_user(request):
     else:
         form = UserCreationForm()
     
-    print(form.errors)
     context = {'form': form}
     return render(request, 'student-registration.html', context)
 
@@ -371,18 +366,6 @@ def run_matching_algorithm(request):
     number_of_candidates = len(candidates) #checking length of candidates
     number_of_jobs = len(jobs) #checking length of jobs
     compatibility_matrix = compute_compatibility_matrix2(candidates, jobs) 
-    
-    #debugging
-    print(compatibility_matrix)
-    print(f"Number of candidates: {number_of_candidates}")
-    print(f"Number of jobs: {number_of_jobs}")
-
-    #calling gale-shapely   
-    offers = run_gale_shapley(candidates, jobs, number_of_candidates, number_of_jobs) 
-    print("offersssssssw")
-    print(offers)
-    print(" ================ offers ========================")
-    formatted_pairings = format_pairings(offers, candidates, jobs)
    
     # save_results_to_csv function is in the matching.py file
     output_file = 'data/offers.csv' 
@@ -485,21 +468,53 @@ def search_student(request):
         object_list = object_list.filter(studentID__icontains=student_id_input)    
     
     return render(request, template, {context_object_name: object_list})
-#searching functionality
-@login_required
-@allowed_users(allowed_roles=['Admin'])
-def student_detail(request, student):
-    student_id = get_object_or_404(Student, pk=student)
-    return render(request, 'student_detail.html', {'student': student_id})   
 
+
+# student details page
+def student_details(request, studentID):
+    try:
+        student = Student.objects.get(studentID = studentID)
+        return render(request, 'student_details.html', context={ 'student' : student })
+    except:
+        return redirect('admin')
 
 
 # ==================================== Views related to admin page search functionality ======================================= 
+
 def query_students(request):
-    return render(request, 'students_db_query.html')
+
+    # query the students table and create a dropdown menu options using only the programmes in the current database students
+    curr_programme_options = { student.currProgramme for student in Student.objects.all() }
+    prev_programme_options = { student.prevProgramme for student in Student.objects.all() }
+
+    context = {'currProgrammeOptions' : curr_programme_options, 'prevProgrammeOptions' : prev_programme_options }
+
+    if request.method == 'POST':
+
+        # extract the form payload
+        student_name = request.POST.get('studentFullname')
+        prev_programme = request.POST.get('studentPrevProgramme')
+        curr_programme = request.POST.get('studentCurrProgramme')
+        filterby = '-GPA' if request.POST.get('resultsFilterby') == 'gpa-desc' else 'GPA'
+
+        # check whether all fields in the POST request are empty
+        empty_form = True if "".join([student_name, prev_programme, curr_programme]) == "" else False
+
+        # if form is empty, return the entire student table othewise query db using form parameters
+        context['students'] = Student.objects.all().order_by(filterby) if empty_form else Student.objects.filter( Q(fullName=student_name) | Q(currProgramme=curr_programme) | Q(prevProgramme=prev_programme) ).order_by(filterby)
+
+        # render the student query page again, displaying the search results in the template
+        return render(request, 'students_db_query.html', context=context)
+
+    return render(request, 'students_db_query.html', context=context)
+
+
+
 
 def query_recruiters(request):
     return render(request, 'recruiters_db_query.html')
 
 def query_internships(request):
     return render(request, 'internships_db_query.html')
+
+

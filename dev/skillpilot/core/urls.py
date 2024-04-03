@@ -58,8 +58,6 @@ urlpatterns = [
     path('cancel_internship/<str:internshipID>/', views.cancel_internship, name='cancel_internship'),
 
     path('execute_matching_process/', views.execute_matching_process, name='execute_matching_process'),
-
-    path('admin_page/<str:student>/<str:internship>/', views.match_detail, name='match_detail'),
     
     path('approve_match/<str:id>/', views.approve_match, name='approve_match'),
     
@@ -68,14 +66,14 @@ urlpatterns = [
     path('send-email', views.send_email, name="send-email"),
     
     path('search_student', views.search_student, name='search_student'),
-    
-    path('search_student/<int:student>/', views.student_detail, name='student_detail'),
 
     
 
     # ================== URLs related to admin page search functionality =========================
-    path('queryStudents', views.query_students, name='queryStudents'),
-    path('queryRecruiters', views.query_recruiters, name='queryRecruiters'),
-    path('queryInternships', views.query_internships, name='queryInternships'),
+    path('query-students', views.query_students, name='queryStudents'),
+    path('query-recruiters', views.query_recruiters, name='queryRecruiters'),
+    path('query-internships', views.query_internships, name='queryInternships'),
+
+    path('student-details/<str:studentID>/', views.student_details, name='studentDetails'),
 
 ]
