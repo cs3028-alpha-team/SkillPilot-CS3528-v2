@@ -13,8 +13,6 @@ from django.views import View
 
 from . models import *
 from . forms import *
-from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render
 from  .gale_shapley import *
 from .data_pipeline import *
 import subprocess
@@ -239,7 +237,28 @@ def send_email(request):
     return HttpResponse('Email sent')
 
 
+# render the student signup form page
+def student_signup(request):
 
+    if request.method == 'POST':
+
+        # extract the form's signup credentials
+        payload = {
+            'username' : request.POST.get('studentUsername'),
+            'email' : request.POST.get('studentEmail'),
+            'password1' : request.POST.get('studentPassword1'),
+            'password2' : request.POST.get('studentPassword1')
+        }
+
+        # instantiate the StudentSignupForm using the request payload
+        new_student = StudentSignupForm(payload)
+
+        # save the student credentials and redirect them to the student dashboard page
+        if new_student.is_valid():
+            new_student.save()
+            return HttpResponse('Student created successfully!!!')
+
+    return render(request, 'auth/student_signup.html')
 
 
 # render a given student profile's details page

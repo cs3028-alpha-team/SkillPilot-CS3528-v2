@@ -35,8 +35,11 @@ urlpatterns = [
     path('disapprove_match/<str:id>/', views.disapprove_match, name='disapprove_match'),
     
     path('send-email', views.send_email, name="send-email"),
+
+
     
-  
+    # paths related to student authentication and authorization
+    path('student-signup', views.student_signup, name='studentSignup'),
 
     # paths available to the admin to query the database from the admin dashboard
     path('query-students', views.query_students, name='queryStudents'),

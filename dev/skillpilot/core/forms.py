@@ -1,6 +1,5 @@
-from django import forms
 from . models import *
-from django.forms import ModelForm
+from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
@@ -43,27 +42,7 @@ class InternshipForm(forms.ModelForm):
             'numberPositions': forms.NumberInput(attrs={'class': 'form-control', 'id': 'numberPositionsInput', 'min': 1, 'max': 10, 'required': True}),
         }
 
-
-class CompanyForm(forms.ModelForm):
-    class Meta:
-        model = Company
-        fields = '__all__'
-
-
-class RecruiterForm(forms.ModelForm):
-    class Meta:
-        model = Recruiter
-        fields = '__all__'
-
-
-# =================================================== ??????????????????????? =========================
-class CreateCompanyForm(UserCreationForm):
+class StudentSignupForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username', 'email','password1', 'password2']
-# =====================================================================================================
-
-class CreateUserForm(UserCreationForm):
-    class Meta:
-        model = User
-        fields = ['first_name', 'last_name','username', 'email','password1', 'password2']

@@ -44,7 +44,7 @@ class Internship(models.Model):
         PART_TIME = 'PT', _('Part-Time')
 
     # enum for mode
-    class mode(models.TextChoices): 
+    class mode(models.TextChoices):  
         ONLINE = 'online', _('Online')
         IN_PERSON = 'in-person', _('In-Person')
         HYBRID = 'hybrid', _('Hybrid')

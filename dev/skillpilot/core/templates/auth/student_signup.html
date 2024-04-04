@@ -1,0 +1,40 @@
+{% extends "base.html" %}  
+{% load static %} 
+
+{% block content %}
+
+    <h1 class="display-4 m-3"> Student Registration Page </h1>
+    <div class="col-6 col-md-6 offset-3">
+        <form method="POST" action="{% url 'studentSignup' %}" autocomplete="off" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="mb-3 col">
+                <label for="studentUsername" class="form-label">Username</label>
+                <input type="text" id="studentUsername" name="studentUsername" class="form-control">
+            </div>
+
+            <div class="mb-3 col">
+                <label for="studentEmail" class="form-label">Email</label>
+                <input type="email" id="studentEmail" name="studentEmail" class="form-control">
+            </div>
+
+            <div class="mb-3 col">
+                <!-- Password1 is imposed by Django's CreateUserForm -->
+                <label for="studentPassword1" class="form-label">Password</label>
+                <input type="text" id="studentPassword1" name="studentPassword1" class="form-control">
+            </div>
+
+            <div class="mb-3 col">
+                <label for="studentPassword2" class="form-label">Confirm Password</label>
+                <input type="text" id="studentPassword2" name="studentPassword2" class="form-control">
+            </div>
+
+            <!-- button for form submission -->
+            <div class="mb-3 mt-5">
+                <button type="submit" class="btn btn-primary col-3">Submit</button>
+            </div>
+
+        </form>
+    </div>
+
+{% endblock %}
