@@ -13,9 +13,8 @@ from django.views import View
 
 from . models import *
 from . forms import *
-from . decorators import *
 from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from  .gale_shapley import *
 from .data_pipeline import *
 import subprocess
@@ -24,23 +23,10 @@ import os
 import pandas as pd
 from django.db.models import Q
 
-# view for the route '/home' 
+
 def home(request):
     return render(request, 'home.html')
 
-# render view upon form submission to notify user of success
-@login_required
-def formSuccess(request):
-    return render(request, 'form-success.html')
-
-@login_required
-# render view upon form submission to notify user of failure
-def formFailure(request):
-    return render(request, 'form-failure.html')
-
-# render view for admin page
-@login_required
-@allowed_users(allowed_roles=['Admin'])
 def admin(request):
     
     csv_data = []
@@ -52,9 +38,6 @@ def admin(request):
     current_internships = Internship.objects.all()  # Fetch all internships from the database
     return render(request, 'admin.html', {'current_internships': current_internships, 'csv_data': csv_data})
 
-# Lives in the dashboard app
-@login_required
-@allowed_users(allowed_roles=['Admin'])
 def dashboard(request):
     return render(request, 'dashboard/dashboard.html')
 
@@ -62,39 +45,8 @@ def dashboard(request):
 def contacts(request):
     return render(request, 'contacts.html')
 
-# render view for login page
-def Login(request):
-    if request.user.is_authenticated:
-        return redirect('student')
-    else:
-        return render(request, 'Login-Page.html')
-
-# render view for registration page
-@unauthenticated_user  
-def registration_user(request):
-    return render(request, 'student-registration.html')
-
-# render view for registration page
-@unauthenticated_user  
-def registration_company2(request):
-    return render(request, 'company-registration.html')
-
-# render view for Login page  
-def employer_Login(request):
-    if request.user.is_authenticated: 
-        return redirect('internship')
-    else:
-        return render(request, 'Login-company.html')
-
-# render view for Login  
-@unauthenticated_user  
-def login_admin(request):
-    return render(request, 'Login-admin.html')
-
 
 # view for the route '/student'
-@login_required
-@allowed_users(allowed_roles=['Students']) # access to student accounts only
 def student(request):
     if request.method == 'POST':
         form = StudentForm(request.POST)
@@ -131,8 +83,6 @@ def student(request):
         return render(request, 'student.html', context)
 
 # view for the route '/internship'
-@login_required
-@allowed_users(allowed_roles=['Companies']) 
 def internship(request):
 
     form = InternshipForm()
@@ -158,153 +108,19 @@ def internship(request):
         return render(request, 'internship.html', context)
     
 
- # view to handle login of students
-@unauthenticated_user  
-def login_user(request):
-    if request.method == "POST":
-        username = request.POST.get('user_name')
-        password = request.POST.get('password')
-        next_url = request.GET.get('next')  # get the 'next' parameter from the URL
-
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            if next_url:  #if 'next' parameter exists user is redirected to that URL
-                return HttpResponseRedirect(next_url)
-            else:  # redirect to the default URL
-                return render(request, 'student.html')
-        else:
-            messages.error(request, "Invalid username or password")
-            return render(request, 'Login-page.html')
-
-    else:
-        # render the login form for GET requests
-        return render(request, 'Login-page.html')
-    
-#handle login of admin account
-@unauthenticated_user 
-def login_admin(request):
-    if request.method == "POST":
-        username = request.POST.get('user_name')
-        password = request.POST.get('password')
-        next_url = request.GET.get('next')  # get the 'next' parameter from the URL
-
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            if next_url: #if 'next' parameter exists user is redirected to that URL
-                return HttpResponseRedirect(next_url)
-            else:  # redirect to the default URL
-                return render(request, 'admin.html')
-        else:
-            messages.error(request, "Invalid username or password")
-            return render(request, 'Login-admin.html')
-
-    else:
-        # render the login form for GET requests
-        return render(request, 'Login-admin.html')
-
-#handle login of company accounts
-@unauthenticated_user      
-def login_internship(request):
-    if request.method == "POST":
-        username = request.POST.get('user_name')
-        password = request.POST.get('password')
-        next_url = request.GET.get('next')  # get the 'next' parameter from the URL
-
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            if next_url:  #if 'next' parameter exists user is redirected to that URL
-                return HttpResponseRedirect(next_url)
-            else:  # redirect to a default URL
-                return render(request, 'internship.html')
-        else:
-            messages.error(request, "Invalid username or password")
-            return render(request, 'Login-company.html')
-
-    else:
-        # render the login form for GET requests
-        return render(request, 'Login-company.html')
-
-    
- # view to handle logout
-@login_required
-def logout_user(request):
-    logout(request)
-    return redirect('home') 
-
-#handle registration of companies
-@unauthenticated_user   
-def registering_company(request):
-    if request.method == "POST":
-        form = CreateCompanyForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            username = form.cleaned_data.get('username')
-            group = Group.objects.get(name = 'Companies') #assigning user to group when the account is created 
-            user.groups.add(group)
-
-            messages.success(request, 'Account was created for ' + username)
-            return redirect('Login-company')  # Redirect to the Login-company page after successful registration
-    else:
-        form = UserCreationForm()
-    
-    context = {'form': form}
-    return render(request, 'company-registration.html', context)
 
 
 
-@unauthenticated_user   
-def registering_user(request):
-    if request.method == "POST":
-        form = CreateUserForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            username = form.cleaned_data.get('username') 
-            group = Group.objects.get(name = 'Students') #assigning user to group when the account is created
-            user.groups.add(group)
-            messages.success(request, 'Account was created for ' + username)
-            return redirect('Login-page')  # Redirect to the Login page after successful registration
-    else:
-        form = UserCreationForm()
-    
-    context = {'form': form}
-    return render(request, 'student-registration.html', context)
-
-@login_required
-@allowed_users(allowed_roles=['Students']) 
-def delete_user(request):
-    if request.method == 'POST':
-        user = request.user
-
-        # Delete forms connected to the user
-        Student.objects.filter(email=user.email).delete()
-
-        # Delete the user
-        user.delete()
-
-        logout(request)
-        return redirect('home')
-    else:
-        # Handle GET request when needed
-        return redirect('home')
-    
-@login_required
-@allowed_users(allowed_roles=['Admin'])
 def CurrentInternship(request):
     current_internships = Internship.objects.all() #takes all internship database information
     return render(request, 'internship.html', {'current_internships': current_internships}) 
 
-@login_required
-@allowed_users(allowed_roles=['Admin'])
+
 def cancel_internship(request, internshipID):
     internship = Internship.objects.get(pk=internshipID)
     internship.delete()
     return redirect('admin')  # Redirect back to the admin page 
 
-@login_required
-@allowed_users(allowed_roles=['Admin'])
 def clean_data(request):
 
     # Calling the data processing function
@@ -316,8 +132,6 @@ def clean_data(request):
 
     return HttpResponse('Data processed successfully')
 
-@login_required
-@allowed_users(allowed_roles=['Admin']) 
 def matching_view(request):
     if request.method == 'POST':
         # Calling the compute_compatibility_matrix function
@@ -339,8 +153,6 @@ def matching_view(request):
     else:
         return HttpResponse('Error: POST request expected.')
 
-@login_required
-@allowed_users(allowed_roles=['Admin']) 
 def run_matching_algorithm(request):
     candidates = pd.read_csv('data/processed_candidates.csv') #assigning csv
     jobs = pd.read_csv('data/processed_jobs.csv')
@@ -358,8 +170,6 @@ def run_matching_algorithm(request):
     html = "Matching algorithm executed successfully. Results saved to CSV file. <a href='/admin_page'>Admin</a>"
     return HttpResponse(html)
 
-@login_required
-@allowed_users(allowed_roles=['Admin'])
 def execute_matching_process(request):
     # Calling clean_data function
     clean_data_response = clean_data(request)
@@ -403,8 +213,6 @@ def disapprove_match(request, id):
     return HttpResponse(html)
     
 #function to send an email
-@login_required
-@allowed_users(allowed_roles=['Admin'])
 def send_email(request): 
     internships = Internship.objects.all() #get data from database
     students = Student.objects.all()
@@ -429,35 +237,12 @@ def send_email(request):
         mail.send()
         
     return HttpResponse('Email sent')
-#searching functionality
-@login_required
-@allowed_users(allowed_roles=['Admin'])
-def search_student(request):
-    context_object_name = 'all_search_results'
-    template = 'search_student.html'
-    
-    student_name_input = request.GET.get('studentNameInput')
-    student_email_input = request.GET.get('studentEmailInput')
-    student_id_input = request.GET.get('studentIDInput')
-    object_list = Student.objects.all()
-    
-    if student_name_input:
-        object_list = object_list.filter(fullName__icontains=student_name_input)
-    if student_email_input:
-        object_list = object_list.filter(email__icontains=student_email_input)
-    if student_id_input:
-        object_list = object_list.filter(studentID__icontains=student_id_input)    
-    
-    return render(request, template, {context_object_name: object_list})
 
 
 
 
 
-
-
-
-# student details page
+# render a given student profile's details page
 def student_details(request, studentID):
     try:
         student = Student.objects.get(studentID = studentID)
@@ -465,7 +250,7 @@ def student_details(request, studentID):
     except:
         return redirect('home') # ====================================== WILL BE REPLACED BY 404 OR ERROR PAGE LATER ON ==========================================
 
-# recruiter details page
+# render a given recruiter profile's details page
 def recruiter_details(request, recruiterID):
     try:
         recruiter = Recruiter.objects.get(recruiterID = recruiterID)
@@ -473,7 +258,7 @@ def recruiter_details(request, recruiterID):
     except:
         return redirect('home') # ====================================== WILL BE REPLACED BY 404 OR ERROR PAGE LATER ON ==========================================
 
-# internship details page
+# render a given live internship's details page
 def internship_details(request, internshipID):
     try:    
         internship = Internship.objects.get(internshipID = internshipID)
@@ -481,9 +266,7 @@ def internship_details(request, internshipID):
     except:
         return redirect('home') # ====================================== WILL BE REPLACED BY 404 OR ERROR PAGE LATER ON ==========================================
 
-
-# ==================================== Views related to admin page search functionality ======================================= 
-
+# handle the routine triggered from the admin dashboard to query all student profiles
 def query_students(request):
 
     # query the students table and create a dropdown menu options using only the programmes in the current database students
@@ -506,10 +289,9 @@ def query_students(request):
         # if form is empty, return the entire student table othewise query db using form parameters
         context['students'] = Student.objects.all().order_by(filterby) if empty_form else Student.objects.filter( Q(fullName=student_name) | Q(currProgramme=curr_programme) | Q(prevProgramme=prev_programme) ).order_by(filterby)
 
-    return render(request, 'students_db_query.html', context=context)
+    return render(request, 'admin_search_feature/students_db_query.html', context=context)
 
-
-
+# handle the routine triggered from the admin dashboard to query all recruiter profiles
 def query_recruiters(request):
 
     # fetch all the company names stored in the recruiters database using the recruiter.companyID attribute
@@ -535,10 +317,9 @@ def query_recruiters(request):
         else:
             context['recruiters'] = Recruiter.objects.filter( Q(fullName=recruiter_fullname) | Q(companyID=recruiter_company) | Q(jobTitle=recruiter_jobtitle) )
 
-    return render(request, 'recruiters_db_query.html', context=context)
+    return render(request, 'admin_search_feature/recruiters_db_query.html', context=context)
 
-
-
+# handle the routine triggered from the admin dashboard to query live internships
 def query_internships(request):
 
     # fetch all the company names stored in the recruiters database using the recruiter.companyID attribute
@@ -593,4 +374,4 @@ def query_internships(request):
         for internship in context['internships']:
             internship.company_name = Company.objects.get(companyID=internship.companyID.companyID).companyName
 
-    return render(request, 'internships_db_query.html', context=context)
+    return render(request, 'admin_search_feature/internships_db_query.html', context=context)
