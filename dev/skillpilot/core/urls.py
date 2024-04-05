@@ -40,6 +40,7 @@ urlpatterns = [
     
     # paths related to student authentication and authorization
     path('student-signup', views.student_signup, name='studentSignup'),
+    path('student-login', views.student_login, name='studentLogin'),
 
     # paths available to the admin to query the database from the admin dashboard
     path('query-students', views.query_students, name='queryStudents'),

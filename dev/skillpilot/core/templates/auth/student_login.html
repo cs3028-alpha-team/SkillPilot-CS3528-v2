@@ -1,0 +1,42 @@
+{% extends "base.html" %}  
+{% load static %} 
+
+{% block content %}
+
+    <h1 class="display-4 m-3"> Student Login Page </h1>
+    <div class="col-6 col-md-6 offset-3">
+
+        {% comment %} {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %} {% endcomment %}
+
+        <form method="POST" action="{% url 'studentLogin' %}" autocomplete="off" enctype="multipart/form-data">
+            {% csrf_token %}
+
+
+            {{ loginForm.as_p }}
+
+            {% comment %} 
+            <div class="mb-3 col">
+                <label for="studentUsername" class="form-label">Username</label>
+                <input type="text" id="studentUsername" name="studentUsername" class="form-control">
+            </div>
+
+            <div class="mb-3 col">
+                <label for="studentPassword" class="form-label">Password</label>
+                <input type="text" id="studentPassword" name="studentPassword" class="form-control">
+            </div>{% endcomment %}
+
+            <!-- button for form submission -->
+            <div class="mb-3 mt-5">
+                <button type="submit" class="btn btn-primary col-3">Submit</button>
+            </div> 
+
+        </form>
+    </div>
+
+{% endblock %}
