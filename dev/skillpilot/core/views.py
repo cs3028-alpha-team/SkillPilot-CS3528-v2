@@ -45,7 +45,7 @@ def contacts(request):
 
 
 # view for the route '/student'
-@login_required(login_url='studentLogin')
+@login_required(login_url='student-login')
 def student(request):
     return render(request, 'student.html')
 
@@ -235,7 +235,7 @@ def student_signup(request):
     
         else:
             messages.info(request, 'Looks like you already have an account, please login!')
-            return redirect('studentLogin')
+            return redirect('student-login')
 
     return render(request, 'auth/student_signup.html')
 
@@ -257,7 +257,7 @@ def student_login(request):
 
         else:       
             messages.error(request, 'Login failed! please try again or signup for an account')
-            return redirect('studentSignup')
+            return redirect('student-signup')
 
     return render(request, 'auth/student_login.html')
 

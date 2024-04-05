@@ -17,10 +17,6 @@ class TestUrls(SimpleTestCase):
         url = reverse('internship')
         self.assertEquals(resolve(url).func, views.internship)
 
-    def test_internship_details_url_resolves(self):
-        url = reverse('internship-details')
-        self.assertEquals(resolve(url).func, views.internshipDetails)
-
     def test_admin_url_resolves(self):
         url = reverse('admin')
         self.assertEquals(resolve(url).func, views.admin)

@@ -20,9 +20,9 @@
     <h1 class="display-4 m-3"> Student Registration Page </h1>
 
     <div class="col-6 col-md-6 offset-3">
-        <p>Already have an account? Login <a href={% url 'studentLogin' %}>here</a></p>
+        <p>Already have an account? Login <a href={% url 'student-login' %}>here</a></p>
 
-        <form method="POST" action="{% url 'studentSignup' %}" autocomplete="off" enctype="multipart/form-data">
+        <form method="POST" action="{% url 'student-signup' %}" autocomplete="off" enctype="multipart/form-data">
             {% csrf_token %}
 
             <div class="mb-3 col">
