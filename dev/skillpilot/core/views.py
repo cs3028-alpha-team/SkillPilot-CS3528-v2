@@ -45,40 +45,10 @@ def contacts(request):
 
 
 # view for the route '/student'
+@login_required(login_url='studentLogin')
 def student(request):
-#     if request.method == 'POST':
-#         form = StudentForm(request.POST)
+    return render(request, 'student.html')
 
-#         if form.is_valid():
-#             email = form.cleaned_data['email']  # Retrieving email address from the form data
-            
-#             # Check if a student with the same email already exists
-#             existing_student = Student.objects.filter(email=email).first()
-#             if existing_student:
-#                 # If student with same email exists the information for that email is updated 
-#                 form_data = form.cleaned_data
-#                 existing_student.fullName = form_data['fullName']
-#                 existing_student.currProgramme = form_data['currProgramme']
-#                 existing_student.prevProgramme = form_data['prevProgramme']
-#                 existing_student.studyMode = form_data['studyMode']
-#                 existing_student.studyPattern = form_data['studyPattern']
-#                 existing_student.GPA = form_data['GPA']
-#                 existing_student.desiredContractLength = form_data['desiredContractLength']
-#                 existing_student.willingRelocate = form_data['willingRelocate']
-#                 existing_student.aspirations = form_data['aspirations']
-
-#                 existing_student.save()  # Saving the updated instance
-#                 return redirect('form-success')
-#             else:
-#                 # If student with same email does not exist from is a success
-#                 form.save() 
-#                 return redirect('form-success')
-#         else:
-#             return redirect('form-failure')
-#     else:
-#         form = StudentForm()
-#         context = {'form': form}
-        return render(request, 'student.html')
 
 # view for the route '/internship'
 def internship(request):
@@ -105,9 +75,6 @@ def internship(request):
     else:
         return render(request, 'internship.html', context)
     
-
-
-
 
 def CurrentInternship(request):
     current_internships = Internship.objects.all() #takes all internship database information
@@ -240,6 +207,8 @@ def send_email(request):
 
 
 
+
+
 # handle the signup routine for a new student
 def student_signup(request):
 
@@ -259,38 +228,51 @@ def student_signup(request):
         # save the student credentials and redirect them to the student dashboard page
         if new_student.is_valid():
             new_student.save()
-            return HttpResponse('Student created successfully!!!')
+            
+            # success flash message for student signup
+            messages.success(request, 'Signup successfull!')
+            return redirect('student')
+    
+        else:
+            messages.info(request, 'Looks like you already have an account, please login!')
+            return redirect('studentLogin')
 
     return render(request, 'auth/student_signup.html')
 
 # handle the login routine for a returning student
 def student_login(request):
-
     form = UserLoginForm()
-        
     if request.method == 'POST':
-
         form = UserLoginForm(request, data=request.POST)
 
         if form.is_valid():
-
             username = request.POST.get('username')
             password = request.POST.get('password')
-
             user = authenticate(request, username=username, password=password)
 
             if user is not None:
                 auth.login(request, user)
+                messages.success(request, 'login successfull')  
                 return redirect('student')
 
         else:       
+            messages.error(request, 'Login failed! please try again or signup for an account')
             return redirect('studentSignup')
 
     context = {'loginForm' : form}
     return render(request, 'auth/student_login.html', context)
 
+# handle the logout routine for all app users
+def user_logout(request):
+    # logout user in current session
+    logout(request)
 
-        
+    messages.success(request, 'logout successfull')  
+    return redirect('home')
+
+
+
+
 
 
 

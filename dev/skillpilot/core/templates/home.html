@@ -6,6 +6,15 @@
     <div class="container text-center">
         <h1 class="display-2 mt-5">Welcome to Skillpilot</h1>
 
+        <!-- display flash messages -->
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags %} id="flash-message" class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                {% endfor %} 
+            </ul>
+        {% endif %}
+
         <!-- student registration card -->
         <div class="row mt-5">
 
@@ -17,7 +26,8 @@
                         <h5 class="card-header">Student Internship Application</h5>
                         <div class="card-body mx-3">
                             <p class="card-text">Students fill in the the form with correct information. Any enquiries check the contacts page.</p>
-                            <a href="{% url 'studentSignup' %}" class="btn btn-lg btn-success">Login</a>
+                            <a href="{% url 'studentLogin' %}" class="btn btn-lg btn-success">Login</a>
+                            <a href="{% url 'studentSignup' %}" class="btn btn-lg btn-primary">Signup</a>
                         </div>
                     </div>
                 </div>

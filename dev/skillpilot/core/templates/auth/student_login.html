@@ -4,15 +4,18 @@
 {% block content %}
 
     <h1 class="display-4 m-3"> Student Login Page </h1>
-    <div class="col-6 col-md-6 offset-3">
 
-        {% comment %} {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %} {% endcomment %}
+    <!-- display flash messages -->
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} id="flash-message" class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="col-6 col-md-6 offset-3">
+        <p>Don't have an account? Signup <a href={% url 'studentSignup' %}>here</a></p>
 
         <form method="POST" action="{% url 'studentLogin' %}" autocomplete="off" enctype="multipart/form-data">
             {% csrf_token %}

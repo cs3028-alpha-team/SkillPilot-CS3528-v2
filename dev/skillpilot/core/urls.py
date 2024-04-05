@@ -36,11 +36,13 @@ urlpatterns = [
     
     path('send-email', views.send_email, name="send-email"),
 
-
     
     # paths related to student authentication and authorization
     path('student-signup', views.student_signup, name='studentSignup'),
     path('student-login', views.student_login, name='studentLogin'),
+
+    # logout route generalized to all users 
+    path('logout', views.user_logout, name='logout'),
 
     # paths available to the admin to query the database from the admin dashboard
     path('query-students', views.query_students, name='queryStudents'),
@@ -51,5 +53,4 @@ urlpatterns = [
     path('student-details/<str:studentID>/', views.student_details, name='studentDetails'),
     path('recruiter-details/<str:recruiterID>/', views.recruiter_details, name='recruiterDetails'),
     path('internship-details/<str:internshipID>/', views.internship_details, name='internshipDetails'),
-
 ]
