@@ -8,8 +8,6 @@ urlpatterns = [
 
     path('home', views.home, name='home'),
 
-    path('student', views.student, name='student'),
-
     path('internship', views.internship, name='internship'),
 
     path('admin_page', views.admin, name='admin_page'),
@@ -37,9 +35,9 @@ urlpatterns = [
     path('send-email', views.send_email, name="send-email"),
 
 
+    # path to an authenticated student dashboard
+    path('student', views.student_dashboard, name='student'),
 
-
-    
     # paths related to student authentication and authorization
     path('student-signup', views.student_signup, name='student-signup'),
     path('student-login', views.student_login, name='student-login'),

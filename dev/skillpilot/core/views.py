@@ -43,13 +43,6 @@ def dashboard(request):
 def contacts(request):
     return render(request, 'contacts.html')
 
-
-# view for the route '/student'
-@login_required(login_url='student-login')
-def student(request):
-    return render(request, 'student.html')
-
-
 # view for the route '/internship'
 def internship(request):
 
@@ -208,6 +201,15 @@ def send_email(request):
 
 
 
+# view for the route '/student'
+@login_required(login_url='student-login')
+def student_dashboard(request):
+
+    return render(request, 'student_dashboard.html')
+
+
+
+
 
 # handle the signup routine for a new student
 def student_signup(request):
@@ -271,18 +273,14 @@ def user_logout(request):
 
 
 
-
-
-
-
-
 # render a given student profile's details page
 def student_details(request, studentID):
     try:
         student = Student.objects.get(studentID = studentID)
         return render(request, 'student_details.html', context={ 'student' : student })
     except:
-        return redirect('home') # ====================================== WILL BE REPLACED BY 404 OR ERROR PAGE LATER ON ==========================================
+        messages.error(request, 'Looks like no student with that ID exists!')
+        return redirect('query-students')
 
 # render a given recruiter profile's details page
 def recruiter_details(request, recruiterID):
@@ -290,7 +288,8 @@ def recruiter_details(request, recruiterID):
         recruiter = Recruiter.objects.get(recruiterID = recruiterID)
         return render(request, 'recruiter_details.html', context={ 'recruiter' : recruiter })
     except:
-        return redirect('home') # ====================================== WILL BE REPLACED BY 404 OR ERROR PAGE LATER ON ==========================================
+        messages.error(request, 'Looks like no recruiter with that ID exists!')
+        return redirect('query-recruiters')
 
 # render a given live internship's details page
 def internship_details(request, internshipID):
@@ -298,7 +297,11 @@ def internship_details(request, internshipID):
         internship = Internship.objects.get(internshipID = internshipID)
         return render(request, 'internship_details.html', context={ 'internship' : internship })
     except:
-        return redirect('home') # ====================================== WILL BE REPLACED BY 404 OR ERROR PAGE LATER ON ==========================================
+        messages.error(request, 'Looks like no internship with that ID exists!')
+        return redirect('query-internships')
+
+
+
 
 # handle the routine triggered from the admin dashboard to query all student profiles
 def query_students(request):
