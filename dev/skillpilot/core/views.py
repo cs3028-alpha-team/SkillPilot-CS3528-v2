@@ -259,8 +259,7 @@ def student_login(request):
             messages.error(request, 'Login failed! please try again or signup for an account')
             return redirect('studentSignup')
 
-    context = {'loginForm' : form}
-    return render(request, 'auth/student_login.html', context)
+    return render(request, 'auth/student_login.html')
 
 # handle the logout routine for all app users
 def user_logout(request):

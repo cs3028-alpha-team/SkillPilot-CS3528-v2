@@ -25,19 +25,15 @@
         <form method="POST" action="{% url 'studentLogin' %}" autocomplete="off" enctype="multipart/form-data">
             {% csrf_token %}
 
-
-            {{ loginForm.as_p }}
-
-            {% comment %} 
             <div class="mb-3 col">
-                <label for="studentUsername" class="form-label">Username</label>
-                <input type="text" id="studentUsername" name="studentUsername" class="form-control">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" id="username" name="username" class="form-control">
             </div>
 
             <div class="mb-3 col">
-                <label for="studentPassword" class="form-label">Password</label>
-                <input type="text" id="studentPassword" name="studentPassword" class="form-control">
-            </div>{% endcomment %}
+                <label for="password" class="form-label">Password</label>
+                <input type="text" id="password" name="password" class="form-control">
+            </div>
 
             <!-- button for form submission -->
             <div class="mb-3 mt-5">
