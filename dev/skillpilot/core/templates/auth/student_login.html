@@ -22,17 +22,19 @@
     <div class="col-6 col-md-6 offset-3">
         <p>Don't have an account? Signup <a href={% url 'student-signup' %}>here</a></p>
 
-        <form method="POST" action="{% url 'student-login' %}" autocomplete="off" enctype="multipart/form-data">
+        <form method="POST" class="needs-validation" action="{% url 'student-login' %}" autocomplete="off" enctype="multipart/form-data" novalidate>
             {% csrf_token %}
 
             <div class="mb-3 col">
                 <label for="username" class="form-label">Username</label>
-                <input type="text" id="username" name="username" class="form-control">
+                <input type="text" id="username" name="username" class="form-control" required>
+                <div class="invalid-feedback">Please enter a username</div>
             </div>
 
             <div class="mb-3 col">
                 <label for="password" class="form-label">Password</label>
-                <input type="text" id="password" name="password" class="form-control">
+                <input type="password" id="password" name="password" class="form-control" required>
+                <div class="invalid-feedback">Please enter a password</div>
             </div>
 
             <!-- button for form submission -->
@@ -41,6 +43,7 @@
             </div> 
 
         </form>
+
     </div>
 
 {% endblock %}
