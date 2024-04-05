@@ -3,16 +3,21 @@
 
 {% block content %}
 
-    <h1 class="display-4 m-3"> Student Login Page </h1>
-
-    <!-- display flash messages -->
     {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-            <li{% if message.tags %} id="flash-message" class="{{ message.tags }}" {% endif %}>{{ message }}</li>
-            {% endfor %}
-        </ul>
+        {% for message in messages %}
+
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div class="mx-auto alert alert-danger w-50 mt-3" id="flash-message" role="alert"> {{ message }} </div>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <div class="mx-auto alert alert-success w-50 mt-3" id="flash-message" role="alert"> {{ message }} </div>
+            {% else %}
+                <div class="mx-auto alert alert-primary w-50 mt-3" id="flash-message" role="alert"> {{ message }} </div>
+            {% endif %}
+
+        {% endfor %} 
     {% endif %}
+
+    <h1 class="display-4 m-3"> Student Login Page </h1>
 
     <div class="col-6 col-md-6 offset-3">
         <p>Don't have an account? Signup <a href={% url 'studentSignup' %}>here</a></p>
