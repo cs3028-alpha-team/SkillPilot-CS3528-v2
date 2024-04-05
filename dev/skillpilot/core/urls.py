@@ -42,6 +42,10 @@ urlpatterns = [
     path('student-signup', views.student_signup, name='student-signup'),
     path('student-login', views.student_login, name='student-login'),
 
+    # paths related to recruiter authentication and authorization
+    path('recruiter-signup', views.recruiter_signup, name='recruiter-signup'),
+    path('recruiter-login', views.recruiter_login, name='recruiter-login'),
+
     # logout route generalized to all users 
     path('logout', views.user_logout, name='logout'),
 

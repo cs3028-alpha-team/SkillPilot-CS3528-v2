@@ -28,9 +28,8 @@
                 <!-- student registration form -->
                 <div class="col-sm-6 mb-3 mb-sm-0">
                     <div class="card">
-                        <h5 class="card-header">Student Internship Application</h5>
+                        <h5 class="card-header">Student Portal</h5>
                         <div class="card-body mx-3">
-                            <p class="card-text">Students fill in the the form with correct information. Any enquiries check the contacts page.</p>
                             <a href="{% url 'student-login' %}" class="btn btn-lg btn-success">Login</a>
                             <a href="{% url 'student-signup' %}" class="btn btn-lg btn-primary">Signup</a>
                         </div>
@@ -38,13 +37,12 @@
                 </div>
 
                 <!-- employer registration form -->
-                <div class="col-sm-6">
+                <div class="col-sm-6 mb-3 mb-sm-0">
                     <div class="card">
-                        <h5 class="card-header">Employers internship application</h5>
+                        <h5 class="card-header">Recruiter Portal</h5>
                         <div class="card-body mx-3">
-                            <p class="card-text">Please complete the form below for each placement opportunity to enable us to take
-                                plans forward and identify student matches.</p>
-                            <a href="#" class="btn btn-lg btn-primary">Login</a>
+                            <a href="{% url 'recruiter-login' %}" class="btn btn-lg btn-success">Login</a>
+                            <a href="{% url 'recruiter-signup' %}" class="btn btn-lg btn-primary">Signup</a>
                         </div>
                     </div>
                 </div>

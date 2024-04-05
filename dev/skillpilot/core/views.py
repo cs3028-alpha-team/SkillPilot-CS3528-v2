@@ -263,6 +263,16 @@ def student_login(request):
 
     return render(request, 'auth/student_login.html')
 
+
+# handle the signup routine for new recruiters
+def recruiter_signup(request):
+    return render(request, 'auth/recruiter_signup.html')
+
+
+# handle the login routine for returning recruiters
+def recruiter_login(request):
+    return render(request, 'auth/recruiter_login.html')
+
 # handle the logout routine for all app users
 def user_logout(request):
     # logout user in current session
