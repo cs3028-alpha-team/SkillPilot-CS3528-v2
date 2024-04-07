@@ -10,7 +10,6 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
 from django.views import View
-
 from . models import *
 from . forms import *
 from  .gale_shapley import *
@@ -21,10 +20,10 @@ import os
 import pandas as pd
 from django.db.models import Q
 
-
 def home(request):
     return render(request, 'home.html')
 
+# @login_required(login_url='admin-login')
 def admin(request):
     
     csv_data = []
@@ -272,6 +271,10 @@ def recruiter_signup(request):
 # handle the login routine for returning recruiters
 def recruiter_login(request):
     return render(request, 'auth/recruiter_login.html')
+
+# handle the login of admin using MFA
+def admin_login(request):
+    return render(request, 'auth/admin_login.html')
 
 # handle the logout routine for all app users
 def user_logout(request):
