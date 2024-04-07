@@ -201,8 +201,29 @@ def send_email(request):
 
 # handle the companies management tool functionality
 def companies_management_tool(request):
+    
+    context = {}
 
-    return render(request, 'companies_management_tool.html')
+    # query all companies from the database
+    companies = Company.objects.all().order_by('companyName')
+
+    # link a recruiter (if any) to each company in the database
+    for company in companies:
+
+        # query the database for a recruiter whose companyID field matches the current company's companyID
+        recruiter = None
+        try: recruiter = Recruiter.objects.get(companyID=company.companyID)
+        except: pass
+
+        # attach the recruiter object found to the current company
+        company.recruiter = recruiter
+
+    context['companies'] = companies
+
+    # use a post request check condition to load the companies
+
+
+    return render(request, 'companies_management_tool.html', context=context)
 
 
 # view for the route '/student'
@@ -309,7 +330,7 @@ def register_company(request):
         else:
             messages.info(request, 'Error occured while registering company, possibly caused by duplicate company!')
         
-        return redirect('register-company')
+        return redirect('manage-companies')
 
     return render(request, 'companies_management_tool.html')
 

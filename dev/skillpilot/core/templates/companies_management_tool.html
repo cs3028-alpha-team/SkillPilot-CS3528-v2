@@ -72,33 +72,60 @@
                     </form>
                 </div>
 
-                <div class="col-md-auto mx-5 overflow-y-auto" style="height:400px;">
-                    <div class="d-flex flex-row justify-content-between align-items-center">
-                        <h3 class="display-6 mb-4">All Companies</h3>
+                <div class="col-md-auto mx-5">
 
-                        <form method="POST" action="#" autocomplete="off" enctype="multipart/form-data">
-                            {% csrf_token %}
+                    <div>
 
-                            <div class="mb-3 col">
-                                <select class="form-select" name="companyFilterDrowpdown" onchange="this.form.submit()">
-                                    <option value="all" selected></option>      
-                                    <option value="unclaimed">unclaimed companies only</option>      
-                                    <option value="claimed">claimed companies only</option>      
-                                </select>
+                        <div class="d-flex flex-row justify-content-between align-items-center">
+                            <h3 class="display-6 mb-4">All Companies</h3>
+
+                            <form method="GET" action="{% url 'manage-companies' %}" autocomplete="off" enctype="multipart/form-data">
+                                {% csrf_token %}
+
+                                <div class="mb-3 col">
+                                    <select class="form-select" name="companyFilterDrowpdown" onchange="this.form.submit()">
+                                        <option value="all" selected></option>      
+                                        <option value="unclaimed">unclaimed companies only</option>      
+                                        <option value="claimed">claimed companies only</option>      
+                                    </select>
+                                </div>
+                            </form>
+
+                        </div>
+
+                        <p>All registered companies and their verified recruiter will appear here</p>
+
+                    </div>
+
+                    <div class="overflow-y-auto" style="height:400px;">
+                    
+                        {% if request.method == 'POST' and companies|length == 0 %}
+                            <div class="alert alert-danger" role="alert">
+                                No results match your query
                             </div>
-                        </form>
+                        {% endif %}
+
+                        {% for company in companies %}
+                            <div class="card mb-2 me-3 ">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <span> 
+                                        {{company.companyName}}
+                                        {% if company.recruiter %} - represented by 
+                                            <a href={% url 'recruiter-details' company.recruiter.recruiterID %}> {{ company.recruiter.fullName }} </a> 
+                                        {% endif %} 
+                                    </span>
+                                    <button class="btn btn-danger ms-5">Delete</button>
+                                </div>
+                            </div>
+                        {% endfor%}
 
                     </div>
-
-                    <div class="alert alert-light" role="alert">
-                        All registered companies and their verified recruiter will appear here
-                    </div>
-
                 </div>
 
             </div>
             
         </div>
+
     </body>
 
 {% endblock %}
