@@ -199,15 +199,17 @@ def send_email(request):
 
 
 
+# handle the companies management tool functionality
+def companies_management_tool(request):
+
+    return render(request, 'companies_management_tool.html')
+
 
 # view for the route '/student'
 @login_required(login_url='student-login')
 def student_dashboard(request):
 
     return render(request, 'student_dashboard.html')
-
-
-
 
 
 # handle the signup routine for a new student

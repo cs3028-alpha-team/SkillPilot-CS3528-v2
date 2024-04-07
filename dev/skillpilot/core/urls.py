@@ -38,6 +38,9 @@ urlpatterns = [
     # path to an authenticated student dashboard
     path('student', views.student_dashboard, name='student'),
 
+    # path to companies management tool, accessible via the admin dashboard
+    path('manage-companies', views.companies_management_tool, name='manage-companies'),
+
     # paths related to student authentication and authorization
     path('student-signup', views.student_signup, name='student-signup'),
     path('student-login', views.student_login, name='student-login'),
