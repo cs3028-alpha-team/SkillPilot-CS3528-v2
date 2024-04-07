@@ -115,11 +115,34 @@
                                         {% endif %} 
                                     </span>
 
-                                    <!-- delete button for a listed company -->
-                                    <form method="POST" action="{% url 'delete-company' company.companyID %}" autocomplete="off" enctype="multipart/form-data">
-                                        {% csrf_token %}
-                                        <button class="btn btn-danger ms-5">Delete</button>
-                                    </form>
+                                    <!-- button trigger modal for the "delete company" form -->
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#companyDeleteModal{{ company.companyID }}">
+                                        Delete
+                                    </button>
+
+                                    <!-- Company Delete Form confirmation modal -->
+                                    <div class="modal fade" id="companyDeleteModal{{ company.companyID }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Delete Company</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p class="fw-bold">{{ company.companyName }}</p>
+                                                <p class="mb-3">You are about to commit a destructive action which will delete the company listing, the associated recruiter account and any internship listing associated with this company. Are you sure?</p>
+                                                <!-- delete button for a listed company -->
+                                                <form method="POST" action="{% url 'delete-company' company.companyID %}" autocomplete="off" enctype="multipart/form-data">
+                                                    {% csrf_token %}
+                                                    <div class="d-flex justify-content-between">
+                                                        <button type="submit" class="btn btn-danger">Yes, I undestand the concequences</button>
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, abort action.</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                 </div>
                             </div>

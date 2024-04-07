@@ -27,3 +27,11 @@ setTimeout(function() {
     }, false)
     })
 })()
+
+// modal logic - allows for the company form deletion modal to work
+const myModal = document.getElementById('myModal')
+const myInput = document.getElementById('myInput')
+
+myModal.addEventListener('shown.bs.modal', () => {
+  myInput.focus()
+})
