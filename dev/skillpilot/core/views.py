@@ -286,6 +286,33 @@ def user_logout(request):
     messages.success(request, 'logout successfull')  
     return redirect('home')
 
+# register a new company to the database using the payload from the form submitted from the companies management tool
+def register_company(request):
+
+    if request.method == 'POST':
+
+        # extract the new company details from the request payload
+        payload = {
+            'companyID' : request.POST.get('recruiterToken'),
+            'companyName' : request.POST.get('companyName'),
+            'industrySector' : request.POST.get('companyField'),
+            'websiteURL' : request.POST.get('companyWebsite')
+        }
+
+        # instantiate a new company using the Company model and request payload
+        new_company = CompanyRegistrationForm(payload)
+
+        if new_company.is_valid():
+            new_company.save()
+            messages.success(request, 'Company successfully registered!')
+    
+        else:
+            messages.info(request, 'Error occured while registering company, possibly caused by duplicate company!')
+        
+        return redirect('register-company')
+
+    return render(request, 'companies_management_tool.html')
+
 
 
 # render a given student profile's details page

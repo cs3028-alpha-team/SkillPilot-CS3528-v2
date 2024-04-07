@@ -41,6 +41,9 @@ urlpatterns = [
     # path to companies management tool, accessible via the admin dashboard
     path('manage-companies', views.companies_management_tool, name='manage-companies'),
 
+    # path to register a new company using the payload from the form submitted via the companies management tool
+    path('register-company', views.register_company, name='register-company'),
+
     # paths related to student authentication and authorization
     path('student-signup', views.student_signup, name='student-signup'),
     path('student-login', views.student_login, name='student-login'),

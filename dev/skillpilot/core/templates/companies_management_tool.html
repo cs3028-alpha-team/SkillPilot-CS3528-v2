@@ -36,7 +36,7 @@
                     <h3 class="display-6 mb-2">Register New Company</h3>
                     <p>Fill-in the form below to register a new company to SkillPilot</p>
 
-                    <form method="POST" action="#" class="needs-validation" autocomplete="off" enctype="multipart/form-data" novalidate>
+                    <form method="POST" action="{% url 'register-company' %}" class="needs-validation" autocomplete="off" enctype="multipart/form-data" novalidate>
 
                         {% csrf_token %}
 

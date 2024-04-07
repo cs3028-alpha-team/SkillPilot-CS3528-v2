@@ -44,6 +44,12 @@ class InternshipForm(forms.ModelForm):
             'numberPositions': forms.NumberInput(attrs={'class': 'form-control', 'id': 'numberPositionsInput', 'min': 1, 'max': 10, 'required': True}),
         }
 
+class CompanyRegistrationForm(forms.ModelForm):
+    class Meta:
+        model = Company
+        fields = '__all__'
+
+
 class StudentSignupForm(UserCreationForm):
     class Meta:
         model = User
