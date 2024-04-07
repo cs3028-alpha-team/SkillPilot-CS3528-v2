@@ -79,7 +79,7 @@
                         <div class="d-flex flex-row justify-content-between align-items-center">
                             <h3 class="display-6 mb-4">All Companies</h3>
 
-                            <form method="GET" action="{% url 'manage-companies' %}" autocomplete="off" enctype="multipart/form-data">
+                            <form method="POST" action="{% url 'manage-companies' %}" autocomplete="off" enctype="multipart/form-data">
                                 {% csrf_token %}
 
                                 <div class="mb-3 col">
@@ -93,7 +93,7 @@
 
                         </div>
 
-                        <p>All registered companies and their verified recruiter will appear here</p>
+                        <p>All registered companies will appear here. Use the menu to filter the results</p>
 
                     </div>
 

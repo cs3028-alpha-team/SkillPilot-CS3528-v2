@@ -220,8 +220,25 @@ def companies_management_tool(request):
 
     context['companies'] = companies
 
-    # use a post request check condition to load the companies
+    # the request comes from the dropdown menu to filter company listings
+    if request.method == 'POST':
 
+        filter_condition = request.POST.get('companyFilterDrowpdown')
+
+        # if filter_condition is 'all', we simply pass the above context dictionary into the template as it is
+
+        # construct lists of companies linked and not linked to a recruiter account 
+        linked, unlinked = [], []
+        for company in companies:
+
+            try:
+                recruiter = Recruiter.objects.get(companyID=company.companyID)
+                linked.append(company)
+            except:
+                unlinked.append(company)
+
+        # check for the filter condition, and return the appropriate list to the user
+        context['companies'] = linked if filter_condition == 'claimed' else unlinked
 
     return render(request, 'companies_management_tool.html', context=context)
 
