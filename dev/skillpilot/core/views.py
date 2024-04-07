@@ -73,10 +73,6 @@ def CurrentInternship(request):
     return render(request, 'internship.html', {'current_internships': current_internships}) 
 
 
-def cancel_internship(request, internshipID):
-    internship = Internship.objects.get(pk=internshipID)
-    internship.delete()
-    return redirect('admin')  # Redirect back to the admin page 
 
 def clean_data(request):
 
@@ -242,6 +238,24 @@ def companies_management_tool(request):
 
     return render(request, 'companies_management_tool.html', context=context)
 
+
+def delete_company(request, companyID):
+
+    if request.method == 'POST':
+
+        # delete the recruiter account associated with the current company
+        Recruiter.objects.get(companyID=companyID).delete()
+
+        # delete any internship listing associated with the company
+        Internship.objects.filter(companyID=companyID).delete()
+
+        # delete the company listing
+        Company.objects.get(companyID=companyID).delete()
+
+        messages.success(request, 'Company deleted successfully. Please contact the recruiter to inform them of the action')
+        return redirect('manage-companies')
+
+    return render(request, 'companies_management_tool.html')
 
 # view for the route '/student'
 @login_required(login_url='student-login')

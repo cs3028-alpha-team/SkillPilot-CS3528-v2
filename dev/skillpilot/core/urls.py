@@ -24,8 +24,6 @@ urlpatterns = [
 
     path('run_matching_algorithm', views.run_matching_algorithm, name='run_matching_algorithm'),
 
-    path('cancel_internship/<str:internshipID>/', views.cancel_internship, name='cancel_internship'),
-
     path('execute_matching_process/', views.execute_matching_process, name='execute_matching_process'),
     
     path('approve_match/<str:id>/', views.approve_match, name='approve_match'),
@@ -43,6 +41,9 @@ urlpatterns = [
 
     # path to register a new company using the payload from the form submitted via the companies management tool
     path('register-company', views.register_company, name='register-company'),
+
+    # path to delete a company listing, the recruiter profile associated with it, and all internship listings associated with it
+    path('delete-company/<str:companyID>', views.delete_company, name='delete-company'),
 
     # paths related to student authentication and authorization
     path('student-signup', views.student_signup, name='student-signup'),

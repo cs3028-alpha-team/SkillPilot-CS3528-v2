@@ -114,7 +114,13 @@
                                             <a href={% url 'recruiter-details' company.recruiter.recruiterID %}> {{ company.recruiter.fullName }} </a> 
                                         {% endif %} 
                                     </span>
-                                    <button class="btn btn-danger ms-5">Delete</button>
+
+                                    <!-- delete button for a listed company -->
+                                    <form method="POST" action="{% url 'delete-company' company.companyID %}" autocomplete="off" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <button class="btn btn-danger ms-5">Delete</button>
+                                    </form>
+
                                 </div>
                             </div>
                         {% endfor%}
