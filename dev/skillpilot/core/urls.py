@@ -14,8 +14,6 @@ urlpatterns = [
 
     path('contacts', views.contacts, name='contacts'),
 
-    path('dashboard/', views.dashboard, name='dashboard'),
-
     path('current-internships', views.CurrentInternship, name='current-internships'),
 
     path('clean-data/', views.clean_data, name='clean_data'),

@@ -20,29 +20,7 @@ import os
 import pandas as pd
 from django.db.models import Q
 
-def home(request):
-    return render(request, 'home.html')
 
-# @login_required(login_url='admin-login')
-def admin(request):
-    
-    csv_data = []
-    with open('data/offers.csv', 'r') as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            csv_data.append(row)
-            
-    current_internships = Internship.objects.all()  # Fetch all internships from the database
-    return render(request, 'admin.html', {'current_internships': current_internships, 'csv_data': csv_data})
-
-def dashboard(request):
-    return render(request, 'dashboard/dashboard.html')
-
-# render view with admin contact details
-def contacts(request):
-    return render(request, 'contacts.html')
-
-# view for the route '/internship'
 def internship(request):
 
     form = InternshipForm()
@@ -67,12 +45,9 @@ def internship(request):
     else:
         return render(request, 'internship.html', context)
     
-
 def CurrentInternship(request):
     current_internships = Internship.objects.all() #takes all internship database information
     return render(request, 'internship.html', {'current_internships': current_internships}) 
-
-
 
 def clean_data(request):
 
@@ -137,7 +112,6 @@ def execute_matching_process(request):
     else:
         return clean_data_response
 
-#only shows student details
 def match_detail(request, student, internship):
     student_num = get_object_or_404(Student, pk=student)
     internship_num = get_object_or_404(Internship, pk=internship)
@@ -164,8 +138,7 @@ def disapprove_match(request, id):
     
     html = "Match dispproved successfully. Results saved to CSV file. <a href='/admin_page'>Admin</a>"
     return HttpResponse(html)
-    
-#function to send an email
+
 def send_email(request): 
     internships = Internship.objects.all() #get data from database
     students = Student.objects.all()
@@ -193,7 +166,29 @@ def send_email(request):
 
 
 
+# ========================================= General Purpose views ============================================ #
 
+def home(request):
+    return render(request, 'home.html')
+
+def contacts(request):
+    return render(request, 'contacts.html')
+
+
+
+# ========================================= Student, Recruiter, and Admin Dashboard pages ============================================ #
+
+# view for the route '/student'
+@login_required(login_url='student-login')
+def student_dashboard(request):
+    return render(request, 'student_dashboard.html')
+
+def admin(request):
+    return render(request, 'admin.html')
+
+
+
+# ========================================= Admin Dashboard - Companies Management Tool functionalities ============================================ #
 
 # handle the companies management tool functionality
 def companies_management_tool(request):
@@ -238,7 +233,6 @@ def companies_management_tool(request):
 
     return render(request, 'companies_management_tool.html', context=context)
 
-
 def delete_company(request, companyID):
 
     if request.method == 'POST':
@@ -257,12 +251,9 @@ def delete_company(request, companyID):
 
     return render(request, 'companies_management_tool.html')
 
-# view for the route '/student'
-@login_required(login_url='student-login')
-def student_dashboard(request):
 
-    return render(request, 'student_dashboard.html')
 
+# ========================================= Authentication (Login & Signup) and Authorization logic ============================================ #
 
 # handle the signup routine for a new student
 def student_signup(request):
@@ -316,11 +307,9 @@ def student_login(request):
 
     return render(request, 'auth/student_login.html')
 
-
 # handle the signup routine for new recruiters
 def recruiter_signup(request):
     return render(request, 'auth/recruiter_signup.html')
-
 
 # handle the login routine for returning recruiters
 def recruiter_login(request):
@@ -367,6 +356,8 @@ def register_company(request):
 
 
 
+# ========================================= Student, Recruiters, and Internships detail pages ============================================ #
+
 # render a given student profile's details page
 def student_details(request, studentID):
     try:
@@ -396,6 +387,7 @@ def internship_details(request, internshipID):
 
 
 
+# ========================================= Admin Dashboard Query Database functionality ============================================ #
 
 # handle the routine triggered from the admin dashboard to query all student profiles
 def query_students(request):
