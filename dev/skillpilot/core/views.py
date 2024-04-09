@@ -238,13 +238,16 @@ def delete_company(request, companyID):
     if request.method == 'POST':
 
         # delete the recruiter account associated with the current company
-        Recruiter.objects.get(companyID=companyID).delete()
+        try: Recruiter.objects.get(companyID=companyID).delete()
+        except: pass
 
         # delete any internship listing associated with the company
-        Internship.objects.filter(companyID=companyID).delete()
+        try:Internship.objects.filter(companyID=companyID).delete()
+        except: pass
 
         # delete the company listing
-        Company.objects.get(companyID=companyID).delete()
+        try: Company.objects.get(companyID=companyID).delete()
+        except: pass
 
         messages.success(request, 'Company deleted successfully. Please contact the recruiter to inform them of the action')
         return redirect('manage-companies')
