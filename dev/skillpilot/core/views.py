@@ -300,6 +300,22 @@ def register_company(request):
 # render the algorithm dashboard page, where the admin can compute and manage assignments
 def algorithm_dashboard(request):
 
+    # query all the students and internships in the database
+    students = Student.objects.all()
+    internships = Internship.objects.all()
+    
+    print("all students ===========================================================")
+    for student in students:   
+        print(Student.str(student))
+
+    print("all internships ========================================================\n")
+    for internship in internships:
+        print(Internship.str(internship))
+
+    # prepare a dataframe using the data cleaning pipeline
+
+    # compute offers through the algorithm
+
     return render(request, 'algorithm_dashboard.html')
 
 

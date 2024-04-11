@@ -4,6 +4,10 @@ from django.utils.translation import gettext_lazy as _ # library used to create 
 # students table
 class Student(models.Model):
 
+    # string representation of student class
+    def str(self):
+        return f"{self.studentID}, {self.fullName}, {self.currProgramme}, {self.prevProgramme}, {self.GPA}"
+
     # enum for the study-pattern
     class pattern(models.TextChoices):
         FULL_TIME = 'FT', _('Full-Time')
@@ -38,6 +42,10 @@ class Student(models.Model):
 # internship table  
 class Internship(models.Model):
 
+    # string representation for the Internship class
+    def str(self):
+        return f"{self.internshipID}, {self.companyID}, {self.recruiterID}, {self.numberPositions}, {self.field}, {self.minGPA}"
+
     # enum for pattern
     class pattern(models.TextChoices):
         FULL_TIME = 'FT', _('Full-Time')
@@ -64,6 +72,10 @@ class Internship(models.Model):
 # companies table
 class Company(models.Model):
 
+    # string representation of Company model
+    def str(self):
+        return f"{self.companyID}, {self.companyName}, {self.industrySector}"
+
     #attributes for company table
     companyID = models.CharField(max_length = 10, primary_key = True)
     companyName = models.CharField(max_length = 50)
@@ -74,6 +86,10 @@ class Company(models.Model):
 # recruiter table
 class Recruiter(models.Model):
 
+    # string representation of Recruiter model
+    def str(self):
+        return f"{self.recruiterID}, {self.fullName}, {self.companyID}"
+
     # attributes for recruiter table
     recruiterID = models.CharField(max_length = 10, primary_key = True)
     fullName = models.CharField(max_length=50)
@@ -83,6 +99,10 @@ class Recruiter(models.Model):
     
 # interviews table
 class Interview(models.Model):
+
+    # string representation of Interview model
+    def str(self):
+        return f"{self.interviewID}, {self.companyID}, {self.studentID}, {self.recruiterID}, {self.outcome}"
 
     #enum for interview outcomes
     class outcomes(models.TextChoices):
@@ -101,6 +121,10 @@ class Interview(models.Model):
 
 # computedMatch Table
 class computedMatch(models.Model):
+
+    # string representation of Computed Match model
+    def str(self):
+        return f"{self.computedMatch}, {self.internshipID}, {self.studentID}, {self.interviewID}"
 
     # table attributes
     computedMatch = models.CharField(max_length = 10, primary_key = True)
