@@ -10,93 +10,55 @@ from . models import *
     the process of matching students to internships and it groups all the functions required 
     during this operation
 """
-def __init__(self):
 
-    pass
-
-def populate_compatibility_matrix(matrix, candidates, jobs):
-    for i in range(len(candidates)):
-        for j in range(len(jobs)):
-            print(f"i: {i}, j: {j}")
-            matrix.loc[(i, j)] = compute_compatibility(candidates[i], jobs[j])
-
-#for run algorithm (going through each candidate and job and giving a compatibility score)
-def populate_compatibility_matrix2(matrix, candidates, jobs):
-    for i in range(len(candidates)):
-        for j in range(len(jobs)):
-            matrix.loc[(i, j)] = compute_compatibility2(candidates.loc[i], jobs.loc[j])
-            
-#for matche views function 
-def compute_compatibility_matrix(students, internships):
-    student_indices = [i for i in range(len(students))]
-    internship_indices = [i for i in range(len(internships))]
-
-    #debugging
-    print("Student Indices:", student_indices)  
-    print("Internship Indices:", internship_indices)
-
-    compatibility = pd.DataFrame(0.0, index=student_indices, columns=internship_indices)
-    compatibility = compatibility.rename_axis(index='Student IDs', columns='Internship IDs')
-
-    print("Populating the Compatibility matrix...")
-    populate_compatibility_matrix(compatibility, students, internships)
-    print("Population operation completed.")
-
-    return compatibility
-
-#for run algorithm 
-def compute_compatibility_matrix2(students, internships):
-    student_indices = [i for i in range(len(students))]
-    internship_indices = [i for i in range(len(internships))]
-    #debugging 
-    print("Student Indices:", student_indices)
-    print("Internship Indices:", internship_indices)
-
-    compatibility = pd.DataFrame(0.0, index=student_indices, columns=internship_indices)
-    compatibility = compatibility.rename_axis(index='Student IDs', columns='Internship IDs')
-
-    print("Populating the Compatibility matrix...")
-    populate_compatibility_matrix2(compatibility, students, internships)
-    print("Population operation completed.")
-
-    return compatibility
-#for match views function uses database information 
 def compute_compatibility(student, internship):
-    compatibility_score = 0
-    #debugging
-    print("Student Data:")
-    print(student)
 
-    print("Internship Data:")
-    print(internship)
+    compatibility_score = 0
 
     # Check if students field of study matches with the internship field
-    if student.currProgramme == internship.field:
-        compatibility_score += 1
-    else:
-        compatibility_score += 0.5
+    if student.currProgramme == internship.field: compatibility_score += 1
+    else: compatibility_score += 0.5
 
-    if student.studyPattern == internship.contractPattern:
-        compatibility_score += 1
-    else:
-         compatibility_score += 0.5
+    if student.studyPattern == internship.contractPattern: compatibility_score += 1
+    else: compatibility_score += 0.5
 
     # Assign a reduced factor based on how far off the MinGPA the student's GPA is
     student_gpa = student.GPA
     internship_min_gpa = internship.minGPA
 
     # Candidate will prefer job whose MinScore is closer to their achieved grade
-    if student_gpa <= 0.9 * internship_min_gpa or student_gpa >= 1.1 * internship_min_gpa:
-        compatibility_score += 1
-    elif student_gpa <= 0.75 * internship_min_gpa or student_gpa >= 1.25 * internship_min_gpa:
-        compatibility_score += 0.5
-    else:
-        compatibility_score += 0.25
+    if student_gpa <= 0.9 * internship_min_gpa or student_gpa >= 1.1 * internship_min_gpa: compatibility_score += 1
+    elif student_gpa <= 0.75 * internship_min_gpa or student_gpa >= 1.25 * internship_min_gpa: compatibility_score += 0.5
+    else: compatibility_score += 0.25
 
     # Account for other factors such as location, pay, company title, etc.
     compatibility_score += random.random()
 
     return round(compatibility_score, 2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def populate_compatibility_matrix(matrix, candidates, jobs):
+    for i in range(len(candidates)):
+        for j in range(len(jobs)):
+            matrix.loc[(i, j)] = compute_compatibility(candidates[i], jobs[j])
+
 
 #for run algorithm uses csv data
 def compute_compatibility2(candidate, job):

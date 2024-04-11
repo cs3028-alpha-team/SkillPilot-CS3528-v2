@@ -12,8 +12,8 @@ from django.conf import settings
 from django.views import View
 from . models import *
 from . forms import *
-from  .gale_shapley import *
-from .data_pipeline import *
+from . gale_shapley import *
+from . data_pipeline import *
 import subprocess
 import csv
 import os
@@ -300,21 +300,31 @@ def register_company(request):
 # render the algorithm dashboard page, where the admin can compute and manage assignments
 def algorithm_dashboard(request):
 
-    # query all the students and internships in the database
+    # 1. Construct the Students and Internships dataframes 
+
+    # construct the Students dataframe 
     students = Student.objects.all()
+    pd_students = pd.DataFrame(columns=['studentID', 'prevProgramme', 'GPA', 'studyMode', 'studyPattern'])
+    for i in range(len(students)):
+        pd_students.loc[i] = [ students[i].studentID, students[i].prevProgramme, students[i].GPA, students[i].studyMode, students[i].studyPattern ]
+
+    # construct the Internships dataframe
     internships = Internship.objects.all()
-    
-    print("all students ===========================================================")
-    for student in students:   
-        print(Student.str(student))
+    pd_internships = pd.DataFrame(columns=['internshipID', 'companyID', 'field', 'minGPA', 'contractMode', 'contractPattern'])
+    for i in range(len(internships)):
+        pd_internships.loc[i] = [ internships[i].internshipID, internships[i].companyID.companyID, internships[i].field, internships[i].minGPA, internships[i].contractMode, internships[i].contractPattern ]
 
-    print("all internships ========================================================\n")
-    for internship in internships:
-        print(Internship.str(internship))
 
-    # prepare a dataframe using the data cleaning pipeline
+    # 2. Prepare the Dataframes for the matchmaking operation, using the DataPipeline class
+    pipeline = DataPipeline(pd_students, pd_internships)
+    pipeline.clean()
 
-    # compute offers through the algorithm
+
+    # 3. Populate the Compatibility Matrix using the cleaned Dataframes 
+
+
+    # 4. Compute the student-internship assignments
+
 
     return render(request, 'algorithm_dashboard.html')
 
@@ -324,7 +334,7 @@ def algorithm_dashboard(request):
 #  Authentication (Login & Signup) and Authorization logic #
 # ======================================================== #
 
-# handle the signup routine for a new student
+# handle the signup routine for a new studen
 def student_signup(request):
 
     if request.method == 'POST':
