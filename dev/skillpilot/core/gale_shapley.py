@@ -15,18 +15,18 @@ def compute_compatibility(student, internship):
 
     compatibility_score = 0
 
-    # Check if students field of study matches with the internship field
-    if student.currProgramme == internship.field: compatibility_score += 1
-    else: compatibility_score += 0.5
+    # # Check if students field of study matches with the internship field
+    # if student['prevProgramme'] == internship['field']: compatibility_score += 1
+    # else: compatibility_score += 0.5
 
-    if student.studyPattern == internship.contractPattern: compatibility_score += 1
-    else: compatibility_score += 0.5
+    # if student['studyPattern'] == internship['contractPattern']: compatibility_score += 1
+    # else: compatibility_score += 0.5
 
     # Assign a reduced factor based on how far off the MinGPA the student's GPA is
-    student_gpa = student.GPA
-    internship_min_gpa = internship.minGPA
+    student_gpa = student['GPA']
+    internship_min_gpa = internship['minGPA']
 
-    # Candidate will prefer job whose MinScore is closer to their achieved grade
+    # Candidate will prefer job whose minGPA is closer to their achieved grade
     if student_gpa <= 0.9 * internship_min_gpa or student_gpa >= 1.1 * internship_min_gpa: compatibility_score += 1
     elif student_gpa <= 0.75 * internship_min_gpa or student_gpa >= 1.25 * internship_min_gpa: compatibility_score += 0.5
     else: compatibility_score += 0.25
@@ -39,120 +39,24 @@ def compute_compatibility(student, internship):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def populate_compatibility_matrix(matrix, candidates, jobs):
-    for i in range(len(candidates)):
-        for j in range(len(jobs)):
-            matrix.loc[(i, j)] = compute_compatibility(candidates[i], jobs[j])
-
-
-#for run algorithm uses csv data
-def compute_compatibility2(candidate, job):
-    compatibility_score = 0
-
-    # Check if student has similar experience
-    if candidate["currProgramme"] == job["field"]:
-        compatibility_score += 1
-    else:
-        compatibility_score += 0.5
-
-    # Assign a reduced factor based on how far off the MinScore the candidate's score is
-    candidate_score = candidate["GPA"]
-    job_minscore = job["minGPA"]
-
-    # Candidate will prefer job whose MinScore is closer to their achieved grade
-    if candidate_score <= 0.9 * job_minscore or candidate_score >= 1.1 * job_minscore:
-        compatibility_score += 1
-    elif candidate_score <= 0.75 * job_minscore or candidate_score >= 1.25 * job_minscore:
-        compatibility_score += 0.5
-    else:
-        compatibility_score += 0.25
-
-    # Account for a candidate preferring location, pay, company title etc.
-    compatibility_score += random.random()
-
-    return round(compatibility_score, 2)
-
-
-# display all the offers made in a user-readable format
-def format_pairings(offers, candidates, jobs, display=False):
-    pairings = []
-    for i in range(len(offers.keys()) - 1):
-        candidate_id = i
-        candidate_name = candidates.loc[candidate_id, "fullName"]
-        candidate_field = candidates.loc[candidate_id, "currProgramme"]
-        candidate_id2 = candidates.loc[candidate_id, "studentID"]
-        #internship_id = jobs.loc[offers[candidate_id][0], "internshipID"]
-        
-        job_id = "N/A" if offers[candidate_id][0] == None else jobs.loc[offers[candidate_id][0], "internshipID"]
-        job_title = "N/A" if offers[candidate_id][0] == None else jobs.loc[offers[candidate_id][0], "title"]
-        job_field = "N/A" if offers[candidate_id][0] == None else jobs.loc[offers[candidate_id][0], "field"]
-        # display parameter default to False
-        if display:
-            print(f'{candidate_name} -> {job_title}')
-            
-        if job_id != "N/A":
-            pairing = (candidate_id,  candidate_id2, candidate_name, candidate_field, job_id, job_title, job_field)
-            pairings.append(pairing)
-    return pairings
-
-# # Save final prodecced data to the offers csv
-def save_results_to_csv(pairings, path):
-    with open(path, 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        #writer.writerow(['Student_id', 'Student', 'Student_course', 'Internship_Id', 'Internship', 'Internship-Position'])
-        writer.writerow(['Student_num', 'Candidate_id', 'Student', 'Student_course','Internship_id', 'Internship', 'Internship-Position'])
-        writer.writerows(pairings)
-    print('Matching algorithm executed successfully. Results saved to CSV file.')
-
 # # =========================================================================== GALE_SHAPLEY.PY FUNCTIONS =======================================================================================
 def find_job(company_ids):
     for i in range(len(company_ids)):
-         if company_ids[i] >= 0: return i
+        if company_ids[i] >= 0: return i
     return -1 
 
 def suitable_candidates(company_index, compatibility_matrix):
     # Retrieve the column with the key of company_index from the compatibility matrix
     company_column = compatibility_matrix[company_index]
-    
     # Create a list of tuples where each tuple contains the candidate index and their compatibility score
     suit_cands = [(i, company_column[i]) for i in range(len(company_column))]
-    
     # Sort the candidates by their compatibility score descending, so the company makes offers to the most relevant candidates first
     suit_cands.sort(key=lambda x: x[1], reverse=True)
-    
     return suit_cands
-
 
 
 def run_gale_shapley(candidates, jobs, number_of_candidates, number_of_jobs):
     
-    print(f"\nRunning Gale-Shapley for {number_of_candidates} candidates and {number_of_jobs} jobs...")
-
-    # reduce size of candidates and jobs dataframes 
-    candidates_dataframe = candidates.loc[:number_of_candidates]
-    print(candidates_dataframe)
-    jobs_dataframe = jobs.loc[:number_of_jobs]
-    print(jobs_dataframe)
-    
-    # compute the compatibility matrix
-    compatibility_matrix = compute_compatibility_matrix2(candidates_dataframe, jobs_dataframe)
-    print("Compatibility matrix")
-    print(compatibility_matrix)
     # keeps track of companies with job offers to still give out 
     company_ids = compatibility_matrix.columns.tolist()
 
@@ -162,13 +66,12 @@ def run_gale_shapley(candidates, jobs, number_of_candidates, number_of_jobs):
     # keeps track of the number of positions left per job
     available_positions = [ jobs_dataframe.loc[job_id, "numberPositions"] for job_id in range(len(jobs_dataframe)) ]
     
-    # compute the total number of positions across number_of_jobs jobs
-    total_jobs = sum(available_positions)
-    
     # run the Gale-Shapley algorithm between the jobs and candidates dataset
     offers, fulfillments = gale_shapley(company_ids, offers, compatibility_matrix, available_positions)
 
     return offers
+
+
 
 def gale_shapley(company_ids, offers, compatibility_matrix, available_positions, max_iterations=10000):
     fulfillments = []  # Keep track of the number of fulfilled companies at each iteration

@@ -31,6 +31,7 @@ class DataPipeline:
         for i in range(len(self.internships)):
             self.internships.loc[(i, 'minGPA')] = self.__round(self.internships.loc[(i, 'minGPA')])
 
+        return [ self.students, self.internships ]
 
     def __round(self, n):
         # extract the unitary digit

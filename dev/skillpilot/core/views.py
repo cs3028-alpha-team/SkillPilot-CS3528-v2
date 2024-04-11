@@ -18,6 +18,7 @@ import subprocess
 import csv
 import os
 import pandas as pd
+import numpy as np
 from django.db.models import Q
 
 
@@ -59,6 +60,7 @@ def clean_data(request):
     candidates.to_csv('data/processed_candidates.csv', index=False)
 
     return HttpResponse('Data processed successfully')
+
 
 def matching_view(request):
     if request.method == 'POST':
@@ -310,20 +312,49 @@ def algorithm_dashboard(request):
 
     # construct the Internships dataframe
     internships = Internship.objects.all()
-    pd_internships = pd.DataFrame(columns=['internshipID', 'companyID', 'field', 'minGPA', 'contractMode', 'contractPattern'])
+    pd_internships = pd.DataFrame(columns=['internshipID', 'companyID', 'field', 'minGPA', 'contractMode', 'contractPattern', 'numberPositions'])
     for i in range(len(internships)):
-        pd_internships.loc[i] = [ internships[i].internshipID, internships[i].companyID.companyID, internships[i].field, internships[i].minGPA, internships[i].contractMode, internships[i].contractPattern ]
+        pd_internships.loc[i] = [ internships[i].internshipID, internships[i].companyID.companyID, internships[i].field, internships[i].minGPA, internships[i].contractMode, internships[i].contractPattern, internships[i].numberPositions ]
 
 
     # 2. Prepare the Dataframes for the matchmaking operation, using the DataPipeline class
     pipeline = DataPipeline(pd_students, pd_internships)
-    pipeline.clean()
+    pd_students, pd_internships = pipeline.clean()
 
 
     # 3. Populate the Compatibility Matrix using the cleaned Dataframes 
 
+    # construct the matrix
+    columns = pd_internships['internshipID'].tolist()
+    index = pd_students['studentID'].tolist()
+    matrix = pd.DataFrame(index=index, columns=columns)
+    matrix.fillna(value=np.nan, inplace=True)
 
-    # 4. Compute the student-internship assignments
+    # populate the matrix using the compatibility scores between students and internships
+    for i in range(matrix.shape[0]):
+        for j in range(matrix.shape[1]):
+            student = pd_students.loc[i]
+            internship = pd_internships.loc[j]
+            matrix.iloc[i, j] = compute_compatibility(student, internship)
+
+
+
+    # 4. Compute Assignments using the Gale-Shapley algorithm
+
+    # create a list of internshipIDs, used to keep track of companies with job offers to still give out 
+    internshipIDs = matrix.columns.tolist()[1:]
+    
+    # keeps track of the offers made so far, studentID : (current_internship_offer_ID, [refused_internship_ID1, ...])
+    offers = { studentID : [None, []] for studentID in index }
+
+    # # keeps track of the number of positions left per job
+    available_positions = { pd_internships.loc[(i, 'internshipID')] : pd_internships.loc[(i, 'numberPositions')] for i in range(matrix.shape[1]) }
+
+
+    # RUN ALGORITH
+    # # run the Gale-Shapley algorithm between the jobs and candidates dataset
+    # offers, fulfillments = gale_shapley(company_ids, offers, compatibility_matrix, available_positions)
+
 
 
     return render(request, 'algorithm_dashboard.html')
