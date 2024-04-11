@@ -31,6 +31,9 @@ urlpatterns = [
     path('send-email', views.send_email, name="send-email"),
 
 
+    # path to render the algorithm dashboard, where the admin can run the algorithm and manage assignments
+    path('algorithm-dahshboard', views.algorithm_dashboard, name='algorithm-dashboard'),
+
     # path to an authenticated student dashboard
     path('student', views.student_dashboard, name='student'),
 

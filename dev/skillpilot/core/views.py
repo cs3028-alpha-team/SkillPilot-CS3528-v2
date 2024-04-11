@@ -166,7 +166,12 @@ def send_email(request):
 
 
 
-# ========================================= General Purpose views ============================================ #
+
+
+
+# ====================== #
+#  General Purpose views #
+# ====================== #
 
 def home(request):
     return render(request, 'home.html')
@@ -176,7 +181,9 @@ def contacts(request):
 
 
 
-# ========================================= Student, Recruiter, and Admin Dashboard pages ============================================ #
+# ============================================== #
+#  Student, Recruiter, and Admin Dashboard pages #
+# ============================================== #
 
 # view for the route '/student'
 @login_required(login_url='student-login')
@@ -188,7 +195,9 @@ def admin(request):
 
 
 
-# ========================================= Admin Dashboard - Companies Management Tool functionalities ============================================ #
+# ============================================================ #
+#  Admin Dashboard - Companies Management Tool functionalities #
+# ============================================================ #
 
 # handle the companies management tool functionality
 def companies_management_tool(request):
@@ -233,6 +242,7 @@ def companies_management_tool(request):
 
     return render(request, 'companies_management_tool.html', context=context)
 
+# handle the procedure to delete a company from the database
 def delete_company(request, companyID):
 
     if request.method == 'POST':
@@ -254,9 +264,49 @@ def delete_company(request, companyID):
 
     return render(request, 'companies_management_tool.html')
 
+# register a new company to the database using the payload from the form submitted from the companies management tool
+def register_company(request):
+
+    if request.method == 'POST':
+
+        # extract the new company details from the request payload
+        payload = {
+            'companyID' : request.POST.get('recruiterToken'),
+            'companyName' : request.POST.get('companyName'),
+            'industrySector' : request.POST.get('companyField'),
+            'websiteURL' : request.POST.get('companyWebsite')
+        }
+
+        # instantiate a new company using the Company model and request payload
+        new_company = CompanyRegistrationForm(payload)
+
+        if new_company.is_valid():
+            new_company.save()
+            messages.success(request, 'Company successfully registered!')
+    
+        else:
+            messages.info(request, 'Error occured while registering company, possibly caused by duplicate company!')
+        
+        return redirect('manage-companies')
+
+    return render(request, 'companies_management_tool.html')
 
 
-# ========================================= Authentication (Login & Signup) and Authorization logic ============================================ #
+
+# =========================================== #
+# Admin Dashboard - Algorithm Functionalities #
+# =========================================== #
+
+# render the algorithm dashboard page, where the admin can compute and manage assignments
+def algorithm_dashboard(request):
+
+    return render(request, 'algorithm_dashboard.html')
+
+
+
+# ======================================================== #
+#  Authentication (Login & Signup) and Authorization logic #
+# ======================================================== #
 
 # handle the signup routine for a new student
 def student_signup(request):
@@ -330,36 +380,11 @@ def user_logout(request):
     messages.success(request, 'logout successfull')  
     return redirect('home')
 
-# register a new company to the database using the payload from the form submitted from the companies management tool
-def register_company(request):
-
-    if request.method == 'POST':
-
-        # extract the new company details from the request payload
-        payload = {
-            'companyID' : request.POST.get('recruiterToken'),
-            'companyName' : request.POST.get('companyName'),
-            'industrySector' : request.POST.get('companyField'),
-            'websiteURL' : request.POST.get('companyWebsite')
-        }
-
-        # instantiate a new company using the Company model and request payload
-        new_company = CompanyRegistrationForm(payload)
-
-        if new_company.is_valid():
-            new_company.save()
-            messages.success(request, 'Company successfully registered!')
-    
-        else:
-            messages.info(request, 'Error occured while registering company, possibly caused by duplicate company!')
-        
-        return redirect('manage-companies')
-
-    return render(request, 'companies_management_tool.html')
 
 
-
-# ========================================= Student, Recruiters, and Internships detail pages ============================================ #
+# ================================================== #
+#  Student, Recruiters, and Internships detail pages #
+# ================================================== #
 
 # render a given student profile's details page
 def student_details(request, studentID):
@@ -390,7 +415,10 @@ def internship_details(request, internshipID):
 
 
 
-# ========================================= Admin Dashboard Query Database functionality ============================================ #
+
+# =============================================== #
+#  Admin Dashboard - Query Database functionality #
+# =============================================== #
 
 # handle the routine triggered from the admin dashboard to query all student profiles
 def query_students(request):
