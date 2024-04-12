@@ -350,12 +350,27 @@ def algorithm_dashboard(request):
     # # keeps track of the number of positions left per job
     available_positions = { pd_internships.loc[(i, 'internshipID')] : pd_internships.loc[(i, 'numberPositions')] for i in range(matrix.shape[1]) }
 
+    offers, fulfillments, updated_positions = gale_shapley(offers, matrix, available_positions)
+    
+    offers = { k : v[0] for k, v in offers.items() }
 
-    # RUN ALGORITH
-    # # run the Gale-Shapley algorithm between the jobs and candidates dataset
-    # offers, fulfillments = gale_shapley(company_ids, offers, compatibility_matrix, available_positions)
+    print(offers)
 
 
+    print()
+
+    print(fulfillments)
+
+    print()
+
+    print(updated_positions)
+
+    print()
+
+    nooffer = {key: value for key, value in offers.items() if key is None}
+    print(nooffer)
+
+    # once the algorithm has run, update the internship positions, and the interviews table after the admin approves or disapproves them
 
     return render(request, 'algorithm_dashboard.html')
 
