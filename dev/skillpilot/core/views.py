@@ -120,28 +120,6 @@ def match_detail(request, student, internship):
     internship_num = get_object_or_404(Internship, pk=internship)
     return render(request, 'match_detail.html', {'student': student_num, 'internship': internship_num})    
 
-def approve_match(request, id):
-    approved_matches = pd.read_csv('data/approved_offers.csv')
-    matches = pd.read_csv('data/offers.csv')
-    approved_match = matches[matches['Candidate_id'] == int(id)]
-    approved_matches = pd.concat([approved_matches, approved_match], ignore_index=True)
-    matches.drop(approved_match.index, inplace=True)
-
-    matches.to_csv('data/offers.csv', index=False, header=["Student_num","Candidate_id","Student","Student_course","Internship_id","Internship","Internship-Position"])
-    approved_matches.to_csv('data/approved_offers.csv', index=False, header=["Student_num","Candidate_id","Student","Student_course","Internship_id","Internship","Internship-Position"])
-    
-    html = "Match approved successfully. Results saved to CSV file. <a href='/admin_page'>Admin</a>"
-    return HttpResponse(html)
-
-def disapprove_match(request, id):
-    matches = pd.read_csv('data/offers.csv')
-    match = matches[matches['Candidate_id'] == int(id)]
-    matches.drop(match.index, inplace=True)
-    matches.to_csv('data/offers.csv', index=False, header=["Student_num","Candidate_id","Student","Student_course","Internship_id","Internship","Internship-Position"])
-    
-    html = "Match dispproved successfully. Results saved to CSV file. <a href='/admin_page'>Admin</a>"
-    return HttpResponse(html)
-
 def send_email(request): 
     internships = Internship.objects.all() #get data from database
     students = Student.objects.all()
@@ -312,7 +290,7 @@ def algorithm_dashboard(request):
     """
 
     """
-    uncomment to restore internship number of positions, DO NOT USE IN PRODUCTION
+    # uncomment to restore internship number of positions, DO NOT USE IN PRODUCTION
     for internship in Internship.objects.all():
         internship.numberPositions = random.randint(2,5)
         internship.save()
@@ -399,12 +377,42 @@ def algorithm_dashboard(request):
             internship.numberPositions = positions
             internship.save()
 
-    context = { 'computedMatches' : ComputedMatch.objects.all() }
+    # show only the computed matches which DO NOT have an interview associated already
+    context = { 'computedMatches' : ComputedMatch.objects.filter(interviewID__isnull=True) }
 
     return render(request, 'algorithm_dashboard.html', context)
 
 
+# handle the approval routine for a match computed by the algorithm
+def approve_match(request, matchID):
 
+    # retrieve the match, the internship listing, the recruiter, the company
+    match = ComputedMatch.objects.get(computedMatchID=matchID)
+
+    # create an entry in the Interviews table corresponding to the approved match
+    interview = Interview( 
+        interviewID=f"Interview_{matchID}", 
+        outcome='pending', 
+        recruiterID=match.internshipID.recruiterID, 
+        studentID=match.studentID, 
+        companyID=match.internshipID.companyID, 
+        internshipID=match.internshipID
+    )
+
+    interview.save()
+
+    # set the computed matches foreign key to the interview ID 
+    match.interviewID = interview
+    match.save()
+
+    messages.success(request, "successfully saved match and booked internship")
+    return redirect('algorithm-dashboard')
+
+
+# handle the rejection routine for a match computed by the algorithm
+def reject_match(request, matchID):
+    return render(request, 'algorithm_dashboard.html')
+    
 
 
 # ======================================================== #

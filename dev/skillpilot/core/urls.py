@@ -24,12 +24,12 @@ urlpatterns = [
 
     path('execute_matching_process/', views.execute_matching_process, name='execute_matching_process'),
     
-    path('approve_match/<str:id>/', views.approve_match, name='approve_match'),
-    
-    path('disapprove_match/<str:id>/', views.disapprove_match, name='disapprove_match'),
     
     path('send-email', views.send_email, name="send-email"),
 
+    # paths to handle admin approval/rejection of matchmaking algorithm output 
+    path('approve-match/<str:matchID>/', views.approve_match, name='approve-match'),
+    path('reject-match/<str:matchID>/', views.reject_match, name='reject-match'),
 
     # path to render the algorithm dashboard, where the admin can run the algorithm and manage assignments
     path('algorithm-dahshboard', views.algorithm_dashboard, name='algorithm-dashboard'),

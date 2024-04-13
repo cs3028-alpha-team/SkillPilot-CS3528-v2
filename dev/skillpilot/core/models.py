@@ -112,10 +112,11 @@ class Interview(models.Model):
         PENDING = 'pending', _('Pending') 
 
     # interviews attributes 
-    interviewID = models.CharField(max_length = 10, primary_key = True)
+    interviewID = models.CharField(max_length = 20, primary_key = True)
     companyID = models.ForeignKey('core.Company', on_delete = models.CASCADE)
     studentID = models.ForeignKey('core.Student', on_delete = models.CASCADE)
     recruiterID = models.ForeignKey('core.Recruiter', on_delete = models.CASCADE)
+    internshipID = models.ForeignKey('core.Internship', on_delete = models.CASCADE, default=None)
     outcome = models.CharField(max_length = 15, choices = outcomes.choices)
 
 
