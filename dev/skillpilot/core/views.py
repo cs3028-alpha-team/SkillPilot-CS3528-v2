@@ -18,6 +18,7 @@ import subprocess
 import csv
 import os
 import pandas as pd
+import random
 import numpy as np
 from django.db.models import Q
 
@@ -304,17 +305,32 @@ def algorithm_dashboard(request):
 
     # 1. Construct the Students and Internships dataframes 
 
+    """
+    As per client requirement, each student should have at most one interview at a time, 
+    so the dataframe will be composed of all internships with positions still to be filled in 
+    and students with no interviews exclusively
+    """
+
     # construct the Students dataframe 
     students = Student.objects.all()
     pd_students = pd.DataFrame(columns=['studentID', 'prevProgramme', 'GPA', 'studyMode', 'studyPattern'])
     for i in range(len(students)):
-        pd_students.loc[i] = [ students[i].studentID, students[i].prevProgramme, students[i].GPA, students[i].studyMode, students[i].studyPattern ]
+
+        # check that student doesn't have an interview scheduled, i.e. there's not an entry in the interviews table
+        try:
+            Interview.objects.get(studentID=students[i].studentID)
+            pass
+        except:
+            pd_students.loc[i] = [ students[i].studentID, students[i].prevProgramme, students[i].GPA, students[i].studyMode, students[i].studyPattern ]
 
     # construct the Internships dataframe
     internships = Internship.objects.all()
     pd_internships = pd.DataFrame(columns=['internshipID', 'companyID', 'field', 'minGPA', 'contractMode', 'contractPattern', 'numberPositions'])
     for i in range(len(internships)):
-        pd_internships.loc[i] = [ internships[i].internshipID, internships[i].companyID.companyID, internships[i].field, internships[i].minGPA, internships[i].contractMode, internships[i].contractPattern, internships[i].numberPositions ]
+
+        # check that internship has still positions to fill, i.e. numberPositions > 0
+        if internships[i].numberPositions > 0:
+            pd_internships.loc[i] = [ internships[i].internshipID, internships[i].companyID.companyID, internships[i].field, internships[i].minGPA, internships[i].contractMode, internships[i].contractPattern, internships[i].numberPositions ]
 
 
     # 2. Prepare the Dataframes for the matchmaking operation, using the DataPipeline class
@@ -330,49 +346,42 @@ def algorithm_dashboard(request):
     matrix = pd.DataFrame(index=index, columns=columns)
     matrix.fillna(value=np.nan, inplace=True)
 
-    # populate the matrix using the compatibility scores between students and internships
-    for i in range(matrix.shape[0]):
-        for j in range(matrix.shape[1]):
-            student = pd_students.loc[i]
-            internship = pd_internships.loc[j]
-            matrix.iloc[i, j] = compute_compatibility(student, internship)
 
+    # populate the matrix using the compatibility scores between students and internships
+    for i in matrix.index.tolist():
+        student = pd_students[ pd_students['studentID'] == i]
+        for j in matrix.columns.tolist():   
+            internship = pd_internships[ pd_internships['internshipID'] == j ]
+            matrix.loc[(i, j)] = compute_compatibility(student, internship)
 
 
     # 4. Compute Assignments using the Gale-Shapley algorithm
 
-    # create a list of internshipIDs, used to keep track of companies with job offers to still give out 
-    internshipIDs = matrix.columns.tolist()[1:]
-    
     # keeps track of the offers made so far, studentID : (current_internship_offer_ID, [refused_internship_ID1, ...])
-    offers = { studentID : [None, []] for studentID in index }
+    offers = { studentID : [None, []] for studentID in matrix.index.tolist() }
 
-    # # keeps track of the number of positions left per job
-    available_positions = { pd_internships.loc[(i, 'internshipID')] : pd_internships.loc[(i, 'numberPositions')] for i in range(matrix.shape[1]) }
+
+    # keeps track of the number of positions left per job
+    available_positions = dict(zip(pd_internships['internshipID'], pd_internships['numberPositions']))
 
     offers, fulfillments, updated_positions = gale_shapley(offers, matrix, available_positions)
-    
-    offers = { k : v[0] for k, v in offers.items() }
+
+    # format the offers into Student object : Internship object
+    offers = { Student.objects.get(studentID=k) : Internship.objects.get(internshipID=v[0]) for k, v in offers.items() }
+
+    # # # update the Internships table to reflect the number of positions left per internship after the algorithm has been called
+    # # for id, positions in updated_positions.items():
+    # #     internship = Internship.objects.get(internshipID=id)
+    # #     internship.numberPositions = positions
+    # #     internship.save()
 
     print(offers)
 
-
-    print()
-
-    print(fulfillments)
-
-    print()
-
-    print(updated_positions)
-
-    print()
-
-    nooffer = {key: value for key, value in offers.items() if key is None}
-    print(nooffer)
-
-    # once the algorithm has run, update the internship positions, and the interviews table after the admin approves or disapproves them
+    # context = { 'offers' : offers }
 
     return render(request, 'algorithm_dashboard.html')
+
+
 
 
 

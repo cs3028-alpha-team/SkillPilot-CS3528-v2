@@ -13,11 +13,12 @@ class DataPipeline:
         self.students = students
         self.internships = internships
 
+
     # encapsulate the cleaning operations in one method 
     def clean(self):        
 
         # handle cases where student's studyMode or studyPatter are null
-        for i in range(len(self.students)):
+        for i in self.students.index.tolist():
 
             if not self.__check_studymode(self.students.loc[(i, 'studyMode')]):
                 self.students.loc[(i, 'studyMode')] = 'in-person'
@@ -28,10 +29,11 @@ class DataPipeline:
             self.students.loc[(i, 'GPA')] = self.__round(self.students.loc[(i, 'GPA')])
 
         # round internship min GPA to closest multiple of 5
-        for i in range(len(self.internships)):
+        for i in self.internships.index.tolist():
             self.internships.loc[(i, 'minGPA')] = self.__round(self.internships.loc[(i, 'minGPA')])
 
         return [ self.students, self.internships ]
+
 
     def __round(self, n):
         # extract the unitary digit

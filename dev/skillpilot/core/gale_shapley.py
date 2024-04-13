@@ -16,15 +16,15 @@ def compute_compatibility(student, internship):
     compatibility_score = 0
 
     # Check if students field of study matches with the internship field
-    if student['prevProgramme'] == internship['field']: compatibility_score += 1
+    if student['prevProgramme'].iloc[0] == internship['field'].iloc[0]: compatibility_score += 1
     else: compatibility_score += 0.5
 
-    if student['studyPattern'] == internship['contractPattern']: compatibility_score += 1
+    if student['studyPattern'].iloc[0] == internship['contractPattern'].iloc[0]: compatibility_score += 1
     else: compatibility_score += 0.5
 
     # Assign a reduced factor based on how far off the MinGPA the student's GPA is
-    student_gpa = student['GPA']
-    internship_min_gpa = internship['minGPA']
+    student_gpa = student['GPA'].iloc[0]
+    internship_min_gpa = internship['minGPA'].iloc[0]
 
     # Candidate will prefer job whose minGPA is closer to their achieved grade
     if student_gpa <= 0.9 * internship_min_gpa or student_gpa >= 1.1 * internship_min_gpa: compatibility_score += 1
@@ -64,8 +64,7 @@ def gale_shapley(offers, matrix, available_positions, max_iterations=10000):
             if positions > 0:
                 internshipID = id 
 
-        if internshipID is None:
-            break
+        if internshipID is None: break
 
         # get a list of all candidates for this internship
         candidates = suitable_candidates(internshipID, matrix)
@@ -103,7 +102,7 @@ def gale_shapley(offers, matrix, available_positions, max_iterations=10000):
                     offers[studentID][0] = internshipID
                     all_reject = False
                     available_positions[k] += 1
-                    available_positions[internshipID] -= 1
+                    available_positions[internshipID] = max(available_positions[internshipID]-1, 0)
               
                 else:
                     # proposed offer is worse than current one, so add to 'do not consider ' list
@@ -113,7 +112,6 @@ def gale_shapley(offers, matrix, available_positions, max_iterations=10000):
         if all_reject:
             available_positions[internshipID] = 0
             
-
         # compute number of offers made at each iteration
         f = sum(1 for value in available_positions.values() if value == 0)
         fulfillments.append(f)
