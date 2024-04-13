@@ -120,17 +120,17 @@ class Interview(models.Model):
 
 
 # computedMatch Table
-class computedMatch(models.Model):
+class ComputedMatch(models.Model):
 
     # string representation of Computed Match model
     def str(self):
         return f"{self.computedMatch}, {self.internshipID}, {self.studentID}, {self.interviewID}"
 
     # table attributes
-    computedMatch = models.CharField(max_length = 10, primary_key = True)
+    computedMatchID = models.CharField(max_length = 20, primary_key = True)
     internshipID = models.ForeignKey('core.Internship', on_delete = models.CASCADE)
     studentID = models.ForeignKey('core.Student', on_delete = models.CASCADE)
-    interviewID = models.ForeignKey('core.Interview', on_delete = models.CASCADE)
+    interviewID = models.ForeignKey('core.Interview', on_delete = models.CASCADE, null=True)
 
 
 # superUser table 

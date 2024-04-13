@@ -311,6 +311,13 @@ def algorithm_dashboard(request):
     and students with no interviews exclusively
     """
 
+    """
+    uncomment to restore internship number of positions, DO NOT USE IN PRODUCTION
+    for internship in Internship.objects.all():
+        internship.numberPositions = random.randint(2,5)
+        internship.save()
+    """
+
     # construct the Students dataframe 
     students = Student.objects.all()
     pd_students = pd.DataFrame(columns=['studentID', 'prevProgramme', 'GPA', 'studyMode', 'studyPattern'])
@@ -357,29 +364,44 @@ def algorithm_dashboard(request):
 
     # 4. Compute Assignments using the Gale-Shapley algorithm
 
-    # keeps track of the offers made so far, studentID : (current_internship_offer_ID, [refused_internship_ID1, ...])
-    offers = { studentID : [None, []] for studentID in matrix.index.tolist() }
+    # if there are no internship or students (or both) left to match do not run the algorithm
+    if pd_students.empty or pd_internships.empty:
+        pass
+    
+    else:
+        # keeps track of the offers made so far, studentID : (current_internship_offer_ID, [refused_internship_ID1, ...])
+        offers = { studentID : [None, []] for studentID in matrix.index.tolist() }
 
+        # keeps track of the number of positions left per job
+        available_positions = dict(zip(pd_internships['internshipID'], pd_internships['numberPositions']))
 
-    # keeps track of the number of positions left per job
-    available_positions = dict(zip(pd_internships['internshipID'], pd_internships['numberPositions']))
+        offers, fulfillments, updated_positions = gale_shapley(offers, matrix, available_positions)
 
-    offers, fulfillments, updated_positions = gale_shapley(offers, matrix, available_positions)
+        # format the offers into Student object : Internship object
+        offers = { Student.objects.get(studentID=k) : Internship.objects.get(internshipID=v[0]) for k, v in offers.items() }
 
-    # format the offers into Student object : Internship object
-    offers = { Student.objects.get(studentID=k) : Internship.objects.get(internshipID=v[0]) for k, v in offers.items() }
+        # write the offers to ComputedMatches table
+        for student, internship in offers.items():
+            
+            # Create an instance of the model with the desired attribute values
+            computed_match = ComputedMatch( computedMatchID=f"{student.studentID}{internship.internshipID}", internshipID=internship, studentID=student )
 
-    # # # update the Internships table to reflect the number of positions left per internship after the algorithm has been called
-    # # for id, positions in updated_positions.items():
-    # #     internship = Internship.objects.get(internshipID=id)
-    # #     internship.numberPositions = positions
-    # #     internship.save()
+            # save computed match only if not already in comptued matches table
+            try:
+                ComputedMatch.objects.get(studentID=student.studentID, internshipID=internship.internshipID)
+                pass
+            except:
+                computed_match.save()
 
-    print(offers)
+        # update the Internships table to reflect the number of positions left per internship after the algorithm has been called
+        for id, positions in updated_positions.items():
+            internship = Internship.objects.get(internshipID=id)
+            internship.numberPositions = positions
+            internship.save()
 
-    # context = { 'offers' : offers }
+    context = { 'computedMatches' : ComputedMatch.objects.all() }
 
-    return render(request, 'algorithm_dashboard.html')
+    return render(request, 'algorithm_dashboard.html', context)
 
 
 
