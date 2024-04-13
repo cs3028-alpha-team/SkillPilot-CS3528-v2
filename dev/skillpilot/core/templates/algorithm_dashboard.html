@@ -27,8 +27,16 @@
     </button>
 
 
-    <div class="container text-center">
+    <div class="container">
         <h1 class="display-2 mt-5">Algorithm Dashboard</h1>
+
+        <form method="POST" action="{% url 'algorithm-dashboard' %}" autocomplete="off" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="mb-3 mt-5">
+                <button type="submit" class="btn btn-primary col-3">Run algorithm</button>
+            </div>
+        </form>
 
         <div class="col-md-auto mx-5 overflow-y-auto" style="height:400px;">
             <h3 class="display-6 mb-4">Algorithm results</h3>

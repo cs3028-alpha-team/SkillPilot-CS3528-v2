@@ -281,101 +281,103 @@ def register_company(request):
 # render the algorithm dashboard page, where the admin can compute and manage assignments
 def algorithm_dashboard(request):
 
-    # 1. Construct the Students and Internships dataframes 
+    if request.method == 'POST':
+        # 1. Construct the Students and Internships dataframes 
 
-    """
-    As per client requirement, each student should have at most one interview at a time, 
-    so the dataframe will be composed of all internships with positions still to be filled in 
-    and students with no interviews exclusively
-    """
+        """
+        As per client requirement, each student should have at most one interview at a time, 
+        so the dataframe will be composed of all internships with positions still to be filled in 
+        and students with no interviews exclusively
+        """
 
-    """
-    # uncomment to restore internship number of positions, DO NOT USE IN PRODUCTION
-    for internship in Internship.objects.all():
-        internship.numberPositions = random.randint(2,5)
-        internship.save()
-    """
+        """
+        # uncomment to restore internship number of positions, DO NOT USE IN PRODUCTION
+        for internship in Internship.objects.all():
+            internship.numberPositions = random.randint(2,5)
+            internship.save()
+        """
 
-    # construct the Students dataframe 
-    students = Student.objects.all()
-    pd_students = pd.DataFrame(columns=['studentID', 'prevProgramme', 'GPA', 'studyMode', 'studyPattern'])
-    for i in range(len(students)):
+        # construct the Students dataframe 
+        students = Student.objects.all()
+        pd_students = pd.DataFrame(columns=['studentID', 'prevProgramme', 'GPA', 'studyMode', 'studyPattern'])
+        for i in range(len(students)):
 
-        # check that student doesn't have an interview scheduled, i.e. there's not an entry in the interviews table
-        try:
-            Interview.objects.get(studentID=students[i].studentID)
-            pass
-        except:
-            pd_students.loc[i] = [ students[i].studentID, students[i].prevProgramme, students[i].GPA, students[i].studyMode, students[i].studyPattern ]
-
-    # construct the Internships dataframe
-    internships = Internship.objects.all()
-    pd_internships = pd.DataFrame(columns=['internshipID', 'companyID', 'field', 'minGPA', 'contractMode', 'contractPattern', 'numberPositions'])
-    for i in range(len(internships)):
-
-        # check that internship has still positions to fill, i.e. numberPositions > 0
-        if internships[i].numberPositions > 0:
-            pd_internships.loc[i] = [ internships[i].internshipID, internships[i].companyID.companyID, internships[i].field, internships[i].minGPA, internships[i].contractMode, internships[i].contractPattern, internships[i].numberPositions ]
-
-
-    # 2. Prepare the Dataframes for the matchmaking operation, using the DataPipeline class
-    pipeline = DataPipeline(pd_students, pd_internships)
-    pd_students, pd_internships = pipeline.clean()
-
-
-    # 3. Populate the Compatibility Matrix using the cleaned Dataframes 
-
-    # construct the matrix
-    columns = pd_internships['internshipID'].tolist()
-    index = pd_students['studentID'].tolist()
-    matrix = pd.DataFrame(index=index, columns=columns)
-    matrix.fillna(value=np.nan, inplace=True)
-
-
-    # populate the matrix using the compatibility scores between students and internships
-    for i in matrix.index.tolist():
-        student = pd_students[ pd_students['studentID'] == i]
-        for j in matrix.columns.tolist():   
-            internship = pd_internships[ pd_internships['internshipID'] == j ]
-            matrix.loc[(i, j)] = compute_compatibility(student, internship)
-
-
-    # 4. Compute Assignments using the Gale-Shapley algorithm
-
-    # if there are no internship or students (or both) left to match do not run the algorithm
-    if pd_students.empty or pd_internships.empty:
-        pass
-    
-    else:
-        # keeps track of the offers made so far, studentID : (current_internship_offer_ID, [refused_internship_ID1, ...])
-        offers = { studentID : [None, []] for studentID in matrix.index.tolist() }
-
-        # keeps track of the number of positions left per job
-        available_positions = dict(zip(pd_internships['internshipID'], pd_internships['numberPositions']))
-
-        offers, fulfillments, updated_positions = gale_shapley(offers, matrix, available_positions)
-
-        # format the offers into Student object : Internship object
-        offers = { Student.objects.get(studentID=k) : Internship.objects.get(internshipID=v[0]) for k, v in offers.items() }
-
-        # write the offers to ComputedMatches table
-        for student, internship in offers.items():
-            
-            # Create an instance of the model with the desired attribute values
-            computed_match = ComputedMatch( computedMatchID=f"{student.studentID}{internship.internshipID}", internshipID=internship, studentID=student )
-
-            # save computed match only if not already in comptued matches table
+            # check that student doesn't have an interview scheduled, i.e. there's not an entry in the interviews table
             try:
-                ComputedMatch.objects.get(studentID=student.studentID, internshipID=internship.internshipID)
+                Interview.objects.get(studentID=students[i].studentID)
                 pass
             except:
-                computed_match.save()
+                pd_students.loc[i] = [ students[i].studentID, students[i].prevProgramme, students[i].GPA, students[i].studyMode, students[i].studyPattern ]
 
-        # update the Internships table to reflect the number of positions left per internship after the algorithm has been called
-        for id, positions in updated_positions.items():
-            internship = Internship.objects.get(internshipID=id)
-            internship.numberPositions = positions
-            internship.save()
+        # construct the Internships dataframe
+        internships = Internship.objects.all()
+        pd_internships = pd.DataFrame(columns=['internshipID', 'companyID', 'field', 'minGPA', 'contractMode', 'contractPattern', 'numberPositions'])
+        for i in range(len(internships)):
+
+            # check that internship has still positions to fill, i.e. numberPositions > 0
+            if internships[i].numberPositions > 0:
+                pd_internships.loc[i] = [ internships[i].internshipID, internships[i].companyID.companyID, internships[i].field, internships[i].minGPA, internships[i].contractMode, internships[i].contractPattern, internships[i].numberPositions ]
+
+
+        # 2. Prepare the Dataframes for the matchmaking operation, using the DataPipeline class
+        pipeline = DataPipeline(pd_students, pd_internships)
+        pd_students, pd_internships = pipeline.clean()
+
+
+        # 3. Populate the Compatibility Matrix using the cleaned Dataframes 
+
+        # construct the matrix
+        columns = pd_internships['internshipID'].tolist()
+        index = pd_students['studentID'].tolist()
+        matrix = pd.DataFrame(index=index, columns=columns)
+        matrix.fillna(value=np.nan, inplace=True)
+
+
+        # populate the matrix using the compatibility scores between students and internships
+        for i in matrix.index.tolist():
+            student = pd_students[ pd_students['studentID'] == i]
+            for j in matrix.columns.tolist():   
+                internship = pd_internships[ pd_internships['internshipID'] == j ]
+                matrix.loc[(i, j)] = compute_compatibility(student, internship)
+
+
+
+        # 4. Compute Assignments using the Gale-Shapley algorithm
+
+        # if there are no internship or students (or both) left to match do not run the algorithm
+        if pd_students.empty or pd_internships.empty:
+            pass
+        
+        else:
+            # keeps track of the offers made so far, studentID : (current_internship_offer_ID, [refused_internship_ID1, ...])
+            offers = { studentID : [None, []] for studentID in matrix.index.tolist() }
+
+            # keeps track of the number of positions left per job
+            available_positions = dict(zip(pd_internships['internshipID'], pd_internships['numberPositions']))
+
+            offers, fulfillments, updated_positions = gale_shapley(offers, matrix, available_positions)
+
+            # format the offers into Student object : Internship object
+            offers = { Student.objects.get(studentID=k) : Internship.objects.get(internshipID=v[0]) for k, v in offers.items() if v[0] is not None }
+
+            # write the offers to ComputedMatches table
+            for student, internship in offers.items():
+                
+                # Create an instance of the model with the desired attribute values
+                computed_match = ComputedMatch( computedMatchID=f"{student.studentID}{internship.internshipID}", internshipID=internship, studentID=student )
+
+                # save computed match only if not already in comptued matches table
+                try:
+                    ComputedMatch.objects.get(studentID=student.studentID, internshipID=internship.internshipID)
+                    pass
+                except:
+                    computed_match.save()
+
+            # update the Internships table to reflect the number of positions left per internship after the algorithm has been called
+            for id, positions in updated_positions.items():
+                internship = Internship.objects.get(internshipID=id)
+                internship.numberPositions = positions
+                internship.save()
 
     # show only the computed matches which DO NOT have an interview associated already
     context = { 'computedMatches' : ComputedMatch.objects.filter(interviewID__isnull=True) }
@@ -391,12 +393,9 @@ def approve_match(request, matchID):
 
     # create an entry in the Interviews table corresponding to the approved match
     interview = Interview( 
-        interviewID=f"Interview_{matchID}", 
-        outcome='pending', 
-        recruiterID=match.internshipID.recruiterID, 
-        studentID=match.studentID, 
-        companyID=match.internshipID.companyID, 
-        internshipID=match.internshipID
+        interviewID=f"Interview_{matchID}", outcome='pending', 
+        recruiterID=match.internshipID.recruiterID, studentID=match.studentID, 
+        companyID=match.internshipID.companyID, internshipID=match.internshipID
     )
 
     interview.save()
@@ -411,9 +410,21 @@ def approve_match(request, matchID):
 
 # handle the rejection routine for a match computed by the algorithm
 def reject_match(request, matchID):
-    return render(request, 'algorithm_dashboard.html')
-    
 
+    # retrieve match
+    match = ComputedMatch.objects.get(computedMatchID=matchID)
+
+    # return the availablePosition to the match's internship
+    internship = Internship.objects.get(internshipID=match.internshipID.internshipID)
+    internship.numberPositions += 1
+    internship.save()
+
+    # delete the computed match from the table
+    match.delete()
+
+    messages.error(request, "match rejected successfully")
+    return redirect('algorithm-dashboard')
+    
 
 # ======================================================== #
 #  Authentication (Login & Signup) and Authorization logic #
