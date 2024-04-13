@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -21,7 +21,8 @@ import pandas as pd
 import random
 import numpy as np
 from django.db.models import Q
-
+from datetime import date
+import random
 
 def internship(request):
 
@@ -169,11 +170,61 @@ def contacts(request):
 # view for the route '/student'
 @login_required(login_url='student-login')
 def student_dashboard(request):
-    return render(request, 'student_dashboard.html')
+    
+    #basic interview system 
+    
+    interviews = Interview.objects.all()
+    students = Student.objects.all()
+    recruiters = Recruiter.objects.all()
+    
+    try:
+        
+        #get student id from student email   
+        user = request.user
+        student_email = user.email
+        student_username = user.username
+        
+        #get details of match
+        student = get_object_or_404(Student, email=student_email)
+        interview = get_object_or_404(Interview, studentID=student.studentID)        
+        recruiter = get_object_or_404(Recruiter, pk=interview.recruiterID.pk)
+
+        # Generate random date and time
+        start_dt = date.today().replace(day=1, month=1).toordinal()
+        end_dt = date.today().toordinal()
+        random_date = date.fromordinal(random.randint(start_dt, end_dt))
+
+        return render(request, 'student_dashboard.html', {'interview': interview, 'username': student_username, 'recruiter': recruiter, 'date': random_date})
+    
+    # if no interview exists render page with no interview section
+    except Student.DoesNotExist:
+        print("Student does not exist")
+        return render(request, 'student_dashboard.html')
+    
+    except Interview.DoesNotExist:
+        print("Interview does not exist")
+        return render(request, 'student_dashboard.html')
+
+    except Recruiter.DoesNotExist:
+        print("Recruiter does not exist")
+        return render(request, 'student_dashboard.html')
+
+    except Exception as e:
+        print("An error occurred:", e)
+        return render(request, 'student_dashboard.html')
+
+# accept/reject an interview
+# currently only changes outcome in the database
+def update_interview(request, interview_id, new_outcome):
+    interview = Interview.objects.get(interviewID=interview_id)
+    
+    interview.outcome = new_outcome
+    interview.save()
+    
+    return redirect('student')
 
 def admin(request):
     return render(request, 'admin.html')
-
 
 
 # ============================================================ #
