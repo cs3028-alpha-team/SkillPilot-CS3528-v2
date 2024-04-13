@@ -42,6 +42,11 @@
             <h3 class="display-6 mb-4">Algorithm results</h3>
 
             <!-- if there are no computed matches left then return message -->
+            {% if computedMatches|length == 0%}
+                <div class="alert alert-danger" role="alert">
+                    No matches have been computed yet. Either all students have an interview scheduled, or there are no internships to be assigned yet
+                </div>
+            {% endif %}
 
             {% for match in computedMatches %}
 
