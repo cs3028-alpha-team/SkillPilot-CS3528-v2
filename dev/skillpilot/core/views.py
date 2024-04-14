@@ -16,11 +16,15 @@ from . gale_shapley import *
 from . data_pipeline import *
 import subprocess
 import csv
+import pickle
 import os
+import json
 import pandas as pd
 import random
 import numpy as np
 from django.db.models import Q
+
+from classifier.classifier import Classifier
 
 
 def internship(request):
@@ -341,7 +345,6 @@ def algorithm_dashboard(request):
                 matrix.loc[(i, j)] = compute_compatibility(student, internship)
 
 
-
         # 4. Compute Assignments using the Gale-Shapley algorithm
 
         # if there are no internship or students (or both) left to match do not run the algorithm
@@ -382,7 +385,16 @@ def algorithm_dashboard(request):
     # show only the computed matches which DO NOT have an interview associated already
     context = { 'computedMatches' : ComputedMatch.objects.filter(interviewID__isnull=True) }
 
+    # deserialise the pre-trained classifier and use it to label the compute offers
+    with open('classifier\\classifier.pkl', 'rb') as f:
+        print(pickle.load(f))
+
     return render(request, 'algorithm_dashboard.html', context)
+
+
+
+
+
 
 
 # handle the approval routine for a match computed by the algorithm
