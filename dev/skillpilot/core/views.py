@@ -86,39 +86,6 @@ def send_email(request):
 # ====================== #
 
 def home(request):
-
-    # """
-    #     Note - a future improvement will consist of pre-training the model and then serialisizing and de-serialising it as required.
-    #     This will ensure the model is consistent at each run, rather than being trained every time the page is refreshed. In addition, pre-training
-    #     the model will speed-up the page rendering speed.
-    # """
-
-    # # construct the training dataframe
-    # df_cols = [ 'studentGPA', 'internshipGPA', 'compatibilityScore', 'GPADifference', 
-    # 'fieldExperienceRelevance',  'contractModeCompatibility', 'contractPatternCompatibility', 'acceptedOffer' ]
-
-    # df_data = []
-    # for i in range(1000):
-    #     studentGPA = random.randint(60, 100)
-    #     internshipGPA = random.randint(60, 100)
-    #     compatibilityScore = round(random.uniform(1.25, 4), 2)
-    #     GPADifference = abs(studentGPA-internshipGPA)/100 # scale down, can be 1.00 to 0.00
-    #     fieldExperienceRelevance = random.random()
-    #     contractModeCompatibility = random.random()
-    #     contractPatternCompatibility = random.random()
-    #     acceptedOffer = True if ((compatibilityScore + fieldExperienceRelevance + contractModeCompatibility + contractPatternCompatibility) > 4 and GPADifference < 0.5) else False
-    #     df_data.append([studentGPA, internshipGPA, compatibilityScore, GPADifference, fieldExperienceRelevance, contractModeCompatibility, contractPatternCompatibility, acceptedOffer])
-
-    # df = pd.DataFrame(data=df_data, columns=df_cols)
-
-    # # instantiate the classifer and train it
-    # classifier = Classifier(df, 'acceptedOffer')    
-
-    # with open('dev\skillpilot\classifier.pkl', 'wb') as f:
-    #     pickle.dump(classifier, f)
-
-    # print("success!!")
-
     return render(request, 'home.html')
 
 def contacts(request):
@@ -253,13 +220,9 @@ def algorithm_dashboard(request):
         so the dataframe will be composed of all internships with positions still to be filled in 
         and students with no interviews exclusively
         """
-
-        """
-        # uncomment to restore internship number of positions, DO NOT USE IN PRODUCTION
-        for internship in Internship.objects.all():
-            internship.numberPositions = random.randint(2,5)
-            internship.save()
-        """
+        for it in Internship.objects.all():
+            it.numberPositions = random.randint(2, 6)
+            it.save()
 
         # construct the Students dataframe 
         students = Student.objects.all()
@@ -288,30 +251,32 @@ def algorithm_dashboard(request):
         pd_students, pd_internships = pipeline.clean()
 
 
-        # 3. Populate the Compatibility Matrix using the cleaned Dataframes 
-
-        # construct the matrix
-        columns = pd_internships['internshipID'].tolist()
-        index = pd_students['studentID'].tolist()
-        matrix = pd.DataFrame(index=index, columns=columns)
-        matrix.fillna(value=np.nan, inplace=True)
-
-
-        # populate the matrix using the compatibility scores between students and internships
-        for i in matrix.index.tolist():
-            student = pd_students[ pd_students['studentID'] == i]
-            for j in matrix.columns.tolist():   
-                internship = pd_internships[ pd_internships['internshipID'] == j ]
-                matrix.loc[(i, j)] = compute_compatibility(student, internship)
-
-
-        # 4. Compute Assignments using the Gale-Shapley algorithm
-
         # if there are no internship or students (or both) left to match do not run the algorithm
         if pd_students.empty or pd_internships.empty:
             pass
         
         else:
+            # 3. Populate the Compatibility Matrix using the cleaned Dataframes 
+
+            # construct the matrix
+            columns = pd_internships['internshipID'].tolist()
+            index = pd_students['studentID'].tolist()
+            matrix = pd.DataFrame(index=index, columns=columns)
+            matrix.fillna(value=np.nan, inplace=True)
+
+            # populate the matrix using the compatibility scores between students and internships
+            for i in matrix.index.tolist():
+                student = pd_students[ pd_students['studentID'] == i]
+                for j in matrix.columns.tolist():   
+                    internship = pd_internships[ pd_internships['internshipID'] == j ]
+                    matrix.loc[(i, j)] = compute_compatibility(student, internship)
+
+            # serialise the matrix, so that it can be used during the classification task at the bottom of this function
+            with open('matrix.pkl', 'wb') as file:
+                pickle.dump(matrix, file)
+
+            # 4. Compute Assignments using the Gale-Shapley algorithm
+
             # keeps track of the offers made so far, studentID : (current_internship_offer_ID, [refused_internship_ID1, ...])
             offers = { studentID : [None, []] for studentID in matrix.index.tolist() }
 
@@ -330,11 +295,8 @@ def algorithm_dashboard(request):
                 computed_match = ComputedMatch( computedMatchID=f"{student.studentID}{internship.internshipID}", internshipID=internship, studentID=student )
 
                 # save computed match only if not already in comptued matches table
-                try:
-                    ComputedMatch.objects.get(studentID=student.studentID, internshipID=internship.internshipID)
-                    pass
-                except:
-                    computed_match.save()
+                try: ComputedMatch.objects.get(studentID=student.studentID, internshipID=internship.internshipID)
+                except: computed_match.save()
 
             # update the Internships table to reflect the number of positions left per internship after the algorithm has been called
             for id, positions in updated_positions.items():
@@ -343,48 +305,49 @@ def algorithm_dashboard(request):
                 internship.save()
 
 
-
-    # deserialise the trained model and assess it 
-    with open('dev\skillpilot\classifier.pkl', 'rb') as f:
+    # deserialise the trained model run an assessment on it
+    with open('classifier.pkl', 'rb') as f:
         classifier = pickle.load(f)
-
     classifier.assess()
 
+    # deserialise the matrix from the last run of the algorithm. This approach works since we assume that the last call of the  
+    # algorithm used the same dataframes used to compute this matrix
+    with open('matrix.pkl', 'rb') as file:
+        matrix = pickle.load(file)
 
-    # # show only the computed matches which DO NOT have an interview associated already
-    # matches = ComputedMatch.objects.filter(interviewID__isnull=True)
+    # show only the computed matches which DO NOT have an interview associated already
+    matches = ComputedMatch.objects.filter(interviewID__isnull=True)
 
-    # # constuct a dataframe to be fed into the classification model
-    # matches_df_data = []
-    # for match in matches:
+    # constuct a dataframe to be fed into the classification model
+    matches_df_data = []
+    for match in matches:
 
-    #     # fetch the student and internship objects involved in the computed match
-    #     student = Student.objects.get(studentID=match.studentID.studentID)
-    #     internship = Internship.objects.get(internshipID=match.internshipID.internshipID)
+        # fetch the student and internship objects involved in the computed match
+        student = Student.objects.get(studentID=match.studentID.studentID)
+        internship = Internship.objects.get(internshipID=match.internshipID.internshipID)
 
-    #     # compute dataframe features
-    #     studentGPA = student.GPA
-    #     internshipGPA = internship.minGPA
-    #     GPADifference = abs(studentGPA - internshipGPA)/100
-    #     fieldExperienceRelevance = round(random.random(), 2) # random between 0.0 and 1.0, in future improvement will be able to calculate relevance based on actual inputs
-    #     contractModeCompatibility = 1 if student.studyMode == internship.contractMode else random.random() * 0.5
-    #     contractPatternCompatibility = 1 if student.studyPattern == internship.contractPattern else random.random() * 0.5
-    #     compatibilityScore = 1 + contractModeCompatibility + contractPatternCompatibility + GPADifference + random.random()
+        # compute dataframe features
+        studentGPA = student.GPA
+        internshipGPA = internship.minGPA
+        GPADifference = abs(studentGPA - internshipGPA)/100
+        fieldExperienceRelevance = round(random.random(), 2) # random between 0.0 and 1.0, in future improvement will be able to calculate relevance based on actual inputs
+        contractModeCompatibility = 1 if student.studyMode == internship.contractMode else random.random() * 0.5
+        contractPatternCompatibility = 1 if student.studyPattern == internship.contractPattern else random.random() * 0.5
+        compatibilityScore = matrix.loc[student.studentID, internship.internshipID]
 
-    #     row = [ studentGPA, internshipGPA, compatibilityScore, GPADifference, fieldExperienceRelevance, contractModeCompatibility, contractPatternCompatibility ]
-    #     matches_df_data.append(row)
+        row = [ studentGPA, internshipGPA, compatibilityScore, GPADifference, fieldExperienceRelevance, contractModeCompatibility, contractPatternCompatibility ]
+        matches_df_data.append(row)
 
-    # matches_df = pd.DataFrame(data=matches_df_data, columns=df_cols[:-1])
+    matches_df = pd.DataFrame(data=matches_df_data, columns=['studentGPA', 'internshipGPA', 'compatibilityScore', 'GPADifference', 'fieldExperienceRelevance', 'contractModeCompatibility', 'contractPatternCompatibility'])
     
-    # # compute the classification output for each match and attach it to the computedMatch object
-    # predictions = classifier.predict(matches_df)
-    # for i in range(len(matches)): matches[i].label = predictions[i]
+    # compute the classification output for each match and attach it to the computedMatch object
+    predictions = classifier.predict(matches_df)
+    for i in range(len(matches)): matches[i].label = predictions[i]
 
-    # # format the computedMatches and label them using the pre-trained classifier 
-    # context = { 'computedMatches' : matches }
+    # format the computedMatches and label them using the pre-trained classifier 
+    context = { 'computedMatches' : matches }
 
-
-    return render(request, 'algorithm_dashboard.html')
+    return render(request, 'algorithm_dashboard.html', context)
 
 
 # handle the approval routine for a match computed by the algorithm
