@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -189,12 +189,16 @@ def student_dashboard(request):
         interview = get_object_or_404(Interview, studentID=student.studentID)        
         recruiter = get_object_or_404(Recruiter, pk=interview.recruiterID.pk)
 
-        # Generate random date and time
+        # Generate random date
         start_dt = date.today().replace(day=1, month=1).toordinal()
         end_dt = date.today().toordinal()
         random_date = date.fromordinal(random.randint(start_dt, end_dt))
+        
+        #generate random mode
+        modes = ['online', 'in-person']
+        random_mode = random.choice(modes)
 
-        return render(request, 'student_dashboard.html', {'interview': interview, 'username': student_username, 'recruiter': recruiter, 'date': random_date})
+        return render(request, 'student_dashboard.html', {'interview': interview, 'username': student_username, 'recruiter': recruiter, 'date': random_date, 'mode': random_mode})
     
     # if no interview exists render page with no interview section
     except Student.DoesNotExist:
@@ -215,13 +219,66 @@ def student_dashboard(request):
 
 # accept/reject an interview
 # currently only changes outcome in the database
-def update_interview(request, interview_id, new_outcome):
-    interview = Interview.objects.get(interviewID=interview_id)
+def update_interview(request, interview_id):
+    if request.method == 'POST':
+        new_outcome = request.POST.get('new_outcome')
+        interview = Interview.objects.get(interviewID=interview_id)
+        interview.outcome = new_outcome
+        interview.save()
+        
+        return redirect('student')
+
+#interview system for recruiters, will be added to recruiter dashboard
+def interview_recruiter(request):
+    #basic interview system 
     
-    interview.outcome = new_outcome
-    interview.save()
+    interviews = Interview.objects.all()
+    students = Student.objects.all()
+    recruiters = Recruiter.objects.all()
     
-    return redirect('student')
+    try:
+        
+        #get student id from student email   
+        user = request.user
+        recruiter_email = user.email
+        recruiter_username = user.username
+        
+        #get details of match
+        recruiter = get_object_or_404(Recruiter, email=recruiter_email)
+        interviews = get_list_or_404(Interview, recruiterID=recruiter.recruiterID)
+        students = [get_object_or_404(Student, pk=interview.studentID.pk) for interview in interviews]
+
+        interview_pairs = zip(interviews, students)
+
+        # Generate random date
+        start_dt = date.today().replace(day=1, month=1).toordinal()
+        end_dt = date.today().toordinal()
+        random_date = date.fromordinal(random.randint(start_dt, end_dt))
+        
+        #generate random mode
+        modes = ['online', 'in-person']
+        random_mode = random.choice(modes)
+
+        return render(request, 'recruiter_dashboard.html', {'interviews': interview_pairs, 'username': recruiter_username, 'date': random_date, 'mode': random_mode})
+    
+    # if no interview exists render page with no interview section
+    except Student.DoesNotExist:
+        print("Student does not exist")
+        return render(request, 'student_dashboard.html')
+    
+    except Interview.DoesNotExist:
+        print("Interview does not exist")
+        return render(request, 'student_dashboard.html')
+
+    except Recruiter.DoesNotExist:
+        print("Recruiter does not exist")
+        return render(request, 'student_dashboard.html')
+
+    except Exception as e:
+        print("An error occurred:", e)
+        return render(request, 'student_dashboard.html')
+
+    
 
 def admin(request):
     return render(request, 'admin.html')

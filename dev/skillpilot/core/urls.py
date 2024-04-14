@@ -71,6 +71,6 @@ urlpatterns = [
     path('internship-details/<str:internshipID>/', views.internship_details, name='internship-details'),
     
     # updates the outcome of an interview to accepted/rejected
-    path('update_interview/<interview_id>/<str:new_outcome>/', views.update_interview, name='update_interview'),
+    path('update_interview/<interview_id>/', views.update_interview, name='update_interview'),
 
 ]
