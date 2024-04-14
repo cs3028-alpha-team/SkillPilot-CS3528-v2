@@ -12,112 +12,49 @@ from django.conf import settings
 from django.views import View
 from . models import *
 from . forms import *
-from  .gale_shapley import *
-from .data_pipeline import *
+from . gale_shapley import *
+from . data_pipeline import *
 import subprocess
 import csv
+import pickle
 import os
-import pandas as pd
+import json
+import random 
 from django.db.models import Q
-from django.contrib.auth.models import User
 from .decorators import *
-from django.shortcuts import get_object_or_404
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.model_selection import train_test_split
+import pandas as pd
+import numpy as np
 
 
-def CurrentInternship(request):
-    current_internships = Internship.objects.all() #takes all internship database information
-    return render(request, 'internship.html', {'current_internships': current_internships}) 
+# view for the route '/internship'
+@login_required
+@allowed_users(allowed_roles=['Companies']) 
+def internship(request):
+    form = InternshipForm()
 
-def clean_data(request):
+    # Get the logged-in recruiter
+    #recruiter = Recruiter.objects.get(fullName=request.user)
+    context = { 'form' : form }
+    # Pass the recruiter's company ID to the template context
+    #context = {'form': form, 'company_id': recruiter.companyID.companyID}
 
-    # Calling the data processing function
-    jobs, candidates = process_data()
-
-    # Save the processed dataframes to CSV files
-    jobs.to_csv('data/processed_jobs.csv', index=False)
-    candidates.to_csv('data/processed_candidates.csv', index=False)
-
-    return HttpResponse('Data processed successfully')
-
-def matching_view(request):
     if request.method == 'POST':
-        # Calling the compute_compatibility_matrix function
-        compatibility_matrix = compute_compatibility_matrix(students, internships)
-        
-        # Save compatibility_matrix to a CSV file
-        csv_file_path = 'data/compatibility_matrix.csv'
-        with open(csv_file_path, 'w', newline='') as csvfile:  # Open in write mode ('w')
-            writer = csv.writer(csvfile)
-            
-            # Write header row
-            writer.writerow(['Candidate IDs'] + [str(job_id) for job_id in compatibility_matrix.columns])
-            
-            # Write compatibility data
-            for index, row in compatibility_matrix.iterrows():
-                writer.writerow([index] + row.tolist())
-                
-        return HttpResponse('Matching process completed. Compatibility matrix saved to CSV file.')
-    else:
-        return HttpResponse('Error: POST request expected.')
-
-def run_matching_algorithm(request):
-    candidates = pd.read_csv('data/processed_candidates.csv') #assigning csv
-    jobs = pd.read_csv('data/processed_jobs.csv')
-    number_of_candidates = len(candidates) #checking length of candidates
-    number_of_jobs = len(jobs) #checking length of jobs
-    compatibility_matrix = compute_compatibility_matrix2(candidates, jobs) 
-   
-    # save_results_to_csv function is in the matching.py file
-    output_file = 'data/offers.csv' 
-    save_results_to_csv(formatted_pairings, output_file)
-    
-    #return JsonResponse({'status': 'success'})
-    
-    # Construct the HTML string with the link
-    html = "Matching algorithm executed successfully. Results saved to CSV file. <a href='/admin_page'>Admin</a>"
-    return HttpResponse(html)
-
-def execute_matching_process(request):
-    # Calling clean_data function
-    clean_data_response = clean_data(request)
-    if clean_data_response.status_code == 200:# checks if successful
-        # Calling matching_view function
-        matching_view_response = matching_view(request)
-        if matching_view_response.status_code == 200:
-            # Calling run_matching_algorithm function
-            return run_matching_algorithm(request)
+        form = InternshipForm(request.POST)
+        if form.is_valid():
+            form.save() 
+            messages.success(request, 'Form successful!')
+            return redirect('internship')
         else:
-            return matching_view_response
+            messages.error(request, 'Form unsuccessful try again')
+            return redirect('internship')
     else:
-        return clean_data_response
+        return render(request, 'internship.html', context) 
 
-def match_detail(request, student, internship):
-    student_num = get_object_or_404(Student, pk=student)
-    internship_num = get_object_or_404(Internship, pk=internship)
-    return render(request, 'match_detail.html', {'student': student_num, 'internship': internship_num})    
-
-def approve_match(request, id):
-    approved_matches = pd.read_csv('data/approved_offers.csv')
-    matches = pd.read_csv('data/offers.csv')
-    approved_match = matches[matches['Candidate_id'] == int(id)]
-    approved_matches = pd.concat([approved_matches, approved_match], ignore_index=True)
-    matches.drop(approved_match.index, inplace=True)
-
-    matches.to_csv('data/offers.csv', index=False, header=["Student_num","Candidate_id","Student","Student_course","Internship_id","Internship","Internship-Position"])
-    approved_matches.to_csv('data/approved_offers.csv', index=False, header=["Student_num","Candidate_id","Student","Student_course","Internship_id","Internship","Internship-Position"])
     
-    html = "Match approved successfully. Results saved to CSV file. <a href='/admin_page'>Admin</a>"
-    return HttpResponse(html)
-
-def disapprove_match(request, id):
-    matches = pd.read_csv('data/offers.csv')
-    match = matches[matches['Candidate_id'] == int(id)]
-    matches.drop(match.index, inplace=True)
-    matches.to_csv('data/offers.csv', index=False, header=["Student_num","Candidate_id","Student","Student_course","Internship_id","Internship","Internship-Position"])
-    
-    html = "Match dispproved successfully. Results saved to CSV file. <a href='/admin_page'>Admin</a>"
-    return HttpResponse(html)
-
 def send_email(request): 
     internships = Internship.objects.all() #get data from database
     students = Student.objects.all()
@@ -145,7 +82,9 @@ def send_email(request):
 
 
 
-# ========================================= General Purpose views ============================================ #
+# ====================== #
+#  General Purpose views #
+# ====================== #
 
 def home(request):
     return render(request, 'home.html')
@@ -155,7 +94,9 @@ def contacts(request):
 
 
 
-# ========================================= Student, Recruiter, and Admin Dashboard pages ============================================ #
+# ============================================== #
+#  Student, Recruiter, and Admin Dashboard pages #
+# ============================================== #
 
 # view for the route '/student'
 @login_required
@@ -203,37 +144,14 @@ def admin(request):
     return render(request, 'admin.html')
 
 
-# view for the route '/internship'
-# view for the route '/internship'
-@login_required
-@allowed_users(allowed_roles=['Companies']) 
-def internship(request):
-    form = InternshipForm()
 
-    # Get the logged-in recruiter
-    #recruiter = Recruiter.objects.get(fullName=request.user)
-    context = { 'form' : form }
-    # Pass the recruiter's company ID to the template context
-    #context = {'form': form, 'company_id': recruiter.companyID.companyID}
-
-    if request.method == 'POST':
-        form = InternshipForm(request.POST)
-        if form.is_valid():
-            form.save() 
-            messages.success(request, 'Form successful!')
-            return redirect('internship')
-        else:
-            messages.error(request, 'Form unsuccessful try again')
-            return redirect('internship')
-    else:
-        return render(request, 'internship.html', context) 
-
-
-# ========================================= Admin Dashboard - Companies Management Tool functionalities ============================================ #
+# ============================================================ #
+#  Admin Dashboard - Companies Management Tool functionalities #
+# ============================================================ #
 
 # handle the companies management tool functionality
-@login_required
-@allowed_users(allowed_roles=['Admin']) 
+#@login_required
+#@allowed_users(allowed_roles=['Admin']) 
 def companies_management_tool(request):
     
     context = {}
@@ -276,9 +194,7 @@ def companies_management_tool(request):
 
     return render(request, 'companies_management_tool.html', context=context)
 
-# handle the companies management tool delete functionality
-@login_required
-@allowed_users(allowed_roles=['Admin']) 
+# handle the procedure to delete a company from the database
 def delete_company(request, companyID):
 
     if request.method == 'POST':
@@ -316,9 +232,226 @@ def delete_company(request, companyID):
 
     return render(request, 'companies_management_tool.html')
 
-# ========================================= Authentication (Login & Signup) and Authorization logic ============================================ #
+# register a new company to the database using the payload from the form submitted from the companies management tool
+def register_company(request):
 
-# handle the signup routine for a new student
+    if request.method == 'POST':
+
+        # extract the new company details from the request payload
+        payload = {
+            'companyID' : request.POST.get('recruiterToken'),
+            'companyName' : request.POST.get('companyName'),
+            'industrySector' : request.POST.get('companyField'),
+            'websiteURL' : request.POST.get('companyWebsite')
+        }
+
+        # instantiate a new company using the Company model and request payload
+        new_company = CompanyRegistrationForm(payload)
+
+        if new_company.is_valid():
+            new_company.save()
+            messages.success(request, 'Company successfully registered!')
+    
+        else:
+            messages.info(request, 'Error occured while registering company, possibly caused by duplicate company!')
+        
+        return redirect('manage-companies')
+
+    return render(request, 'companies_management_tool.html')
+
+
+
+# =========================================== #
+# Admin Dashboard - Algorithm Functionalities #
+# =========================================== #
+
+# render the algorithm dashboard page, where the admin can compute and manage assignments
+def algorithm_dashboard(request):
+
+    if request.method == 'POST':
+        # 1. Construct the Students and Internships dataframes 
+
+        """
+        As per client requirement, each student should have at most one interview at a time, 
+        so the dataframe will be composed of all internships with positions still to be filled in 
+        and students with no interviews exclusively
+        """
+        for it in Internship.objects.all():
+            it.numberPositions = random.randint(2, 6)
+            it.save()
+
+        # construct the Students dataframe 
+        students = Student.objects.all()
+        pd_students = pd.DataFrame(columns=['studentID', 'prevProgramme', 'GPA', 'studyMode', 'studyPattern'])
+        for i in range(len(students)):
+
+            # check that student doesn't have an interview scheduled, i.e. there's not an entry in the interviews table
+            try:
+                Interview.objects.get(studentID=students[i].studentID)
+                pass
+            except:
+                pd_students.loc[i] = [ students[i].studentID, students[i].prevProgramme, students[i].GPA, students[i].studyMode, students[i].studyPattern ]
+
+        # construct the Internships dataframe
+        internships = Internship.objects.all()
+        pd_internships = pd.DataFrame(columns=['internshipID', 'companyID', 'field', 'minGPA', 'contractMode', 'contractPattern', 'numberPositions'])
+        for i in range(len(internships)):
+
+            # check that internship has still positions to fill, i.e. numberPositions > 0
+            if internships[i].numberPositions > 0:
+                pd_internships.loc[i] = [ internships[i].internshipID, internships[i].companyID.companyID, internships[i].field, internships[i].minGPA, internships[i].contractMode, internships[i].contractPattern, internships[i].numberPositions ]
+
+
+        # 2. Prepare the Dataframes for the matchmaking operation, using the DataPipeline class
+        pipeline = DataPipeline(pd_students, pd_internships)
+        pd_students, pd_internships = pipeline.clean()
+
+
+        # if there are no internship or students (or both) left to match do not run the algorithm
+        if pd_students.empty or pd_internships.empty:
+            pass
+        
+        else:
+            # 3. Populate the Compatibility Matrix using the cleaned Dataframes 
+
+            # construct the matrix
+            columns = pd_internships['internshipID'].tolist()
+            index = pd_students['studentID'].tolist()
+            matrix = pd.DataFrame(index=index, columns=columns)
+            matrix.fillna(value=np.nan, inplace=True)
+
+            # populate the matrix using the compatibility scores between students and internships
+            for i in matrix.index.tolist():
+                student = pd_students[ pd_students['studentID'] == i]
+                for j in matrix.columns.tolist():   
+                    internship = pd_internships[ pd_internships['internshipID'] == j ]
+                    matrix.loc[(i, j)] = compute_compatibility(student, internship)
+
+            # serialise the matrix, so that it can be used during the classification task at the bottom of this function
+            with open('matrix.pkl', 'wb') as file:
+                pickle.dump(matrix, file)
+
+            # 4. Compute Assignments using the Gale-Shapley algorithm
+
+            # keeps track of the offers made so far, studentID : (current_internship_offer_ID, [refused_internship_ID1, ...])
+            offers = { studentID : [None, []] for studentID in matrix.index.tolist() }
+
+            # keeps track of the number of positions left per job
+            available_positions = dict(zip(pd_internships['internshipID'], pd_internships['numberPositions']))
+
+            offers, fulfillments, updated_positions = gale_shapley(offers, matrix, available_positions)
+
+            # format the offers into Student object : Internship object
+            offers = { Student.objects.get(studentID=k) : Internship.objects.get(internshipID=v[0]) for k, v in offers.items() if v[0] is not None }
+
+            # write the offers to ComputedMatches table
+            for student, internship in offers.items():
+                
+                # Create an instance of the model with the desired attribute values
+                computed_match = ComputedMatch( computedMatchID=f"{student.studentID}{internship.internshipID}", internshipID=internship, studentID=student )
+
+                # save computed match only if not already in comptued matches table
+                try: ComputedMatch.objects.get(studentID=student.studentID, internshipID=internship.internshipID)
+                except: computed_match.save()
+
+            # update the Internships table to reflect the number of positions left per internship after the algorithm has been called
+            for id, positions in updated_positions.items():
+                internship = Internship.objects.get(internshipID=id)
+                internship.numberPositions = positions
+                internship.save()
+
+
+    # deserialise the trained model run an assessment on it
+    with open('classifier.pkl', 'rb') as f:
+        classifier = pickle.load(f)
+    classifier.assess()
+
+    # deserialise the matrix from the last run of the algorithm. This approach works since we assume that the last call of the  
+    # algorithm used the same dataframes used to compute this matrix
+    with open('matrix.pkl', 'rb') as file:
+        matrix = pickle.load(file)
+
+    # show only the computed matches which DO NOT have an interview associated already
+    matches = ComputedMatch.objects.filter(interviewID__isnull=True)
+
+    # constuct a dataframe to be fed into the classification model
+    matches_df_data = []
+    for match in matches:
+
+        # fetch the student and internship objects involved in the computed match
+        student = Student.objects.get(studentID=match.studentID.studentID)
+        internship = Internship.objects.get(internshipID=match.internshipID.internshipID)
+
+        # compute dataframe features
+        studentGPA = student.GPA
+        internshipGPA = internship.minGPA
+        GPADifference = abs(studentGPA - internshipGPA)/100
+        fieldExperienceRelevance = round(random.random(), 2) # random between 0.0 and 1.0, in future improvement will be able to calculate relevance based on actual inputs
+        contractModeCompatibility = 1 if student.studyMode == internship.contractMode else random.random() * 0.5
+        contractPatternCompatibility = 1 if student.studyPattern == internship.contractPattern else random.random() * 0.5
+        compatibilityScore = matrix.loc[student.studentID, internship.internshipID]
+
+        row = [ studentGPA, internshipGPA, compatibilityScore, GPADifference, fieldExperienceRelevance, contractModeCompatibility, contractPatternCompatibility ]
+        matches_df_data.append(row)
+
+    matches_df = pd.DataFrame(data=matches_df_data, columns=['studentGPA', 'internshipGPA', 'compatibilityScore', 'GPADifference', 'fieldExperienceRelevance', 'contractModeCompatibility', 'contractPatternCompatibility'])
+    
+    # compute the classification output for each match and attach it to the computedMatch object
+    predictions = classifier.predict(matches_df)
+    for i in range(len(matches)): matches[i].label = predictions[i]
+
+    # format the computedMatches and label them using the pre-trained classifier 
+    context = { 'computedMatches' : matches }
+
+    return render(request, 'algorithm_dashboard.html', context)
+
+
+# handle the approval routine for a match computed by the algorithm
+def approve_match(request, matchID):
+
+    # retrieve the match, the internship listing, the recruiter, the company
+    match = ComputedMatch.objects.get(computedMatchID=matchID)
+
+    # create an entry in the Interviews table corresponding to the approved match
+    interview = Interview( 
+        interviewID=f"Interview_{matchID}", outcome='pending', 
+        recruiterID=match.internshipID.recruiterID, studentID=match.studentID, 
+        companyID=match.internshipID.companyID, internshipID=match.internshipID
+    )
+
+    interview.save()
+
+    # set the computed matches foreign key to the interview ID 
+    match.interviewID = interview
+    match.save()
+
+    messages.success(request, "successfully saved match and booked internship")
+    return redirect('algorithm-dashboard')
+
+
+# handle the rejection routine for a match computed by the algorithm
+def reject_match(request, matchID):
+
+    # retrieve match
+    match = ComputedMatch.objects.get(computedMatchID=matchID)
+
+    # return the availablePosition to the match's internship
+    internship = Internship.objects.get(internshipID=match.internshipID.internshipID)
+    internship.numberPositions += 1
+    internship.save()
+
+    # delete the computed match from the table
+    match.delete()
+
+    messages.error(request, "match rejected successfully")
+    return redirect('algorithm-dashboard')
+    
+
+# ======================================================== #
+#  Authentication (Login & Signup) and Authorization logic #
+# ======================================================== #
+
+# handle the signup routine for a new studen
 def student_signup(request):
     if request.user.is_authenticated:
         return redirect('student')
@@ -402,6 +535,10 @@ def recruiter_signup(request):
             messages.error(request, 'Username already exists. Please choose a different username.')
             return redirect('recruiter-signup')
         
+        if Recruiter.objects.filter(recruiterID=recruiter_id).exists():
+            messages.error(request, 'Recruiter ID already exists. Please choose a different recruiter ID.')
+            return redirect('recruiter-signup')
+        
         # Create the recruiter account if all validations pass
         user = User.objects.create_user(username=recruiter_username, email=recruiter_email, password=password1)
         group = Group.objects.get(name = 'Companies')
@@ -452,42 +589,11 @@ def user_logout(request):
     messages.success(request, 'logout successfull')  
     return redirect('home')
 
-# register a new company to the database using the payload from the form submitted from the companies management tool
-@login_required
-@allowed_users(allowed_roles=['Admin']) 
-def register_company(request):
 
-    if request.method == 'POST':
 
-        # extract the new company details from the request payload
-        payload = {
-            'companyID' : request.POST.get('recruiterToken'),
-            'companyName' : request.POST.get('companyName'),
-            'industrySector' : request.POST.get('companyField'),
-            'websiteURL' : request.POST.get('companyWebsite')
-        }
-
-        # instantiate a new company using the Company model and request payload
-        new_company = CompanyRegistrationForm(payload)
-
-        if new_company.is_valid():
-            new_company.save()
-            messages.success(request, 'Company successfully registered!')
-    
-        else:
-            messages.info(request, 'Error occured while registering company, possibly caused by duplicate company!')
-        
-        return redirect('manage-companies')
-
-    return render(request, 'companies_management_tool.html')
-
-# view to handle logout
-@login_required
-def logout_user(request):
-    logout(request)
-    return render(request, 'home.html')
-
-# ========================================= Student, Recruiters, and Internships detail pages ============================================ #
+# ================================================== #
+#  Student, Recruiters, and Internships detail pages #
+# ================================================== #
 
 # render a given student profile's details page
 def student_details(request, studentID):
@@ -515,8 +621,13 @@ def internship_details(request, internshipID):
     except:
         messages.error(request, 'Looks like no internship with that ID exists!')
         return redirect('query-internships')
-    
-# ========================================= Admin Dashboard Query Database functionality ============================================ #
+
+
+
+
+# =============================================== #
+#  Admin Dashboard - Query Database functionality #
+# =============================================== #
 
 # handle the routine triggered from the admin dashboard to query all student profiles
 def query_students(request):
@@ -643,9 +754,9 @@ def delete_user(request):
         user.delete()
 
         logout(request)
+        messages.success(request, 'Student account deleted successfully')
         return redirect('home')
     else:
-        
         return redirect('home')
     
 @login_required

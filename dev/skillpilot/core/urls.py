@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views 
-from .views import clean_data
 
 urlpatterns = [
 
@@ -13,23 +12,16 @@ urlpatterns = [
     path('admin_page', views.admin, name='admin_page'),
 
     path('contacts', views.contacts, name='contacts'),
-
-    path('current-internships', views.CurrentInternship, name='current-internships'),
-
-    path('clean-data/', views.clean_data, name='clean_data'),
-
-    path('matching', views.matching_view, name='matching'),
-
-    path('run_matching_algorithm', views.run_matching_algorithm, name='run_matching_algorithm'),
-
-    path('execute_matching_process/', views.execute_matching_process, name='execute_matching_process'),
-    
-    path('approve_match/<str:id>/', views.approve_match, name='approve_match'),
-    
-    path('disapprove_match/<str:id>/', views.disapprove_match, name='disapprove_match'),
     
     path('send-email', views.send_email, name="send-email"),
 
+
+    # paths to handle admin approval/rejection of matchmaking algorithm output 
+    path('approve-match/<str:matchID>/', views.approve_match, name='approve-match'),
+    path('reject-match/<str:matchID>/', views.reject_match, name='reject-match'),
+
+    # path to render the algorithm dashboard, where the admin can run the algorithm and manage assignments
+    path('algorithm-dahshboard', views.algorithm_dashboard, name='algorithm-dashboard'),
 
     # path to an authenticated student dashboard
     path('student', views.student_dashboard, name='student'),
