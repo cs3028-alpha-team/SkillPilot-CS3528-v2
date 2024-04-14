@@ -21,7 +21,7 @@
 
     <div class="col-6 col-md-6 offset-3">
 
-        <p>Already have an account? Login <a href={% url 'recruiter-login' %}>here</a></p>
+        <p>Already have an account? Login <a href= "{% url 'recruiter-login' %}" >here</a></p>
 
         <form method="POST" class="needs-validation" action="{% url 'recruiter-signup' %}" autocomplete="off" enctype="multipart/form-data" novalidate>
             {% csrf_token %}

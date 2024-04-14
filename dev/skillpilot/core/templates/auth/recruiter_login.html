@@ -19,10 +19,10 @@
 
     <h1 class="display-4 m-3"> Recruiter Login Page </h1>
 
-    {% comment %} <div class="col-6 col-md-6 offset-3">
-        <p>Don't have an account? Signup <a href={% url 'student-signup' %}>here</a></p>
+    <div class="col-6 col-md-6 offset-3">
+        <p>Don't have an account? Signup <a href="{% url 'recruiter-signup' %}">here</a></p>
 
-        <form method="POST" class="needs-validation" action="{% url 'student-login' %}" autocomplete="off" enctype="multipart/form-data" novalidate>
+        <form method="POST" class="needs-validation" action="{% url 'recruiter-login' %}" autocomplete="off" enctype="multipart/form-data" novalidate>
             {% csrf_token %}
 
             <div class="mb-3 col">
@@ -44,6 +44,6 @@
 
         </form>
 
-    </div> {% endcomment %}
+    </div> 
 
 {% endblock %}

@@ -4,17 +4,17 @@ from .candidate_analysis import candidate_histogram_code, course_count, job_min_
 from django.shortcuts import render
 import os
 from django.contrib.auth.decorators import login_required
-from .decorators import *
+#from .decorators import *
 from core import gale_shapley
 from django.http import JsonResponse
 
 @login_required
-@allowed_users(allowed_roles=['Admin'])
+#@allowed_users(allowed_roles=['Admin'])
 def dashboard(request):
     return render(request, 'dashboard.html')
 
 @login_required
-@allowed_users(allowed_roles=['Admin'])
+#@allowed_users(allowed_roles=['Admin'])
 def candidate_histogram(request):
     print("Generating candidate histogram...")
     file_path = 'data/processed_candidates.csv'
@@ -26,7 +26,7 @@ def candidate_histogram(request):
     return JsonResponse({'chart_path': temp_file})
 
 @login_required
-@allowed_users(allowed_roles=['Admin'])
+#allowed_users(allowed_roles=['Admin'])
 def course_count_call(request):
     print("Generating course count chart...")
     file_path = 'data/processed_candidates.csv'
@@ -38,7 +38,7 @@ def course_count_call(request):
     return JsonResponse({'chart_path': temp_file})
 
 @login_required
-@allowed_users(allowed_roles=['Admin'])
+#@allowed_users(allowed_roles=['Admin'])
 def job_min_score_count_call(request):
     print("Generating job min score count chart...")
     file_path = 'data/processed_jobs.csv'
