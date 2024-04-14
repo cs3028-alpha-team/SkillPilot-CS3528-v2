@@ -19,12 +19,16 @@ import csv
 import pickle
 import os
 import json
-import pandas as pd
 import random 
-import numpy as np
 from django.db.models import Q
 
-from . classifier_class import Classifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.model_selection import train_test_split
+import pandas as pd
+import numpy as np
+
 
 def internship(request):
 
@@ -82,6 +86,39 @@ def send_email(request):
 # ====================== #
 
 def home(request):
+
+    # """
+    #     Note - a future improvement will consist of pre-training the model and then serialisizing and de-serialising it as required.
+    #     This will ensure the model is consistent at each run, rather than being trained every time the page is refreshed. In addition, pre-training
+    #     the model will speed-up the page rendering speed.
+    # """
+
+    # # construct the training dataframe
+    # df_cols = [ 'studentGPA', 'internshipGPA', 'compatibilityScore', 'GPADifference', 
+    # 'fieldExperienceRelevance',  'contractModeCompatibility', 'contractPatternCompatibility', 'acceptedOffer' ]
+
+    # df_data = []
+    # for i in range(1000):
+    #     studentGPA = random.randint(60, 100)
+    #     internshipGPA = random.randint(60, 100)
+    #     compatibilityScore = round(random.uniform(1.25, 4), 2)
+    #     GPADifference = abs(studentGPA-internshipGPA)/100 # scale down, can be 1.00 to 0.00
+    #     fieldExperienceRelevance = random.random()
+    #     contractModeCompatibility = random.random()
+    #     contractPatternCompatibility = random.random()
+    #     acceptedOffer = True if ((compatibilityScore + fieldExperienceRelevance + contractModeCompatibility + contractPatternCompatibility) > 4 and GPADifference < 0.5) else False
+    #     df_data.append([studentGPA, internshipGPA, compatibilityScore, GPADifference, fieldExperienceRelevance, contractModeCompatibility, contractPatternCompatibility, acceptedOffer])
+
+    # df = pd.DataFrame(data=df_data, columns=df_cols)
+
+    # # instantiate the classifer and train it
+    # classifier = Classifier(df, 'acceptedOffer')    
+
+    # with open('dev\skillpilot\classifier.pkl', 'wb') as f:
+    #     pickle.dump(classifier, f)
+
+    # print("success!!")
+
     return render(request, 'home.html')
 
 def contacts(request):
@@ -306,77 +343,48 @@ def algorithm_dashboard(request):
                 internship.save()
 
 
-    # ===================================================== KNN CLASSIFIER =================================================================================
-    """
-        Note - a future improvement will consist of pre-training the model and then serialisizing and de-serialising it as required.
-        This will ensure the model is consistent at each run, rather than being trained every time the page is refreshed. In addition, pre-training
-        the model will speed-up the page rendering speed.
-    """
 
-    # construct the training dataframe
-    df_cols = [ 'studentGPA', 'internshipGPA', 'compatibilityScore', 'GPADifference', 
-    'fieldExperienceRelevance',  'contractModeCompatibility', 'contractPatternCompatibility', 'acceptedOffer' ]
+    # deserialise the trained model and assess it 
+    with open('dev\skillpilot\classifier.pkl', 'rb') as f:
+        classifier = pickle.load(f)
 
-    df_data = []
-    for i in range(1000):
-        studentGPA = random.randint(60, 100)
-        internshipGPA = random.randint(60, 100)
-        compatibilityScore = round(random.uniform(1.25, 4), 2)
-        GPADifference = abs(studentGPA-internshipGPA)/100 # scale down, can be 1.00 to 0.00
-        fieldExperienceRelevance = random.random()
-        contractModeCompatibility = random.random()
-        contractPatternCompatibility = random.random()
-        acceptedOffer = True if ((compatibilityScore + fieldExperienceRelevance + contractModeCompatibility + contractPatternCompatibility) > 4 and GPADifference < 0.5) else False
-        df_data.append([studentGPA, internshipGPA, compatibilityScore, GPADifference, fieldExperienceRelevance, contractModeCompatibility, contractPatternCompatibility, acceptedOffer])
-
-    df = pd.DataFrame(data=df_data, columns=df_cols)
-
-    print("Dataframe created\n")
-    print(df.head())
-
-    # instantiate the classifer and train it
-    classifier = Classifier(df, 'acceptedOffer')    
-    classifier.train()
-
-    print("Classifier instantiated and trained\n")
     classifier.assess()
-    # ======================================================================================================================================
 
 
-    # show only the computed matches which DO NOT have an interview associated already
-    matches = ComputedMatch.objects.filter(interviewID__isnull=True)
+    # # show only the computed matches which DO NOT have an interview associated already
+    # matches = ComputedMatch.objects.filter(interviewID__isnull=True)
 
-    # constuct a dataframe to be fed into the classification model
-    matches_df_data = []
-    for match in matches:
+    # # constuct a dataframe to be fed into the classification model
+    # matches_df_data = []
+    # for match in matches:
 
-        # fetch the student and internship objects involved in the computed match
-        student = Student.objects.get(studentID=match.studentID.studentID)
-        internship = Internship.objects.get(internshipID=match.internshipID.internshipID)
+    #     # fetch the student and internship objects involved in the computed match
+    #     student = Student.objects.get(studentID=match.studentID.studentID)
+    #     internship = Internship.objects.get(internshipID=match.internshipID.internshipID)
 
-        # compute dataframe features
-        studentGPA = student.GPA
-        internshipGPA = internship.minGPA
-        GPADifference = abs(studentGPA - internshipGPA)/100
-        fieldExperienceRelevance = round(random.random(), 2) # random between 0.0 and 1.0, in future improvement will be able to calculate relevance based on actual inputs
-        contractModeCompatibility = 1 if student.studyMode == internship.contractMode else random.random() * 0.5
-        contractPatternCompatibility = 1 if student.studyPattern == internship.contractPattern else random.random() * 0.5
-        compatibilityScore = 1 + contractModeCompatibility + contractPatternCompatibility + GPADifference + random.random()
+    #     # compute dataframe features
+    #     studentGPA = student.GPA
+    #     internshipGPA = internship.minGPA
+    #     GPADifference = abs(studentGPA - internshipGPA)/100
+    #     fieldExperienceRelevance = round(random.random(), 2) # random between 0.0 and 1.0, in future improvement will be able to calculate relevance based on actual inputs
+    #     contractModeCompatibility = 1 if student.studyMode == internship.contractMode else random.random() * 0.5
+    #     contractPatternCompatibility = 1 if student.studyPattern == internship.contractPattern else random.random() * 0.5
+    #     compatibilityScore = 1 + contractModeCompatibility + contractPatternCompatibility + GPADifference + random.random()
 
-        row = [ studentGPA, internshipGPA, compatibilityScore, GPADifference, fieldExperienceRelevance, contractModeCompatibility, contractPatternCompatibility ]
-        matches_df_data.append(row)
+    #     row = [ studentGPA, internshipGPA, compatibilityScore, GPADifference, fieldExperienceRelevance, contractModeCompatibility, contractPatternCompatibility ]
+    #     matches_df_data.append(row)
 
-    matches_df = pd.DataFrame(data=matches_df_data, columns=df_cols[:-1])
+    # matches_df = pd.DataFrame(data=matches_df_data, columns=df_cols[:-1])
     
-    # compute the classification output for each match and attach it to the computedMatch object
-    predictions = classifier.predict(matches_df)
-    for i in range(len(matches)): matches[i].label = predictions[i]
+    # # compute the classification output for each match and attach it to the computedMatch object
+    # predictions = classifier.predict(matches_df)
+    # for i in range(len(matches)): matches[i].label = predictions[i]
 
-    # format the computedMatches and label them using the pre-trained classifier 
-    context = { 'computedMatches' : matches }
+    # # format the computedMatches and label them using the pre-trained classifier 
+    # context = { 'computedMatches' : matches }
 
 
-    return render(request, 'algorithm_dashboard.html', context)
+    return render(request, 'algorithm_dashboard.html')
 
 
 # handle the approval routine for a match computed by the algorithm
