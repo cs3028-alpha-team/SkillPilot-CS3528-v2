@@ -13,19 +13,32 @@
             Back
          </button>
 
-        <div class="container-fluid mt-5 ms-5">
-            <h1> Student Details Page </h1>
-
-            <p> {{ student.fullName}} </p>
-            <p> {{ student.GPA}} </p>
-            <p> {{ student.currProgramme}} </p>
-            <p> {{ student.prevProgramme}} </p>
-            <p> {{ student.studyMode}} </p>
-            <p> {{ student.studyPattern}} </p>
-            <p> {{ student.desiredContractLength}} </p>
-            <p> {{ student.willingRelocate}} </p>
-            <p> {{ student.aspirations}} </p>
+         <div class="container-fluid mt-5 ms-5">
+            <h1>Student Details</h1>
+        
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Full name:</strong> {{ student.fullName }}</p>
+                    <p><strong>Email:</strong> {{ student.email }}</p>
+                    <p><strong>GPA:</strong> {{ student.GPA }}</p>
+                    <p><strong>Current Programme:</strong> {{ student.currProgramme }}</p>
+                    <p><strong>Previous Programme:</strong> {{ student.prevProgramme }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Study Mode:</strong> {{ student.studyMode }}</p>
+                    <p><strong>Study Pattern:</strong> {{ student.studyPattern }}</p>
+                    <p><strong>Desired Contract Length:</strong> {{ student.desiredContractLength }}</p>
+                    <p><strong>Willing to Relocate:</strong> {{ student.willingRelocate }}</p>
+                </div>
+            </div>
+            
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <p><strong>Aspirations:</strong> {{ student.aspirations }}</p>
+                </div>
+            </div>
         </div>
+        
     <body>
 
 {% endblock %}
