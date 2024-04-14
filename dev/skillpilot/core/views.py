@@ -572,7 +572,9 @@ def student_details(request, studentID):
 def recruiter_details(request, recruiterID):
     try:
         recruiter = Recruiter.objects.get(recruiterID = recruiterID)
-        return render(request, 'recruiter_details.html', context={ 'recruiter' : recruiter })
+        company = get_object_or_404(Company, pk=recruiter.companyID.pk)
+
+        return render(request, 'recruiter_details.html', context={ 'recruiter' : recruiter, 'company' : company.companyName })
     except:
         messages.error(request, 'Looks like no recruiter with that ID exists!')
         return redirect('query-recruiters')
@@ -581,7 +583,10 @@ def recruiter_details(request, recruiterID):
 def internship_details(request, internshipID):
     try:    
         internship = Internship.objects.get(internshipID = internshipID)
-        return render(request, 'internship_details.html', context={ 'internship' : internship })
+        company = get_object_or_404(Company, pk=internship.companyID.pk)
+        recruiter = get_object_or_404(Recruiter, pk=internship.recruiterID.pk)
+
+        return render(request, 'internship_details.html', context={ 'internship' : internship, 'recruiter' : recruiter.fullName, 'company': company.companyName })
     except:
         messages.error(request, 'Looks like no internship with that ID exists!')
         return redirect('query-internships')
