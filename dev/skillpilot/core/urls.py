@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views 
-from .views import clean_data
 
 urlpatterns = [
 
@@ -13,19 +12,9 @@ urlpatterns = [
     path('admin_page', views.admin, name='admin_page'),
 
     path('contacts', views.contacts, name='contacts'),
-
-    path('current-internships', views.CurrentInternship, name='current-internships'),
-
-    path('clean-data/', views.clean_data, name='clean_data'),
-
-    path('matching', views.matching_view, name='matching'),
-
-    path('run_matching_algorithm', views.run_matching_algorithm, name='run_matching_algorithm'),
-
-    path('execute_matching_process/', views.execute_matching_process, name='execute_matching_process'),
-    
     
     path('send-email', views.send_email, name="send-email"),
+
 
     # paths to handle admin approval/rejection of matchmaking algorithm output 
     path('approve-match/<str:matchID>/', views.approve_match, name='approve-match'),

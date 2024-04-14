@@ -16,13 +16,23 @@ from . gale_shapley import *
 from . data_pipeline import *
 import subprocess
 import csv
+import pickle
 import os
+import json
+import random 
+from django.db.models import Q
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.model_selection import train_test_split
 import pandas as pd
-import random
 import numpy as np
+
 from django.db.models import Q
 from datetime import date
 import random
+
 
 def internship(request):
 
@@ -48,79 +58,6 @@ def internship(request):
     else:
         return render(request, 'internship.html', context)
     
-def CurrentInternship(request):
-    current_internships = Internship.objects.all() #takes all internship database information
-    return render(request, 'internship.html', {'current_internships': current_internships}) 
-
-def clean_data(request):
-
-    # Calling the data processing function
-    jobs, candidates = process_data()
-
-    # Save the processed dataframes to CSV files
-    jobs.to_csv('data/processed_jobs.csv', index=False)
-    candidates.to_csv('data/processed_candidates.csv', index=False)
-
-    return HttpResponse('Data processed successfully')
-
-
-def matching_view(request):
-    if request.method == 'POST':
-        # Calling the compute_compatibility_matrix function
-        compatibility_matrix = compute_compatibility_matrix(students, internships)
-        
-        # Save compatibility_matrix to a CSV file
-        csv_file_path = 'data/compatibility_matrix.csv'
-        with open(csv_file_path, 'w', newline='') as csvfile:  # Open in write mode ('w')
-            writer = csv.writer(csvfile)
-            
-            # Write header row
-            writer.writerow(['Candidate IDs'] + [str(job_id) for job_id in compatibility_matrix.columns])
-            
-            # Write compatibility data
-            for index, row in compatibility_matrix.iterrows():
-                writer.writerow([index] + row.tolist())
-                
-        return HttpResponse('Matching process completed. Compatibility matrix saved to CSV file.')
-    else:
-        return HttpResponse('Error: POST request expected.')
-
-def run_matching_algorithm(request):
-    candidates = pd.read_csv('data/processed_candidates.csv') #assigning csv
-    jobs = pd.read_csv('data/processed_jobs.csv')
-    number_of_candidates = len(candidates) #checking length of candidates
-    number_of_jobs = len(jobs) #checking length of jobs
-    compatibility_matrix = compute_compatibility_matrix2(candidates, jobs) 
-   
-    # save_results_to_csv function is in the matching.py file
-    output_file = 'data/offers.csv' 
-    save_results_to_csv(formatted_pairings, output_file)
-    
-    #return JsonResponse({'status': 'success'})
-    
-    # Construct the HTML string with the link
-    html = "Matching algorithm executed successfully. Results saved to CSV file. <a href='/admin_page'>Admin</a>"
-    return HttpResponse(html)
-
-def execute_matching_process(request):
-    # Calling clean_data function
-    clean_data_response = clean_data(request)
-    if clean_data_response.status_code == 200:# checks if successful
-        # Calling matching_view function
-        matching_view_response = matching_view(request)
-        if matching_view_response.status_code == 200:
-            # Calling run_matching_algorithm function
-            return run_matching_algorithm(request)
-        else:
-            return matching_view_response
-    else:
-        return clean_data_response
-
-def match_detail(request, student, internship):
-    student_num = get_object_or_404(Student, pk=student)
-    internship_num = get_object_or_404(Internship, pk=internship)
-    return render(request, 'match_detail.html', {'student': student_num, 'internship': internship_num})    
-
 def send_email(request): 
     internships = Internship.objects.all() #get data from database
     students = Student.objects.all()
@@ -145,9 +82,6 @@ def send_email(request):
         mail.send()
         
     return HttpResponse('Email sent')
-
-
-
 
 
 
@@ -397,13 +331,9 @@ def algorithm_dashboard(request):
         so the dataframe will be composed of all internships with positions still to be filled in 
         and students with no interviews exclusively
         """
-
-        """
-        # uncomment to restore internship number of positions, DO NOT USE IN PRODUCTION
-        for internship in Internship.objects.all():
-            internship.numberPositions = random.randint(2,5)
-            internship.save()
-        """
+        for it in Internship.objects.all():
+            it.numberPositions = random.randint(2, 6)
+            it.save()
 
         # construct the Students dataframe 
         students = Student.objects.all()
@@ -432,31 +362,32 @@ def algorithm_dashboard(request):
         pd_students, pd_internships = pipeline.clean()
 
 
-        # 3. Populate the Compatibility Matrix using the cleaned Dataframes 
-
-        # construct the matrix
-        columns = pd_internships['internshipID'].tolist()
-        index = pd_students['studentID'].tolist()
-        matrix = pd.DataFrame(index=index, columns=columns)
-        matrix.fillna(value=np.nan, inplace=True)
-
-
-        # populate the matrix using the compatibility scores between students and internships
-        for i in matrix.index.tolist():
-            student = pd_students[ pd_students['studentID'] == i]
-            for j in matrix.columns.tolist():   
-                internship = pd_internships[ pd_internships['internshipID'] == j ]
-                matrix.loc[(i, j)] = compute_compatibility(student, internship)
-
-
-
-        # 4. Compute Assignments using the Gale-Shapley algorithm
-
         # if there are no internship or students (or both) left to match do not run the algorithm
         if pd_students.empty or pd_internships.empty:
             pass
         
         else:
+            # 3. Populate the Compatibility Matrix using the cleaned Dataframes 
+
+            # construct the matrix
+            columns = pd_internships['internshipID'].tolist()
+            index = pd_students['studentID'].tolist()
+            matrix = pd.DataFrame(index=index, columns=columns)
+            matrix.fillna(value=np.nan, inplace=True)
+
+            # populate the matrix using the compatibility scores between students and internships
+            for i in matrix.index.tolist():
+                student = pd_students[ pd_students['studentID'] == i]
+                for j in matrix.columns.tolist():   
+                    internship = pd_internships[ pd_internships['internshipID'] == j ]
+                    matrix.loc[(i, j)] = compute_compatibility(student, internship)
+
+            # serialise the matrix, so that it can be used during the classification task at the bottom of this function
+            with open('matrix.pkl', 'wb') as file:
+                pickle.dump(matrix, file)
+
+            # 4. Compute Assignments using the Gale-Shapley algorithm
+
             # keeps track of the offers made so far, studentID : (current_internship_offer_ID, [refused_internship_ID1, ...])
             offers = { studentID : [None, []] for studentID in matrix.index.tolist() }
 
@@ -475,11 +406,8 @@ def algorithm_dashboard(request):
                 computed_match = ComputedMatch( computedMatchID=f"{student.studentID}{internship.internshipID}", internshipID=internship, studentID=student )
 
                 # save computed match only if not already in comptued matches table
-                try:
-                    ComputedMatch.objects.get(studentID=student.studentID, internshipID=internship.internshipID)
-                    pass
-                except:
-                    computed_match.save()
+                try: ComputedMatch.objects.get(studentID=student.studentID, internshipID=internship.internshipID)
+                except: computed_match.save()
 
             # update the Internships table to reflect the number of positions left per internship after the algorithm has been called
             for id, positions in updated_positions.items():
@@ -487,8 +415,48 @@ def algorithm_dashboard(request):
                 internship.numberPositions = positions
                 internship.save()
 
+
+    # deserialise the trained model run an assessment on it
+    with open('classifier.pkl', 'rb') as f:
+        classifier = pickle.load(f)
+    classifier.assess()
+
+    # deserialise the matrix from the last run of the algorithm. This approach works since we assume that the last call of the  
+    # algorithm used the same dataframes used to compute this matrix
+    with open('matrix.pkl', 'rb') as file:
+        matrix = pickle.load(file)
+
     # show only the computed matches which DO NOT have an interview associated already
-    context = { 'computedMatches' : ComputedMatch.objects.filter(interviewID__isnull=True) }
+    matches = ComputedMatch.objects.filter(interviewID__isnull=True)
+
+    # constuct a dataframe to be fed into the classification model
+    matches_df_data = []
+    for match in matches:
+
+        # fetch the student and internship objects involved in the computed match
+        student = Student.objects.get(studentID=match.studentID.studentID)
+        internship = Internship.objects.get(internshipID=match.internshipID.internshipID)
+
+        # compute dataframe features
+        studentGPA = student.GPA
+        internshipGPA = internship.minGPA
+        GPADifference = abs(studentGPA - internshipGPA)/100
+        fieldExperienceRelevance = round(random.random(), 2) # random between 0.0 and 1.0, in future improvement will be able to calculate relevance based on actual inputs
+        contractModeCompatibility = 1 if student.studyMode == internship.contractMode else random.random() * 0.5
+        contractPatternCompatibility = 1 if student.studyPattern == internship.contractPattern else random.random() * 0.5
+        compatibilityScore = matrix.loc[student.studentID, internship.internshipID]
+
+        row = [ studentGPA, internshipGPA, compatibilityScore, GPADifference, fieldExperienceRelevance, contractModeCompatibility, contractPatternCompatibility ]
+        matches_df_data.append(row)
+
+    matches_df = pd.DataFrame(data=matches_df_data, columns=['studentGPA', 'internshipGPA', 'compatibilityScore', 'GPADifference', 'fieldExperienceRelevance', 'contractModeCompatibility', 'contractPatternCompatibility'])
+    
+    # compute the classification output for each match and attach it to the computedMatch object
+    predictions = classifier.predict(matches_df)
+    for i in range(len(matches)): matches[i].label = predictions[i]
+
+    # format the computedMatches and label them using the pre-trained classifier 
+    context = { 'computedMatches' : matches }
 
     return render(request, 'algorithm_dashboard.html', context)
 
