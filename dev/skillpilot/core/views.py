@@ -24,9 +24,6 @@ import random
 import numpy as np
 from django.db.models import Q
 
-from classifier.classifier import Classifier
-
-
 def internship(request):
 
     form = InternshipForm()
@@ -51,79 +48,6 @@ def internship(request):
     else:
         return render(request, 'internship.html', context)
     
-def CurrentInternship(request):
-    current_internships = Internship.objects.all() #takes all internship database information
-    return render(request, 'internship.html', {'current_internships': current_internships}) 
-
-def clean_data(request):
-
-    # Calling the data processing function
-    jobs, candidates = process_data()
-
-    # Save the processed dataframes to CSV files
-    jobs.to_csv('data/processed_jobs.csv', index=False)
-    candidates.to_csv('data/processed_candidates.csv', index=False)
-
-    return HttpResponse('Data processed successfully')
-
-
-def matching_view(request):
-    if request.method == 'POST':
-        # Calling the compute_compatibility_matrix function
-        compatibility_matrix = compute_compatibility_matrix(students, internships)
-        
-        # Save compatibility_matrix to a CSV file
-        csv_file_path = 'data/compatibility_matrix.csv'
-        with open(csv_file_path, 'w', newline='') as csvfile:  # Open in write mode ('w')
-            writer = csv.writer(csvfile)
-            
-            # Write header row
-            writer.writerow(['Candidate IDs'] + [str(job_id) for job_id in compatibility_matrix.columns])
-            
-            # Write compatibility data
-            for index, row in compatibility_matrix.iterrows():
-                writer.writerow([index] + row.tolist())
-                
-        return HttpResponse('Matching process completed. Compatibility matrix saved to CSV file.')
-    else:
-        return HttpResponse('Error: POST request expected.')
-
-def run_matching_algorithm(request):
-    candidates = pd.read_csv('data/processed_candidates.csv') #assigning csv
-    jobs = pd.read_csv('data/processed_jobs.csv')
-    number_of_candidates = len(candidates) #checking length of candidates
-    number_of_jobs = len(jobs) #checking length of jobs
-    compatibility_matrix = compute_compatibility_matrix2(candidates, jobs) 
-   
-    # save_results_to_csv function is in the matching.py file
-    output_file = 'data/offers.csv' 
-    save_results_to_csv(formatted_pairings, output_file)
-    
-    #return JsonResponse({'status': 'success'})
-    
-    # Construct the HTML string with the link
-    html = "Matching algorithm executed successfully. Results saved to CSV file. <a href='/admin_page'>Admin</a>"
-    return HttpResponse(html)
-
-def execute_matching_process(request):
-    # Calling clean_data function
-    clean_data_response = clean_data(request)
-    if clean_data_response.status_code == 200:# checks if successful
-        # Calling matching_view function
-        matching_view_response = matching_view(request)
-        if matching_view_response.status_code == 200:
-            # Calling run_matching_algorithm function
-            return run_matching_algorithm(request)
-        else:
-            return matching_view_response
-    else:
-        return clean_data_response
-
-def match_detail(request, student, internship):
-    student_num = get_object_or_404(Student, pk=student)
-    internship_num = get_object_or_404(Internship, pk=internship)
-    return render(request, 'match_detail.html', {'student': student_num, 'internship': internship_num})    
-
 def send_email(request): 
     internships = Internship.objects.all() #get data from database
     students = Student.objects.all()
@@ -148,9 +72,6 @@ def send_email(request):
         mail.send()
         
     return HttpResponse('Email sent')
-
-
-
 
 
 
@@ -385,16 +306,8 @@ def algorithm_dashboard(request):
     # show only the computed matches which DO NOT have an interview associated already
     context = { 'computedMatches' : ComputedMatch.objects.filter(interviewID__isnull=True) }
 
-    # deserialise the pre-trained classifier and use it to label the compute offers
-    with open('classifier\\classifier.pkl', 'rb') as f:
-        print(pickle.load(f))
 
     return render(request, 'algorithm_dashboard.html', context)
-
-
-
-
-
 
 
 # handle the approval routine for a match computed by the algorithm

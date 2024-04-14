@@ -6,7 +6,8 @@ import pandas as pd
 import numpy as np
 import random as rand
 import pickle
-from classifier import Classifier
+
+from classifier_class import Classifier
 
 if __name__ == "__main__":
     
