@@ -576,7 +576,7 @@ def student_login(request):
 # handle the signup routine for new recruiters
 def recruiter_signup(request):
     if request.user.is_authenticated:
-        return redirect('internship')
+        return redirect('recruiter')
     
     if request.method == 'POST':
         # Extract recruiter details from the form
@@ -629,7 +629,7 @@ def recruiter_signup(request):
 # handle the login routine for returning recruiters
 def recruiter_login(request):
     if request.user.is_authenticated:
-        return redirect('internship')
+        return redirect('recruiter')
     
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -639,7 +639,7 @@ def recruiter_login(request):
         # If user is authenticated, log them in and redirect to the recruiter form page
         if user is not None:
             login(request, user)
-            return redirect('internship')  # Adjust this to the correct URL name for the recruiter form page
+            return redirect('recruiter')  # Adjust this to the correct URL name for the recruiter form page
         else:
             # If authentication fails, display an error message
             messages.error(request, 'Invalid username or password.')
