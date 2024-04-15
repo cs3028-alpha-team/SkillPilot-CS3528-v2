@@ -83,17 +83,12 @@ def contacts(request):
 @login_required
 @allowed_users(allowed_roles=['Students']) # access to student accounts only
 def student_dashboard(request):
-
     if request.method == 'POST':
         form = StudentForm(request.POST)
-
         if form.is_valid():
-            email = form.cleaned_data['email']  # Retrieving email address from the form data
-            
-            # Check if a student with the same email already exists
+            email = form.cleaned_data['email']
             existing_student = Student.objects.filter(email=email).first()
             if existing_student:
-                # If student with same email exists the information for that email is updated 
                 form_data = form.cleaned_data
                 existing_student.fullName = form_data['fullName']
                 existing_student.currProgramme = form_data['currProgramme']
@@ -104,23 +99,51 @@ def student_dashboard(request):
                 existing_student.desiredContractLength = form_data['desiredContractLength']
                 existing_student.willingRelocate = form_data['willingRelocate']
                 existing_student.aspirations = form_data['aspirations']
-
-                existing_student.save()  # Saving the updated instance
+                existing_student.save()
                 messages.success(request, 'Form successful!')
-                return redirect('student')  
-            else: 
-                # If student with same email does not exist from is a success
-                form.save() 
+            else:
+                form.save()
                 messages.success(request, 'Form successful!')
-                return redirect('student')  
         else:
-            messages.error(request, 'Form unsuccessful try again') 
-            return redirect('student')
+            messages.error(request, 'Form unsuccessful try again')
+        return redirect('student')
+
     else:
         form = StudentForm()
         context = {'form': form}
-        return render(request, 'student_dashboard.html', context)
+
     
+    try:
+        user = request.user
+        student_email = user.email
+        student_username = user.username
+        
+        student = get_object_or_404(Student, email=student_email)
+        interview = get_object_or_404(Interview, studentID=student.studentID)
+        recruiter = get_object_or_404(Recruiter, pk=interview.recruiterID.pk)
+        
+        start_dt = date.today().replace(day=1, month=1).toordinal()
+        end_dt = date.today().toordinal()
+        random_date = date.fromordinal(random.randint(start_dt, end_dt))
+        modes = ['online', 'in-person']
+        random_mode = random.choice(modes)
+        
+        return render(request, 'student_dashboard.html', {'interview': interview, 'username': student_username, 'recruiter': recruiter, 'date': random_date, 'mode': random_mode})
+    
+    except Student.DoesNotExist:
+        print("Student does not exist")
+    
+    except Interview.DoesNotExist:
+        print("Interview does not exist")
+        
+    except Recruiter.DoesNotExist:
+        print("Recruiter does not exist")
+
+    except Exception as e:
+        print("An error occurred:", e)
+
+    return render(request, 'student_dashboard.html', context)        
+
 # view for the route '/internship'
 @login_required
 @allowed_users(allowed_roles=['Companies']) 
@@ -162,8 +185,8 @@ def update_interview(request, interview_id):
         
         return redirect('student')
 
-#interview system for recruiters, will be added to recruiter dashboard
-def interview_recruiter(request):
+#recruiter dashboard
+def recruiter_dashboard(request):
     #basic interview system 
     
     interviews = Interview.objects.all()
@@ -172,7 +195,7 @@ def interview_recruiter(request):
     
     try:
         
-        #get student id from student email   
+        #get recruiter id from recruiter email   
         user = request.user
         recruiter_email = user.email
         recruiter_username = user.username
@@ -198,19 +221,19 @@ def interview_recruiter(request):
     # if no interview exists render page with no interview section
     except Student.DoesNotExist:
         print("Student does not exist")
-        return render(request, 'student_dashboard.html')
+        return render(request, 'recruiter_dashboard.html')
     
     except Interview.DoesNotExist:
         print("Interview does not exist")
-        return render(request, 'student_dashboard.html')
+        return render(request, 'recruiter_dashboard.html')
 
     except Recruiter.DoesNotExist:
         print("Recruiter does not exist")
-        return render(request, 'student_dashboard.html')
+        return render(request, 'recruiter_dashboard.html')
 
     except Exception as e:
         print("An error occurred:", e)
-        return render(request, 'student_dashboard.html')
+        return render(request, 'recruiter_dashboard.html')
 
   
 
