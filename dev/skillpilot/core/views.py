@@ -29,6 +29,13 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
 
+import seaborn as sns
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.use('Agg') # use the agg backend to silence GUI warning
+import io
+import base64
+
 from django.db.models import Q
 from datetime import date
 import random
@@ -344,6 +351,7 @@ def delete_company(request, companyID):
 
     return render(request, 'companies_management_tool.html')
 
+
 # register a new company to the database using the payload from the form submitted from the companies management tool
 def register_company(request):
 
@@ -558,6 +566,64 @@ def reject_match(request, matchID):
     messages.error(request, "match rejected successfully")
     return redirect('algorithm-dashboard')
     
+
+
+
+
+
+
+
+
+# ===================================== #
+# Admin Dashboard - Analytics Dashboard #
+# ===================================== #
+
+def analytics_dashboard(request):
+
+    context = {}
+
+    # deserialise the last computed matrix into a dataframe
+    with open('matrix.pkl', 'rb') as file:
+        matrix = pickle.load(file)
+
+    # Generate heatmap
+    fig_heatmap, ax_heatmap = plt.subplots(figsize=(10, 10))
+    sns.heatmap(matrix.iloc[:25, :25], cmap="plasma", annot=True, linewidth=.5)  # Sample 25 rows for the heatmap
+    buffer_heatmap = io.BytesIO()
+    plt.savefig(buffer_heatmap, format='png')
+    buffer_heatmap.seek(0)
+    heatmap_base64 = base64.b64encode(buffer_heatmap.getvalue()).decode('utf-8')
+    plt.close()
+    context['heatmap_image'] = heatmap_base64
+
+
+    students = [ [student.studentID, student.currProgramme] for student in Student.objects.all() ]
+    students_df = pd.DataFrame(data=students, columns=['studentID', 'currProgramme'])
+
+    # countplot of student grouped by their current degree of study
+    fig_heatmap, ax = plt.subplots(figsize=(10, 20))
+    chart = sns.countplot(data=students_df, x='currProgramme', hue='currProgramme', palette='RdBu', orient="v", legend=False)
+
+    # Set the tick locations and labels
+    chart.set_xticklabels(chart.get_xticklabels(), rotation=30, ha="right", rotation_mode='anchor')
+
+    buffer_countplot = io.BytesIO()
+    plt.savefig(buffer_countplot, format='png')
+    buffer_countplot.seek(0)
+    countplot_base64 = base64.b64encode(buffer_countplot.getvalue()).decode('utf-8')
+    plt.close()
+    context['countplot_image'] = countplot_base64
+
+
+
+
+    return render(request, 'analytics_dashboard.html', context)
+
+
+
+
+
+
 
 # ======================================================== #
 #  Authentication (Login & Signup) and Authorization logic #

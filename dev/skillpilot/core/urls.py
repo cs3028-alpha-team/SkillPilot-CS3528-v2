@@ -23,6 +23,9 @@ urlpatterns = [
     # path to render the algorithm dashboard, where the admin can run the algorithm and manage assignments
     path('algorithm-dahshboard', views.algorithm_dashboard, name='algorithm-dashboard'),
 
+    # path to render the analytics dashboard, accessible from the admin page
+    path('analytics-dashboard', views.analytics_dashboard, name='analytics-dashboard'),
+
     # path to an authenticated student dashboard
     path('student', views.student_dashboard, name='student'),
 
@@ -68,5 +71,5 @@ urlpatterns = [
 
     
     # updates the outcome of an interview to accepted/rejected
-    path('update_interview/<interview_id>/', views.update_interview, name='update_interview'),
+    path('update-interview/<interview_id>/', views.update_interview, name='update-interview'),
 ]

@@ -44,7 +44,7 @@
             </div>
             <!-- This is the recruiter version, it will be removed here when the recruiter dashboard is added and moved there-->
             <div style="flex: 1; padding-left: 20px;"> 
-                <form method="post" action="{% url 'update_interview' interview.interviewID %}">
+                <form method="post" action="{% url 'update-interview' interview.interviewID %}">
                     {% csrf_token %}
                     <select name="new_outcome" class="form-select mb-3" aria-label="Select Interview Outcome"> <!-- Added margin bottom -->
                         <option value="accepted">Accepted</option>
