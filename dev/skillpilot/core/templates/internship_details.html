@@ -13,14 +13,17 @@
             Back
          </button>
 
-        <div class="container-fluid mt-5 ms-5">
-            <h1> Internship Details Page </h1>
-
-            <p> {{ internship.title}} </p>
-            <p> {{ internship.companyID}} </p>
-            <p> {{ internship.recruiterID}} </p>
-            <p> {{ internship.numberPositions}} </p>
-            <p> {{ internship.minGPA}} </p>
+         <div class="container-fluid mt-5 ms-5">
+            <h1>Internship Details</h1>
+        
+            <p><strong>Title:</strong> {{ internship.title }}</p>
+            <p><strong>Field:</strong> {{ internship.field }}</p>
+            <p><strong>Company:</strong> {{ company }}</p>
+            <p><strong>Recruiter:</strong> {{ recruiter }}</p>
+            <p><strong>Number of Positions:</strong> {{ internship.numberPositions }}</p>
+            <p><strong>Minimum GPA:</strong> {{ internship.minGPA }}</p>
+            <p><strong>Contract Mode:</strong> {{ internship.contractMode }}</p>
+            <p><strong>Contract Pattern:</strong> {{ internship.contractPattern }}</p>
         </div>
     <body>
 
