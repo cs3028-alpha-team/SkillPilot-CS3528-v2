@@ -22,6 +22,10 @@
 
 <body>
   <div class="container">
+        <!-- 
+            RecruiterName will be replaced with username once recruiter log-in is successfull 
+            Also, the dashboard should not be accessible to unauthorized users
+        -->
     <header class="display-5 mt-5 ms-5 mb-3">
       Welcome back, {{ request.user.username }}
     </header>
@@ -36,17 +40,18 @@
           enctype="multipart/form-data"
         >
           {% csrf_token %}
-
+           <!-- internship title input -->
           <div class="mb-3">
             <label for="titleInput" class="form-label">Company Name</label>
             {{ form.title }}
           </div>
-
+          <!-- internship field input -->
           <div class="row">
             <div class="mb-3 col">
               <label for="fieldInput" class="form-label">Field</label>
               {{ form.field }}
             </div>
+            <!-- internship ID input -->
             <div class="mb-3 col">
               <label for="internshipIDInput" class="form-label"
                 >Opportunity Name</label
@@ -54,12 +59,30 @@
               {{ form.internshipID }}
             </div>
           </div>
+          <!-- 
+              pre-populate these fields and disable them, this is done to show the recruiter the full
+              request payload 
+          -->
           <div class="row">
+            <!-- internship recruiter ID input 
             <div class="mb-3 col">
               <label for="recruiterIDInput" class="form-label"
                 >Recruiter ID</label
               >
               {{ form.recruiterID }}
+            </div>
+            -->
+            <!-- internship recruiter ID read-only -->
+            <div class="mb-3 col">
+              <label for="recruiterIDInput" class="form-label">Recruiter ID</label>
+              <input
+                type="fieldInput"
+                id="recruiterIDInput"
+                name="recruiterID"
+                class="form-control"
+                value="{{ company_id }}"
+                readonly
+              />
             </div>
             <!-- company ID input -->
             <div class="mb-3 col">
@@ -68,28 +91,29 @@
               >
               {{ form.companyID }}
             </div>
-            <!--
-              <div class="mb-3 col">
-                <label for="companyID" class="form-label">Recruiter Token</label>
-                <input
-                  type="fieldInput"
-                  id="companyID"
-                  name="companyID"
-                  class="form-control"
-                  value="{{ company_id }}"
-                  readonly
-                />
-              </div>
-              -->
+            <!-- company ID input read only
+            <div class="mb-3 col">
+              <label for="companyID" class="form-label">Recruiter Token</label>
+              <input
+                type="fieldInput"
+                id="companyID"
+                name="companyID"
+                class="form-control"
+                value="{{ company_id }}"
+                readonly
+              />
+            </div>
           </div>
-
+          -->
           <div class="row mb-3">
+            <!-- internship contract length input -->
             <div class="col">
               <label for="contractmodeInput" class="form-label"
                 >Contract Mode</label
               >
               {{ form.contractMode }}
             </div>
+            <!-- internship contract pattern input -->
             <div class="col">
               <label for="contractpatternInput" class="form-label"
                 >Contract Pattern</label
@@ -97,12 +121,13 @@
               {{ form.contractPattern }}
             </div>
           </div>
-
+          <!-- internship min GPA input -->
           <div class="row mb-3">
             <div class="col">
               <label for="minGPAInput" class="form-label">Min GPA</label>
               {{ form.minGPA }}
             </div>
+            <!-- internship number of positions input -->
             <div class="col">
               <label for="numberPositionsInput" class="form-label"
                 >Positions</label
@@ -110,7 +135,7 @@
               {{ form.numberPositions }}
             </div>
           </div>
-
+          <!-- button for form submission -->
           <div class="mb-3 mt-5">
             <button type="submit" class="btn btn-primary col-12">Submit</button>
           </div>
@@ -118,6 +143,7 @@
       </div>
     </div>
     <div class="row justify-content-center mt-2">
+      <!-- button for form deleting account -->
       <div class="col-md-8">
         <form method="POST" action="{% url 'delete-recruiter' %}">
           {% csrf_token %}
