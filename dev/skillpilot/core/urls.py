@@ -35,6 +35,13 @@ urlpatterns = [
     # path to delete a company listing, the recruiter profile associated with it, and all internship listings associated with it
     path('delete-company/<str:companyID>', views.delete_company, name='delete-company'),
 
+    # path to delete a student profile associated, and student application connected to it
+    path('delete-user', views.delete_user, name='delete-user'),
+    
+    # path to delete a recruiter profile associated, and student application connected to it
+    path('delete-recruiter', views.delete_recruiter, name='delete-recruiter'),
+
+
     # paths related to student authentication and authorization
     path('student-signup', views.student_signup, name='student-signup'),
     path('student-login', views.student_login, name='student-login'),
@@ -58,8 +65,8 @@ urlpatterns = [
     path('student-details/<str:studentID>/', views.student_details, name='student-details'),
     path('recruiter-details/<str:recruiterID>/', views.recruiter_details, name='recruiter-details'),
     path('internship-details/<str:internshipID>/', views.internship_details, name='internship-details'),
+
     
     # updates the outcome of an interview to accepted/rejected
     path('update_interview/<interview_id>/', views.update_interview, name='update_interview'),
-
 ]

@@ -35,9 +35,19 @@
         <div class="collapse navbar-collapse" id="navLinks">
           <div class="ms-auto">
             <ul class="navbar-nav ml-auto">
+                <!-- if the user is authenticated it will chnage the nagivation to inlcude a logout button-->
+              {% if user.is_authenticated %}
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'admin_page' %}">Admin</a>
               </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+              </li>
+              {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'admin_page' %}">Admin</a>
+              </li>
+              {% endif %}
               <li class="nav-item">
                 <a class="nav-link" href="https://www.abdn.ac.uk/">Info</a>
               </li>
@@ -71,6 +81,5 @@
       integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
       crossorigin="anonymous"
     ></script>
-    <script src="{% static 'js/app.js' %}"></script>
   </body>
 </html>

@@ -103,6 +103,7 @@ class Recruiter(models.Model):
     companyID = models.ForeignKey('core.Company', on_delete = models.CASCADE)
     jobTitle = models.CharField(max_length = 40)
     
+
 # interviews table
 class Interview(models.Model):
 
