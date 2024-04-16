@@ -165,6 +165,10 @@ def recruiter_dashboard(request):
     try:
         # Get the logged-in recruiter
         recruiter = Recruiter.objects.get(email=logged_in_recruiter.email)
+        print("Recruiter companyID:", recruiter.companyID)
+        
+        #company = Company.objects.get(companyID=recruiter.companyID)
+        #print("Corresponding Company ID:", company.companyID) 
         context = {'form': form, 'company_id': recruiter.recruiterID}
     except Recruiter.DoesNotExist:
         messages.error(request, 'No recruiter associated with the logged-in user')
