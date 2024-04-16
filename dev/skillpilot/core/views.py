@@ -582,37 +582,52 @@ def analytics_dashboard(request):
 
     context = {}
 
-    # deserialise the last computed matrix into a dataframe
-    with open('matrix.pkl', 'rb') as file:
-        matrix = pickle.load(file)
+    # calculate system-generic stats
+    students_count = len(Student.objects.all())
+    internships_count = len(Internship.objects.all())
+    recruiters_count = len(Recruiter.objects.all())
+    unclaimed_companies_count = len(Recruiter.objects.filter(companyID__isnull=True))
 
-    # Generate heatmap
-    fig_heatmap, ax_heatmap = plt.subplots(figsize=(10, 10))
-    sns.heatmap(matrix.iloc[:25, :25], cmap="plasma", annot=True, linewidth=.5)  # Sample 25 rows for the heatmap
-    buffer_heatmap = io.BytesIO()
-    plt.savefig(buffer_heatmap, format='png')
-    buffer_heatmap.seek(0)
-    heatmap_base64 = base64.b64encode(buffer_heatmap.getvalue()).decode('utf-8')
-    plt.close()
-    context['heatmap_image'] = heatmap_base64
+    context['general'] = { 
+        'students_count' : students_count, 
+        'internships_count' : internships_count, 
+        'recruiters_count' : recruiters_count, 
+        'unclaimed_companies_count' : unclaimed_companies_count, 
+    }
+
+    # # 1. Last computed compatibility matrix in the form of a heatmap ===================================================================
+    # with open('matrix.pkl', 'rb') as file:
+    #     matrix = pickle.load(file)
+
+    # fig_heatmap, ax_heatmap = plt.subplots(figsize=(10, 10))
+    # sns.heatmap(matrix.iloc[:25, :25], cmap="plasma", annot=True, linewidth=.5)  # Sample 25 rows for the heatmap
+    # buffer_heatmap = io.BytesIO()
+    # plt.savefig(buffer_heatmap, format='png')
+    # buffer_heatmap.seek(0)
+    # heatmap_base64 = base64.b64encode(buffer_heatmap.getvalue()).decode('utf-8')
+    # plt.close()
+    # context['heatmap_image'] = heatmap_base64
 
 
-    students = [ [student.studentID, student.currProgramme] for student in Student.objects.all() ]
-    students_df = pd.DataFrame(data=students, columns=['studentID', 'currProgramme'])
+    # # 2. Countplot of students' current degree programme ================================================================================== 
+    # students = [ [student.studentID, student.currProgramme] for student in Student.objects.all() ]
+    # students_df = pd.DataFrame(data=students, columns=['studentID', 'currProgramme'])
 
-    # countplot of student grouped by their current degree of study
-    fig_heatmap, ax = plt.subplots(figsize=(10, 20))
-    chart = sns.countplot(data=students_df, x='currProgramme', hue='currProgramme', palette='RdBu', orient="v", legend=False)
+    # counts = students_df['currProgramme'].value_counts()
+    
 
-    # Set the tick locations and labels
-    chart.set_xticklabels(chart.get_xticklabels(), rotation=30, ha="right", rotation_mode='anchor')
+    # fig_heatmap, ax = plt.subplots(figsize=(10, 10))
+    # chart = counts.plot(kind='pie', autopct='%1.1f%%')
 
-    buffer_countplot = io.BytesIO()
-    plt.savefig(buffer_countplot, format='png')
-    buffer_countplot.seek(0)
-    countplot_base64 = base64.b64encode(buffer_countplot.getvalue()).decode('utf-8')
-    plt.close()
-    context['countplot_image'] = countplot_base64
+    # buffer_countplot = io.BytesIO()
+    # plt.savefig(buffer_countplot, format='png')
+    # buffer_countplot.seek(0)
+    # countplot_base64 = base64.b64encode(buffer_countplot.getvalue()).decode('utf-8')
+    # plt.close()
+    # context['countplot_image'] = countplot_base64
+
+
+    # 3. Piechart of students studyMode and studyPattern 
 
 
 
