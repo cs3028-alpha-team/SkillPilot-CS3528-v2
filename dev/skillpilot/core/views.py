@@ -581,19 +581,113 @@ def reject_match(request, matchID):
 def analytics_dashboard(request):
 
     context = {}
+    buffer = io.BytesIO()
 
     # calculate system-generic stats
     students_count = len(Student.objects.all())
     internships_count = len(Internship.objects.all())
     recruiters_count = len(Recruiter.objects.all())
-    unclaimed_companies_count = len(Recruiter.objects.filter(companyID__isnull=True))
+    companies_count = len(Company.objects.all())
 
     context['general'] = { 
         'students_count' : students_count, 
         'internships_count' : internships_count, 
         'recruiters_count' : recruiters_count, 
-        'unclaimed_companies_count' : unclaimed_companies_count, 
+        'companies_count' : companies_count, 
     }
+
+
+    # generate a student dataframe to develop the charts 
+    students = [ [student.studentID, student.currProgramme, student.studyMode, student.studyPattern] for student in Student.objects.all() ]
+    students_df = pd.DataFrame(data=students, columns=['studentID', 'currProgramme', 'studyMode', 'studyPattern'])
+
+    # generate an internship dataframe to develop the charts 
+    internships = [ [ internship.internshipID, internship.contractMode, internship.contractPattern ] for internship in Internship.objects.all() ]
+    internships_df = pd.DataFrame(data=internships, columns=['internshipID', 'contractMode', 'contractPattern'])
+
+
+    # 1. Piechart for distribution of students by studyPattern =================================================================================
+
+    # group and count students by studyPattern and studyMode columns in the dataframe
+    studyPattern_counts = students_df['studyPattern'].value_counts()
+    studyMode_counts = students_df['studyMode'].value_counts()
+
+    # plot the piechart to be display and declare settings
+    fig, ax = plt.subplots(figsize=(4, 3))
+    ax.pie(studyPattern_counts, labels=studyPattern_counts.index, autopct='%1.1f%%', startangle=90)
+    ax.axis('equal')
+    ax.set_title('Distribution of students by Study Pattern')
+
+    # save the studyPattern chart and uncode it using binary stream
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    studyPattern_chart = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    plt.close()
+
+    # set the context dictionary entry so that other charts can be computed 
+    context['studyPattern_chart'] = studyPattern_chart
+
+
+    # 2. Piechart for distribution of students by studyMode =====================================================================================
+
+    # plot the piechart to be display and declare settings
+    fig, ax = plt.subplots(figsize=(4, 3))
+    ax.pie(studyMode_counts, labels=studyMode_counts.index, autopct='%1.1f%%', startangle=90)
+    ax.axis('equal')
+    ax.set_title('Distribution of students by Study Mode')
+
+    # save the studyPattern chart and uncode it using binary stream
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    studyMode_chart = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    plt.close()
+
+    # set the context dictionary entry so that other charts can be computed 
+    context['studyMode_chart'] = studyMode_chart
+
+
+    # 3. Piechart for distribution of internships by contractMode =================================================================================
+
+    # group and count internships by contractPattern and contractMode columns in the dataframe
+    contractPattern_counts = internships_df['contractPattern'].value_counts()
+    contractMode_counts = internships_df['contractMode'].value_counts()
+
+    # plot the piechart to be display and declare settings
+    fig, ax = plt.subplots(figsize=(4, 3))
+    ax.pie(contractPattern_counts, labels=contractPattern_counts.index, autopct='%1.1f%%', startangle=90)
+    ax.axis('equal')
+    ax.set_title('Distribution of internships by Contract Pattern')
+
+    # save the studyPattern chart and uncode it using binary stream
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    contractPattern_chart = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    plt.close()
+
+    # set the context dictionary entry so that other charts can be computed 
+    context['contractPattern_chart'] = contractPattern_chart
+
+    # 4. Piechart for distribution of internships by contractPattern ==============================================================================
+    
+    # plot the piechart to be display and declare settings
+    fig, ax = plt.subplots(figsize=(4, 3))
+    ax.pie(contractMode_counts, labels=contractMode_counts.index, autopct='%1.1f%%', startangle=90)
+    ax.axis('equal')
+    ax.set_title('Distribution of internships by Contract Mode')
+
+    # save the studyPattern chart and uncode it using binary stream
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    contractMode_chart = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    plt.close()
+
+    # set the context dictionary entry so that other charts can be computed 
+    context['contractMode_chart'] = contractMode_chart
+
+
+
+
+
 
     # # 1. Last computed compatibility matrix in the form of a heatmap ===================================================================
     # with open('matrix.pkl', 'rb') as file:
@@ -610,8 +704,8 @@ def analytics_dashboard(request):
 
 
     # # 2. Countplot of students' current degree programme ================================================================================== 
-    # students = [ [student.studentID, student.currProgramme] for student in Student.objects.all() ]
-    # students_df = pd.DataFrame(data=students, columns=['studentID', 'currProgramme'])
+    # students = [ [student.studentID, student.currProgramme, student.studyMode, student.studyPattern] for student in Student.objects.all() ]
+    # students_df = pd.DataFrame(data=students, columns=['studentID', 'currProgramme', 'studyMode', 'studyPattern'])
 
     # counts = students_df['currProgramme'].value_counts()
     

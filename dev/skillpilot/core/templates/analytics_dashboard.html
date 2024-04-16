@@ -40,17 +40,32 @@
             </div>
 
             <!-- display system-generic informations -->
-            <div class="d-flex mx-5 mt-5 justify-content-between align-items-center">
+            <div class="d-flex mx-5 my-5 justify-content-between align-items-center">
                 <div><span class="ms-5 display-6">{{ general.students_count }}</span><span> Student Accounts</span></div>
                 <div><span class="display-6">{{ general.internships_count }}</span><span> Live Internships </span></div>
                 <div><span class="display-6">{{ general.recruiters_count }}</span><span> Recruiter Accounts </span></div>
-                <div><span class="display-6">{{ general.unclaimed_companies_count }}</span><span class="me-5"> Unclaimed Companies </span></div>
+                <div><span class="display-6">{{ general.companies_count }}</span><span class="me-5"> Registered Companies </span></div>
             </div>
 
-            <!-- Last computed compatibility matrix in the form of a heatmap -->
-            {% comment %} <img src="data:image/png;base64,{{ heatmap_image }}">
+            <!-- piechart for the distribution of students by pattern of study-->
+            <div class="ms-5 mt-5">
+                <img class="ms-5" src="data:image/png;base64,{{ studyPattern_chart }}">
+            </div>
 
-            <img src="data:image/png;base64,{{ countplot_image }}" class="mb-5"> {% endcomment %}
+            <!-- piechart for the distribution of students by mode of study-->
+            <div class="ms-5 mt-5">
+                <img class="ms-5" src="data:image/png;base64,{{ studyMode_chart }}">
+            </div>
+
+            <!-- piechart for the distribution of internships by contract pattern-->
+            <div class="ms-5 mt-5">
+                <img class="ms-5" src="data:image/png;base64,{{ contractPattern_chart }}">
+            </div>
+
+            <!-- piechart for the distribution of internships by contract mode-->
+            <div class="ms-5 mt-5">
+                <img class="ms-5" src="data:image/png;base64,{{ contractMode_chart }}">
+            </div>
         
         </div>
 
