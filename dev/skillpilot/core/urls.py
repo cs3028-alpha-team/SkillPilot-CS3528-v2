@@ -15,6 +15,10 @@ urlpatterns = [
     
     path('send-email', views.send_email, name="send-email"),
 
+    path('recruiter-update/<str:internship_id>/', views.recruiter_update, name='recruiter-update'),
+
+    path('delete-internship/<str:internship_id>/', views.delete_internship, name='delete-internship'),
+   
 
     # paths to handle admin approval/rejection of matchmaking algorithm output 
     path('approve-match/<str:matchID>/', views.approve_match, name='approve-match'),

@@ -156,6 +156,35 @@ def student_dashboard(request):
 
     return render(request, 'student_dashboard.html', context)        
 
+# Handle recruiters wanting to delete posted internships
+@login_required
+@allowed_users(allowed_roles=['Companies']) 
+def delete_internship(request, internship_id):
+    if request.method == 'POST':
+        try:
+            internship = Internship.objects.get(pk=internship_id)
+            internship.delete()
+            return redirect('recruiter')  
+        except Internship.DoesNotExist:
+            return HttpResponse("Internship does not exist", status=404)
+    else:
+        return HttpResponse("error not allowed", status=405)
+
+# Handle recruiters wanting to update their internships
+@login_required
+@allowed_users(allowed_roles=['Companies'])  
+def recruiter_update(request, internship_id):
+    internship = get_object_or_404(Internship, pk=internship_id)
+    form = InternshipForm(instance=internship)
+
+    if request.method == 'POST':
+        form = InternshipForm(request.POST, instance=internship)
+        if form.is_valid():
+            form.save()
+            return redirect('recruiter')  
+
+    return render(request, 'recruiter_update.html', {'form': form, 'internship': internship})
+
 # view for the route '/recruiter'
 @login_required
 @allowed_users(allowed_roles=['Companies']) 
@@ -165,11 +194,16 @@ def recruiter_dashboard(request):
     try:
         # Get the logged-in recruiter
         recruiter = Recruiter.objects.get(email=logged_in_recruiter.email)
-        print("Recruiter companyID:", recruiter.companyID)
+        #print("Recruiter companyID:", recruiter.companyID)
         
-        #company = Company.objects.get(companyID=recruiter.companyID)
-        #print("Corresponding Company ID:", company.companyID) 
-        context = {'form': form, 'company_id': recruiter.recruiterID}
+        # Retrieve posted internships associated with the corresponding recruiter
+        posted_internships = Internship.objects.filter(recruiterID=recruiter)
+        print("Posted internships:", posted_internships)
+
+        # Prepare context data
+        context = {'form': form, 'company_id': recruiter.recruiterID, 'posted_internships': posted_internships}
+    
+        #context = {'form': form, 'company_id': recruiter.recruiterID}
     except Recruiter.DoesNotExist:
         messages.error(request, 'No recruiter associated with the logged-in user')
         return redirect('home')
@@ -205,19 +239,21 @@ def recruiter_dashboard(request):
             modes = ['online', 'in-person']
             random_mode = random.choice(modes)
 
-            return render(request, 'recruiter_dashboard.html', {'interviews': interview_pairs, 'username': recruiter_username, 'date': random_date, 'mode': random_mode})
+            return render(request, 'recruiter_dashboard.html', {'interviews': interview_pairs, 'username': recruiter_username, 'date': random_date, 'mode': random_mode}, context)
 
         except (Interview.DoesNotExist, Student.DoesNotExist):
             print("An object does not exist")
-            return render(request, 'recruiter_dashboard.html')
+            return render(request, 'recruiter_dashboard.html', context)
 
         except Exception as e:
             print("An error occurred:", e)
-            return render(request, 'recruiter_dashboard.html')
+            return render(request, 'recruiter_dashboard.html', context)
         
         
 # accept/reject an interview
-# currently only changes outcome in the database
+# currently only changes outcome in the database#
+@login_required
+#@allowed_users(allowed_roles=['Companies']) 
 def update_interview(request, interview_id):
     if request.method == 'POST':
         new_outcome = request.POST.get('new_outcome')
@@ -226,7 +262,9 @@ def update_interview(request, interview_id):
         interview.save()
         
         return redirect('student')
-
+    
+@login_required
+@allowed_users(allowed_roles=['Admin']) 
 def admin(request):
     return render(request, 'admin.html')
 
@@ -281,6 +319,8 @@ def companies_management_tool(request):
     return render(request, 'companies_management_tool.html', context=context)
 
 # handle the procedure to delete a company from the database
+@login_required
+@allowed_users(allowed_roles=['Admin']) 
 def delete_company(request, companyID):
 
     if request.method == 'POST':
@@ -320,6 +360,8 @@ def delete_company(request, companyID):
 
 
 # register a new company to the database using the payload from the form submitted from the companies management tool
+@login_required
+@allowed_users(allowed_roles=['Admin']) 
 def register_company(request):
 
     if request.method == 'POST':
@@ -353,6 +395,8 @@ def register_company(request):
 # =========================================== #
 
 # render the algorithm dashboard page, where the admin can compute and manage assignments
+@login_required
+@allowed_users(allowed_roles=['Admin']) 
 def algorithm_dashboard(request):
 
     if request.method == 'POST':
@@ -536,6 +580,8 @@ def algorithm_dashboard(request):
 
 
 # handle the approval routine for a match computed by the algorithm
+@login_required
+@allowed_users(allowed_roles=['Admin']) 
 def approve_match(request, matchID):
 
     # retrieve the match, the internship listing, the recruiter, the company
@@ -586,7 +632,8 @@ def reject_match(request, matchID):
 # ===================================== #
 # Admin Dashboard - Analytics Dashboard #
 # ===================================== #
-
+@login_required
+@allowed_users(allowed_roles=['Admin']) 
 def analytics_dashboard(request):
 
     context = {}
@@ -901,6 +948,8 @@ def user_logout(request):
 # ================================================== #
 
 # render a given student profile's details page
+@login_required
+#@allowed_users(allowed_roles=['Admin']) 
 def student_details(request, studentID):
     try:
         student = Student.objects.get(studentID = studentID)
@@ -910,6 +959,8 @@ def student_details(request, studentID):
         return redirect('query-students')
 
 # render a given recruiter profile's details page
+@login_required
+#@allowed_users(allowed_roles=['Admin']) 
 def recruiter_details(request, recruiterID):
     try:
         recruiter = Recruiter.objects.get(recruiterID = recruiterID)
@@ -921,6 +972,8 @@ def recruiter_details(request, recruiterID):
         return redirect('query-recruiters')
 
 # render a given live internship's details page
+@login_required
+#@allowed_users(allowed_roles=['Admin']) 
 def internship_details(request, internshipID):
     try:    
         internship = Internship.objects.get(internshipID = internshipID)
@@ -940,6 +993,8 @@ def internship_details(request, internshipID):
 # =============================================== #
 
 # handle the routine triggered from the admin dashboard to query all student profiles
+@login_required
+@allowed_users(allowed_roles=['Admin']) 
 def query_students(request):
 
     # query the students table and create a dropdown menu options using only the programmes in the current database students
@@ -965,6 +1020,8 @@ def query_students(request):
     return render(request, 'admin_search_feature/students_db_query.html', context=context)
 
 # handle the routine triggered from the admin dashboard to query all recruiter profiles
+@login_required
+@allowed_users(allowed_roles=['Admin']) 
 def query_recruiters(request):
 
     # fetch all the company names stored in the recruiters database using the recruiter.companyID attribute
@@ -993,6 +1050,8 @@ def query_recruiters(request):
     return render(request, 'admin_search_feature/recruiters_db_query.html', context=context)
 
 # handle the routine triggered from the admin dashboard to query live internships
+@login_required
+@allowed_users(allowed_roles=['Admin']) 
 def query_internships(request):
 
     # fetch all the company names stored in the recruiters database using the recruiter.companyID attribute
