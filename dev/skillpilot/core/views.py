@@ -99,9 +99,9 @@ def send_email(request):
 
 def home(request):
 
-    for it in Internship.objects.all():
-        it.numberPositions = random.randint(2, 6)
-        it.save()
+    # for it in Internship.objects.all():
+    #     it.numberPositions = random.randint(2, 6)
+    #     it.save()
 
     return render(request, 'home.html')
 
@@ -476,19 +476,26 @@ def algorithm_dashboard(request):
 
             # create a lineplot instance of the number of internships to be assigned at each iteration of the algorithm
             fulfillments_df = pd.DataFrame({'algorithm_iterations': range(1, len(fulfillments) + 1), 'internships_to_be_assigned': fulfillments[::-1]})
-            fulfillments_chart = sns.lineplot(data=fulfillments_df, x='algorithm_iterations', y='internships_to_be_assigned', color='green')
+            fulfillments_chart = sns.lineplot(data=fulfillments_df, x='algorithm_iterations', y='internships_to_be_assigned', color='#2d00f7')
             fulfillments_chart.set_xlabel('Algorithm Iterations')
             fulfillments_chart.set_ylabel('Internships to be Assigned')
             fulfillments_chart.set_title('Internships to be Assigned vs Algorithm Iterations')
             fig = fulfillments_chart.get_figure()
-            fig.set_size_inches(10, 4)
+            fig.set_size_inches(7, 4)
+
+
+            metrics = {
+                'Time Elapsed' : f"{time_elapsed} seconds",
+                'Comparisons Made' : comparisons,
+                'Students Matched' : f"{round(len(nonNull_offers)/len(offers) * 100, 1)} %",
+                'Internships Matched' : f"{round(len(columns)* 100 / len(nonNull_offers), 1)} %",
+            }
+
+            algorithm_analytics_df = pd.DataFrame.from_dict(metrics, orient='index', columns=['Value']).to_html(classes="table table-bordered table-striped", index=True)
 
             # compute a dictionary to store all the analytics relevant to the current algorithm run - this is updated at each run
             algorithm_analytics = {
-                'time_elapsed' : time_elapsed,
-                'comparisons_made' : comparisons,
-                'matched_students_percentage' : round(len(nonNull_offers)/len(offers) * 100, 1),
-                'matched_internships_percentage' : round(len(columns)* 100 / len(nonNull_offers), 1),
+                'metrics' : algorithm_analytics_df,
                 'assignmentsLeft_vs_iterations_plot' : fulfillments_chart
             }
 
@@ -654,7 +661,7 @@ def analytics_dashboard(request):
 
     # plot the piechart to be display and declare settings
     fig, ax = plt.subplots(figsize=(4, 3))
-    ax.pie(studyPattern_counts, labels=studyPattern_counts.index, autopct='%1.1f%%', startangle=90)
+    ax.pie(studyPattern_counts, labels=studyPattern_counts.index, autopct='%1.1f%%', startangle=90, colors=['#4793AF', '#DD5746'])
     ax.axis('equal')
     ax.set_title('Distribution of students by Study Pattern')
 
@@ -672,7 +679,7 @@ def analytics_dashboard(request):
 
     # plot the piechart to be display and declare settings
     fig, ax = plt.subplots(figsize=(4, 3))
-    ax.pie(studyMode_counts, labels=studyMode_counts.index, autopct='%1.1f%%', startangle=90)
+    ax.pie(studyMode_counts, labels=studyMode_counts.index, autopct='%1.1f%%', startangle=90, colors=['#ed6a5a', '#f4f1bb', '#9bc1bc'])
     ax.axis('equal')
     ax.set_title('Distribution of students by Study Mode')
 
@@ -694,7 +701,7 @@ def analytics_dashboard(request):
 
     # plot the piechart to be display and declare settings
     fig, ax = plt.subplots(figsize=(4, 3))
-    ax.pie(contractPattern_counts, labels=contractPattern_counts.index, autopct='%1.1f%%', startangle=90)
+    ax.pie(contractPattern_counts, labels=contractPattern_counts.index, autopct='%1.1f%%', startangle=90, colors=['#f6f7eb', '#e94f37'])
     ax.axis('equal')
     ax.set_title('Distribution of internships by Contract Pattern')
 
@@ -711,7 +718,7 @@ def analytics_dashboard(request):
     
     # plot the piechart to be display and declare settings
     fig, ax = plt.subplots(figsize=(4, 3))
-    ax.pie(contractMode_counts, labels=contractMode_counts.index, autopct='%1.1f%%', startangle=90)
+    ax.pie(contractMode_counts, labels=contractMode_counts.index, autopct='%1.1f%%', startangle=90, colors=['#124e78', '#f0f0c9', '#f2bb05'])
     ax.axis('equal')
     ax.set_title('Distribution of internships by Contract Mode')
 
@@ -764,6 +771,7 @@ def analytics_dashboard(request):
     analytics_dictionary['assignmentsLeft_vs_iterations_plot'] = algorithm_chart
 
     context['algorithm_analytics'] = analytics_dictionary
+
 
 
     # 8. Histogram of total internship positions per Field
