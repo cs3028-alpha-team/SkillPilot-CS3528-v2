@@ -41,29 +41,6 @@ from datetime import date
 import random
 
 
-# view for the route '/internship'
-@login_required
-@allowed_users(allowed_roles=['Companies']) 
-def internship(request):
-    form = InternshipForm()
-
-    # Get the logged-in recruiter
-    #recruiter = Recruiter.objects.get(fullName=request.user)
-    context = { 'form' : form }
-    # Pass the recruiter's company ID to the template context
-    #context = {'form': form, 'company_id': recruiter.companyID.companyID}
-
-    if request.method == 'POST':
-        form = InternshipForm(request.POST)
-        if form.is_valid():
-            form.save() 
-            messages.success(request, 'Form successful!')
-            return redirect('internship')
-        else:
-            messages.error(request, 'Form unsuccessful try again')
-            return redirect('internship')
-    else:
-        return render(request, 'internship.html', context) 
 
     
 def send_email(request): 
@@ -118,17 +95,12 @@ def contacts(request):
 @login_required
 @allowed_users(allowed_roles=['Students']) # access to student accounts only
 def student_dashboard(request):
-
     if request.method == 'POST':
         form = StudentForm(request.POST)
-
         if form.is_valid():
-            email = form.cleaned_data['email']  # Retrieving email address from the form data
-            
-            # Check if a student with the same email already exists
+            email = form.cleaned_data['email']
             existing_student = Student.objects.filter(email=email).first()
             if existing_student:
-                # If student with same email exists the information for that email is updated 
                 form_data = form.cleaned_data
                 existing_student.fullName = form_data['fullName']
                 existing_student.currProgramme = form_data['currProgramme']
@@ -139,69 +111,107 @@ def student_dashboard(request):
                 existing_student.desiredContractLength = form_data['desiredContractLength']
                 existing_student.willingRelocate = form_data['willingRelocate']
                 existing_student.aspirations = form_data['aspirations']
-
-                existing_student.save()  # Saving the updated instance
+                existing_student.save()
                 messages.success(request, 'Form successful!')
-                return redirect('student')  
-            else: 
-                # If student with same email does not exist from is a success
-                form.save() 
+            else:
+                form.save()
                 messages.success(request, 'Form successful!')
-                return redirect('student')  
         else:
-            messages.error(request, 'Form unsuccessful try again') 
-            return redirect('student')
+            messages.error(request, 'Form unsuccessful try again')
+        return redirect('student')
+
     else:
         form = StudentForm()
         context = {'form': form}
-        return render(request, 'student_dashboard.html', context)
-    
-    #basic interview system 
-    
-    interviews = Interview.objects.all()
-    students = Student.objects.all()
-    recruiters = Recruiter.objects.all()
+
     
     try:
-        
-        #get student id from student email   
         user = request.user
         student_email = user.email
         student_username = user.username
         
-        #get details of match
         student = get_object_or_404(Student, email=student_email)
-        interview = get_object_or_404(Interview, studentID=student.studentID)        
+        interview = get_object_or_404(Interview, studentID=student.studentID)
         recruiter = get_object_or_404(Recruiter, pk=interview.recruiterID.pk)
-
-        # Generate random date
+        
         start_dt = date.today().replace(day=1, month=1).toordinal()
         end_dt = date.today().toordinal()
         random_date = date.fromordinal(random.randint(start_dt, end_dt))
-        
-        #generate random mode
         modes = ['online', 'in-person']
         random_mode = random.choice(modes)
-
+        
         return render(request, 'student_dashboard.html', {'interview': interview, 'username': student_username, 'recruiter': recruiter, 'date': random_date, 'mode': random_mode})
     
-    # if no interview exists render page with no interview section
     except Student.DoesNotExist:
         print("Student does not exist")
-        return render(request, 'student_dashboard.html')
     
     except Interview.DoesNotExist:
         print("Interview does not exist")
-        return render(request, 'student_dashboard.html')
-
+        
     except Recruiter.DoesNotExist:
         print("Recruiter does not exist")
-        return render(request, 'student_dashboard.html')
 
     except Exception as e:
         print("An error occurred:", e)
-        return render(request, 'student_dashboard.html')
 
+    return render(request, 'student_dashboard.html', context)        
+
+# view for the route '/recruiter'
+@login_required
+@allowed_users(allowed_roles=['Companies']) 
+def recruiter_dashboard(request):
+    form = InternshipForm()
+    logged_in_recruiter = request.user
+    try:
+        # Get the logged-in recruiter
+        recruiter = Recruiter.objects.get(email=logged_in_recruiter.email)
+        context = {'form': form, 'company_id': recruiter.recruiterID}
+    except Recruiter.DoesNotExist:
+        messages.error(request, 'No recruiter associated with the logged-in user')
+        return redirect('home')
+
+    if request.method == 'POST':
+        form = InternshipForm(request.POST)
+        if form.is_valid():
+            form.save() 
+            messages.success(request, 'Form successful!')
+            return redirect('recruiter')
+        else:
+            messages.error(request, 'Form unsuccessful try again')
+            return redirect('recruiter')
+    else:
+        # Interview system code
+        
+        try:
+            # Get recruiter details
+            user = request.user
+            recruiter_email = user.email
+            recruiter_username = user.username
+
+            recruiter = get_object_or_404(Recruiter, email=recruiter_email)
+            interviews = get_list_or_404(Interview, recruiterID=recruiter.recruiterID)
+            students = [get_object_or_404(Student, pk=interview.studentID.pk) for interview in interviews]
+
+            interview_pairs = zip(interviews, students)
+
+            # Generate random date and mode
+            start_dt = date.today().replace(day=1, month=1).toordinal()
+            end_dt = date.today().toordinal()
+            random_date = date.fromordinal(random.randint(start_dt, end_dt))
+            modes = ['online', 'in-person']
+            random_mode = random.choice(modes)
+
+            return render(request, 'recruiter_dashboard.html', {'interviews': interview_pairs, 'username': recruiter_username, 'date': random_date, 'mode': random_mode})
+
+        except (Interview.DoesNotExist, Student.DoesNotExist):
+            print("An object does not exist")
+            return render(request, 'recruiter_dashboard.html')
+
+        except Exception as e:
+            print("An error occurred:", e)
+            return render(request, 'recruiter_dashboard.html')
+        
+        
 # accept/reject an interview
 # currently only changes outcome in the database
 def update_interview(request, interview_id):
@@ -212,58 +222,6 @@ def update_interview(request, interview_id):
         interview.save()
         
         return redirect('student')
-
-#interview system for recruiters, will be added to recruiter dashboard
-def interview_recruiter(request):
-    #basic interview system 
-    
-    interviews = Interview.objects.all()
-    students = Student.objects.all()
-    recruiters = Recruiter.objects.all()
-    
-    try:
-        
-        #get student id from student email   
-        user = request.user
-        recruiter_email = user.email
-        recruiter_username = user.username
-        
-        #get details of match
-        recruiter = get_object_or_404(Recruiter, email=recruiter_email)
-        interviews = get_list_or_404(Interview, recruiterID=recruiter.recruiterID)
-        students = [get_object_or_404(Student, pk=interview.studentID.pk) for interview in interviews]
-
-        interview_pairs = zip(interviews, students)
-
-        # Generate random date
-        start_dt = date.today().replace(day=1, month=1).toordinal()
-        end_dt = date.today().toordinal()
-        random_date = date.fromordinal(random.randint(start_dt, end_dt))
-        
-        #generate random mode
-        modes = ['online', 'in-person']
-        random_mode = random.choice(modes)
-
-        return render(request, 'recruiter_dashboard.html', {'interviews': interview_pairs, 'username': recruiter_username, 'date': random_date, 'mode': random_mode})
-    
-    # if no interview exists render page with no interview section
-    except Student.DoesNotExist:
-        print("Student does not exist")
-        return render(request, 'student_dashboard.html')
-    
-    except Interview.DoesNotExist:
-        print("Interview does not exist")
-        return render(request, 'student_dashboard.html')
-
-    except Recruiter.DoesNotExist:
-        print("Recruiter does not exist")
-        return render(request, 'student_dashboard.html')
-
-    except Exception as e:
-        print("An error occurred:", e)
-        return render(request, 'student_dashboard.html')
-
-  
 
 def admin(request):
     return render(request, 'admin.html')
@@ -849,7 +807,7 @@ def student_login(request):
 # handle the signup routine for new recruiters
 def recruiter_signup(request):
     if request.user.is_authenticated:
-        return redirect('internship')
+        return redirect('recruiter')
     
     if request.method == 'POST':
         # Extract recruiter details from the form
@@ -902,7 +860,7 @@ def recruiter_signup(request):
 # handle the login routine for returning recruiters
 def recruiter_login(request):
     if request.user.is_authenticated:
-        return redirect('internship')
+        return redirect('recruiter')
     
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -912,7 +870,7 @@ def recruiter_login(request):
         # If user is authenticated, log them in and redirect to the recruiter form page
         if user is not None:
             login(request, user)
-            return redirect('internship')  # Adjust this to the correct URL name for the recruiter form page
+            return redirect('recruiter')  # Adjust this to the correct URL name for the recruiter form page
         else:
             # If authentication fails, display an error message
             messages.error(request, 'Invalid username or password.')
@@ -1088,6 +1046,7 @@ def query_internships(request):
     return render(request, 'admin_search_feature/internships_db_query.html', context=context)
 
 # ========================================= Recruiter and internship delete function ============================================ #
+# handle the procedure to delete a student from the database
 @login_required
 @allowed_users(allowed_roles=['Students']) 
 def delete_user(request):
@@ -1105,35 +1064,50 @@ def delete_user(request):
         return redirect('home')
     else:
         return redirect('home')
-    
+
+# handle the procedure to delete a recruiter from the database
 @login_required
 @allowed_users(allowed_roles=['Companies']) 
 def delete_recruiter(request):
     if request.method == 'POST':
-        recruiter = request.user  # Get the logged-in recruiter
+        # Get the logged-in user (assuming it's a recruiter)
+        logged_in_user = request.user
+        
+        try:
+            # Retrieve the recruiter associated with the logged-in user
+            recruiter = Recruiter.objects.get(email=logged_in_user.email)
+        except Recruiter.DoesNotExist:
+            # Handle the case where no recruiter is associated with the logged-in user
+            messages.error(request, 'No recruiter associated with the logged-in user')
+            return redirect('home')
+
+        # Now we have the correct recruiter instance
         recruiter_email = recruiter.email
-        print("adsaasasad", recruiter)
-        print("adsaasasad", recruiter_email)
+        print("Recruiter:", recruiter)
+        print("Recruiter Email:", recruiter_email)
+
         # Delete the recruiter account associated with the current company
-        #try:
-            #recruiter.delete()
-        #except: 
-         #   print("Error deleting recruiter:", sys.exc_info()[0])
+        try:
+            recruiter.delete()
+            print("Recruiter deleted successfully")
+        except Exception as e:
+            print("Error deleting recruiter:", e)
 
         # Delete any internship listings associated with the company
         try:
             Internship.objects.filter(recruiterID=recruiter.recruiterID).delete()
             print("Internships deleted successfully")
-        except:
-            print("Error deleting internships:", sys.exc_info()[0])
+        except Exception as e:
+            print("Error deleting internships:", e)
 
         # Delete the user associated with the company by email
         if recruiter_email:
             try:
                 user = User.objects.get(email=recruiter_email)
                 user.delete()
-            except:
-                print("Error deleting user:", sys.exc_info()[0])
+                print("User deleted successfully")
+            except Exception as e:
+                print("Error deleting user:", e)
 
         messages.success(request, 'Company deleted successfully. Please contact the recruiter to inform them of the action')
         logout(request)
