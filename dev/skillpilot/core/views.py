@@ -205,15 +205,15 @@ def recruiter_dashboard(request):
             modes = ['online', 'in-person']
             random_mode = random.choice(modes)
 
-            return render(request, 'recruiter_dashboard.html', {'interviews': interview_pairs, 'username': recruiter_username, 'date': random_date, 'mode': random_mode})
+            return render(request, 'recruiter_dashboard.html', {'interviews': interview_pairs, 'username': recruiter_username, 'date': random_date, 'mode': random_mode}, context)
 
         except (Interview.DoesNotExist, Student.DoesNotExist):
             print("An object does not exist")
-            return render(request, 'recruiter_dashboard.html')
+            return render(request, 'recruiter_dashboard.html', context)
 
         except Exception as e:
             print("An error occurred:", e)
-            return render(request, 'recruiter_dashboard.html')
+            return render(request, 'recruiter_dashboard.html', context)
         
         
 # accept/reject an interview
