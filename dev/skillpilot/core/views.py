@@ -686,42 +686,21 @@ def analytics_dashboard(request):
 
 
 
+    # 5. Last computed compatibility matrix in the form of a heatmap ==============================================================================
+    with open('matrix.pkl', 'rb') as file:
+        matrix = pickle.load(file)
 
+    fig, ax = plt.subplots(figsize=(9, 7))
+    sns.heatmap(matrix.iloc[:20, :20], cmap="viridis", annot=True, linewidth=.5)  # Sample 20 rows for the heatmap
+    ax.set_title('Last computed Compatibility Matrix sample')
+    plt.xticks(rotation=45, ha='right')
+    plt.yticks(rotation=45, ha='right')
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    matrixChart = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    plt.close()
+    context['matrixChart'] = matrixChart
 
-
-    # # 1. Last computed compatibility matrix in the form of a heatmap ===================================================================
-    # with open('matrix.pkl', 'rb') as file:
-    #     matrix = pickle.load(file)
-
-    # fig_heatmap, ax_heatmap = plt.subplots(figsize=(10, 10))
-    # sns.heatmap(matrix.iloc[:25, :25], cmap="plasma", annot=True, linewidth=.5)  # Sample 25 rows for the heatmap
-    # buffer_heatmap = io.BytesIO()
-    # plt.savefig(buffer_heatmap, format='png')
-    # buffer_heatmap.seek(0)
-    # heatmap_base64 = base64.b64encode(buffer_heatmap.getvalue()).decode('utf-8')
-    # plt.close()
-    # context['heatmap_image'] = heatmap_base64
-
-
-    # # 2. Countplot of students' current degree programme ================================================================================== 
-    # students = [ [student.studentID, student.currProgramme, student.studyMode, student.studyPattern] for student in Student.objects.all() ]
-    # students_df = pd.DataFrame(data=students, columns=['studentID', 'currProgramme', 'studyMode', 'studyPattern'])
-
-    # counts = students_df['currProgramme'].value_counts()
-    
-
-    # fig_heatmap, ax = plt.subplots(figsize=(10, 10))
-    # chart = counts.plot(kind='pie', autopct='%1.1f%%')
-
-    # buffer_countplot = io.BytesIO()
-    # plt.savefig(buffer_countplot, format='png')
-    # buffer_countplot.seek(0)
-    # countplot_base64 = base64.b64encode(buffer_countplot.getvalue()).decode('utf-8')
-    # plt.close()
-    # context['countplot_image'] = countplot_base64
-
-
-    # 3. Piechart of students studyMode and studyPattern 
 
 
 
