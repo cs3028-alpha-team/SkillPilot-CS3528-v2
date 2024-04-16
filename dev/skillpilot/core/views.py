@@ -389,7 +389,8 @@ def register_company(request):
 def algorithm_dashboard(request):
 
     if request.method == 'POST':
-        # 1. Construct the Students and Internships dataframes 
+
+        # 1. Construct the Students and Internships dataframes ===============================================================================================
 
         """
         As per client requirement, each student should have at most one interview at a time, 
@@ -422,7 +423,7 @@ def algorithm_dashboard(request):
                 pd_internships.loc[i] = [ internships[i].internshipID, internships[i].companyID.companyID, internships[i].field, internships[i].minGPA, internships[i].contractMode, internships[i].contractPattern, internships[i].numberPositions ]
 
 
-        # 2. Prepare the Dataframes for the matchmaking operation, using the DataPipeline class
+        # 2. Prepare the Dataframes for the matchmaking operation, using the DataPipeline class ===============================================================================================
         pipeline = DataPipeline(pd_students, pd_internships)
         pd_students, pd_internships = pipeline.clean()
 
@@ -432,7 +433,7 @@ def algorithm_dashboard(request):
             pass
         
         else:
-            # 3. Populate the Compatibility Matrix using the cleaned Dataframes 
+            # 3. Populate the Compatibility Matrix using the cleaned Dataframes ===============================================================================================
 
             # construct the matrix
             columns = pd_internships['internshipID'].tolist()
@@ -451,7 +452,7 @@ def algorithm_dashboard(request):
             with open('matrix.pkl', 'wb') as file:
                 pickle.dump(matrix, file)
 
-            # 4. Compute Assignments using the Gale-Shapley algorithm
+            # 4. Compute Assignments using the Gale-Shapley algorithm ===============================================================================================
 
             # keeps track of the offers made so far, studentID : (current_internship_offer_ID, [refused_internship_ID1, ...])
             offers = { studentID : [None, []] for studentID in matrix.index.tolist() }
@@ -459,7 +460,38 @@ def algorithm_dashboard(request):
             # keeps track of the number of positions left per job
             available_positions = dict(zip(pd_internships['internshipID'], pd_internships['numberPositions']))
 
-            offers, fulfillments, updated_positions = gale_shapley(offers, matrix, available_positions)
+            offers, fulfillments, updated_positions, comparisons, time_elapsed = gale_shapley(offers, matrix, available_positions)
+
+
+
+            # 5. Assemble the analytics dictionary for this run of the algorithm ===============================================================================================
+
+            # filter all key:value pairs from the offers dictionary which are not None, i.e. all students with an offer
+            nonNull_offers = { k:v for k,v in offers.items() if v[0] is not None}
+
+            # create a lineplot instance of the number of internships to be assigned at each iteration of the algorithm
+            fulfillments_df = pd.DataFrame({'algorithm_iterations': range(1, len(fulfillments) + 1), 'internships_to_be_assigned': fulfillments})
+            fulfillments_chart = sns.lineplot(data=fulfillments_df, x='algorithm_iterations', y='internships_to_be_assigned')
+            plt.xlabel('Algorithm Iterations')
+            plt.ylabel('Internships to Assign')
+            plt.title('Internships to Assign vs Algorithm Iterations')
+
+            # compute a dictionary to store all the analytics relevant to the current algorithm run - this is updated at each run
+            algorithm_analytics = {
+                'time_elapsed' : time_elapsed,
+                'comparisons_made' : comparisons,
+                'matched_students_percentage' : round(len(nonNull_offers)/len(offers) * 100, 1),
+                'matched_internships_percentage' : round(len(columns)* 100 / len(nonNull_offers), 1),
+                'assignmentsLeft_vs_iterations_plot' : fulfillments_chart
+            }
+
+            # serialise the dictionary so that it can be rendered during GET requests to the analytics dashboard
+            with open('algorithm_analytics.pkl', 'wb') as file:
+                pickle.dump(algorithm_analytics, file)
+
+
+
+            # 6. save database state after algorithm run ===============================================================================================
 
             # format the offers into Student object : Internship object
             offers = { Student.objects.get(studentID=k) : Internship.objects.get(internshipID=v[0]) for k, v in offers.items() if v[0] is not None }
@@ -481,7 +513,8 @@ def algorithm_dashboard(request):
                 internship.save()
 
 
-    # deserialise the trained model run an assessment on it
+
+    # deserialise the trained model and run an assessment on it
     with open('classifier.pkl', 'rb') as f:
         classifier = pickle.load(f)
     classifier.assess()
@@ -524,6 +557,7 @@ def algorithm_dashboard(request):
     context = { 'computedMatches' : matches }
 
     return render(request, 'algorithm_dashboard.html', context)
+
 
 
 # handle the approval routine for a match computed by the algorithm
@@ -699,11 +733,13 @@ def analytics_dashboard(request):
     buffer.seek(0)
     matrixChart = base64.b64encode(buffer.getvalue()).decode('utf-8')
     plt.close()
-    context['matrixChart'] = matrixChart
+    context['matrix_chart'] = matrixChart
 
 
+    # 6. Histogram of students grouped by current programme
 
 
+    # TO BE IMPLEMENTED 
 
     return render(request, 'analytics_dashboard.html', context)
 

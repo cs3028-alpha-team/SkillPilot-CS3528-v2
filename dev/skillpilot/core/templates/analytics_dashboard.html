@@ -70,9 +70,16 @@
 
             <!-- heatmap for the last computed compatibility matrix-->
             <div class="ms-5 mt-5">
-                <img class="ms-5" src="data:image/png;base64,{{ matrixChart }}">
+                <img class="ms-5" src="data:image/png;base64,{{ matrix_chart }}">
             </div>
-        
+
+            {% comment %} <!-- histrogram of students grouped by current programme of study-->
+            <div class="ms-5 mt-5">
+                <img class="ms-5" src="data:image/png;base64,{{ currProgramme_chart }}">
+            </div>
+            {% endcomment %}
+
+
         </div>
 
     </body>
