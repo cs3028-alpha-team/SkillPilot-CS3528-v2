@@ -1,7 +1,7 @@
 import sys
 import random
 import pandas as pd
-from time import time
+import time
 import csv
 from . models import *
 
@@ -55,7 +55,11 @@ def gale_shapley(offers, matrix, available_positions, max_iterations=10000):
 
     fulfillments = []  # Keep track of the number of fulfilled companies at each iteration
     iterations = 0
-    
+    comparisons = 0 # keep track of all number of comparisons (not iterations!) done 
+
+    # define a start time, used to compute how long the algorithm takes to run
+    start_time = time.time()    
+
     while iterations < max_iterations:
 
         internshipID = None
@@ -94,7 +98,10 @@ def gale_shapley(offers, matrix, available_positions, max_iterations=10000):
                 # obtain the compatibility score of proposed offer vs current offer
                 prev_offer_score = matrix.loc[(studentID, k)]
                 curr_offer_score = matrix.loc[(studentID, internshipID)]
-                
+
+                # increase total comparisons when the algorithm compares the current internship to an already assigned one
+                comparisons += 1                
+
                 # if current offer is more compatible
                 if curr_offer_score > prev_offer_score:
 
@@ -117,8 +124,12 @@ def gale_shapley(offers, matrix, available_positions, max_iterations=10000):
         fulfillments.append(f)
         iterations += 1
         
+    # timeout - return failure
     if iterations >= max_iterations:
-        print("Termination due to time-out")
+        return None
 
-    return [offers, fulfillments, available_positions]
+    # calculate total time taken by the algorithm to run
+    time_elapsed = round(time.time() - start_time, 2)
+
+    return [offers, fulfillments, available_positions, comparisons, time_elapsed]
 

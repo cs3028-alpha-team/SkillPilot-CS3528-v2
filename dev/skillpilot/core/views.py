@@ -29,6 +29,13 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
 
+import seaborn as sns
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.use('Agg') # use the agg backend to silence GUI warning
+import io
+import base64
+
 from django.db.models import Q
 from datetime import date
 import random
@@ -68,6 +75,11 @@ def send_email(request):
 # ====================== #
 
 def home(request):
+
+    # for it in Internship.objects.all():
+    #     it.numberPositions = random.randint(2, 6)
+    #     it.save()
+
     return render(request, 'home.html')
 
 def contacts(request):
@@ -306,6 +318,7 @@ def delete_company(request, companyID):
 
     return render(request, 'companies_management_tool.html')
 
+
 # register a new company to the database using the payload from the form submitted from the companies management tool
 def register_company(request):
 
@@ -343,7 +356,8 @@ def register_company(request):
 def algorithm_dashboard(request):
 
     if request.method == 'POST':
-        # 1. Construct the Students and Internships dataframes 
+
+        # 1. Construct the Students and Internships dataframes ===============================================================================================
 
         """
         As per client requirement, each student should have at most one interview at a time, 
@@ -376,7 +390,7 @@ def algorithm_dashboard(request):
                 pd_internships.loc[i] = [ internships[i].internshipID, internships[i].companyID.companyID, internships[i].field, internships[i].minGPA, internships[i].contractMode, internships[i].contractPattern, internships[i].numberPositions ]
 
 
-        # 2. Prepare the Dataframes for the matchmaking operation, using the DataPipeline class
+        # 2. Prepare the Dataframes for the matchmaking operation, using the DataPipeline class ===============================================================================================
         pipeline = DataPipeline(pd_students, pd_internships)
         pd_students, pd_internships = pipeline.clean()
 
@@ -386,7 +400,7 @@ def algorithm_dashboard(request):
             pass
         
         else:
-            # 3. Populate the Compatibility Matrix using the cleaned Dataframes 
+            # 3. Populate the Compatibility Matrix using the cleaned Dataframes ===============================================================================================
 
             # construct the matrix
             columns = pd_internships['internshipID'].tolist()
@@ -405,7 +419,7 @@ def algorithm_dashboard(request):
             with open('matrix.pkl', 'wb') as file:
                 pickle.dump(matrix, file)
 
-            # 4. Compute Assignments using the Gale-Shapley algorithm
+            # 4. Compute Assignments using the Gale-Shapley algorithm ===============================================================================================
 
             # keeps track of the offers made so far, studentID : (current_internship_offer_ID, [refused_internship_ID1, ...])
             offers = { studentID : [None, []] for studentID in matrix.index.tolist() }
@@ -413,7 +427,46 @@ def algorithm_dashboard(request):
             # keeps track of the number of positions left per job
             available_positions = dict(zip(pd_internships['internshipID'], pd_internships['numberPositions']))
 
-            offers, fulfillments, updated_positions = gale_shapley(offers, matrix, available_positions)
+            offers, fulfillments, updated_positions, comparisons, time_elapsed = gale_shapley(offers, matrix, available_positions)
+
+
+
+            # 5. Assemble the analytics dictionary for this run of the algorithm ===============================================================================================
+
+            # filter all key:value pairs from the offers dictionary which are not None, i.e. all students with an offer
+            nonNull_offers = { k:v for k,v in offers.items() if v[0] is not None}
+
+            # create a lineplot instance of the number of internships to be assigned at each iteration of the algorithm
+            fulfillments_df = pd.DataFrame({'algorithm_iterations': range(1, len(fulfillments) + 1), 'internships_to_be_assigned': fulfillments[::-1]})
+            fulfillments_chart = sns.lineplot(data=fulfillments_df, x='algorithm_iterations', y='internships_to_be_assigned', color='#2d00f7')
+            fulfillments_chart.set_xlabel('Algorithm Iterations')
+            fulfillments_chart.set_ylabel('Internships to be Assigned')
+            fulfillments_chart.set_title('Internships to be Assigned vs Algorithm Iterations')
+            fig = fulfillments_chart.get_figure()
+            fig.set_size_inches(6, 4)
+
+
+            metrics = {
+                'time_elapsed' : f"{time_elapsed} seconds",
+                'comparisons_made' : comparisons,
+                'students_matched' : f"{round(len(nonNull_offers)/len(offers) * 100, 1)} %",
+                'internships_matched' : f"{round(len(columns)* 100 / len(nonNull_offers), 1)} %",
+            }
+
+
+            # compute a dictionary to store all the analytics relevant to the current algorithm run - this is updated at each run
+            algorithm_analytics = {
+                'metrics' : metrics,
+                'assignmentsLeft_vs_iterations_plot' : fulfillments_chart
+            }
+
+            # serialise the dictionary so that it can be rendered during GET requests to the analytics dashboard
+            with open('algorithm_analytics.pkl', 'wb') as file:
+                pickle.dump(algorithm_analytics, file)
+
+
+
+            # 6. save database state after algorithm run ===============================================================================================
 
             # format the offers into Student object : Internship object
             offers = { Student.objects.get(studentID=k) : Internship.objects.get(internshipID=v[0]) for k, v in offers.items() if v[0] is not None }
@@ -425,7 +478,7 @@ def algorithm_dashboard(request):
                 computed_match = ComputedMatch( computedMatchID=f"{student.studentID}{internship.internshipID}", internshipID=internship, studentID=student )
 
                 # save computed match only if not already in comptued matches table
-                try: ComputedMatch.objects.get(studentID=student.studentID, internshipID=internship.internshipID)
+                try: match_exists = ComputedMatch.objects.get(computedMatchID=f"{student.studentID}{internship.internshipID}")
                 except: computed_match.save()
 
             # update the Internships table to reflect the number of positions left per internship after the algorithm has been called
@@ -435,7 +488,8 @@ def algorithm_dashboard(request):
                 internship.save()
 
 
-    # deserialise the trained model run an assessment on it
+
+    # deserialise the trained model and run an assessment on it
     with open('classifier.pkl', 'rb') as f:
         classifier = pickle.load(f)
     classifier.assess()
@@ -480,6 +534,7 @@ def algorithm_dashboard(request):
     return render(request, 'algorithm_dashboard.html', context)
 
 
+
 # handle the approval routine for a match computed by the algorithm
 def approve_match(request, matchID):
 
@@ -520,6 +575,182 @@ def reject_match(request, matchID):
     messages.error(request, "match rejected successfully")
     return redirect('algorithm-dashboard')
     
+
+
+
+
+
+
+
+
+# ===================================== #
+# Admin Dashboard - Analytics Dashboard #
+# ===================================== #
+
+def analytics_dashboard(request):
+
+    context = {}
+    buffer = io.BytesIO()
+
+    # calculate system-generic stats
+    students_count = len(Student.objects.all())
+    internships_count = len(Internship.objects.all())
+    recruiters_count = len(Recruiter.objects.all())
+    companies_count = len(Company.objects.all())
+
+    context['general'] = { 
+        'students_count' : students_count, 
+        'internships_count' : internships_count, 
+        'recruiters_count' : recruiters_count, 
+        'companies_count' : companies_count, 
+    }
+
+    # generate a student dataframe to develop the charts 
+    students = [ [student.studentID, student.currProgramme, student.studyMode, student.studyPattern] for student in Student.objects.all() ]
+    students_df = pd.DataFrame(data=students, columns=['studentID', 'currProgramme', 'studyMode', 'studyPattern'])
+
+    # generate an internship dataframe to develop the charts 
+    internships = [ [ internship.internshipID, internship.contractMode, internship.contractPattern, internship.field, internship.numberPositions ] for internship in Internship.objects.all() ]
+    internships_df = pd.DataFrame(data=internships, columns=['internshipID', 'contractMode', 'contractPattern', 'field', 'numberPositions'])
+
+
+    # 1. Piechart for distribution of students by studyPattern =================================================================================
+
+    # group and count students by studyPattern and studyMode columns in the dataframe
+    studyPattern_counts = students_df['studyPattern'].value_counts()
+    studyMode_counts = students_df['studyMode'].value_counts()
+
+    # plot the piechart to be display and declare settings
+    fig, ax = plt.subplots(figsize=(4, 3))
+    ax.pie(studyPattern_counts, labels=studyPattern_counts.index, autopct='%1.1f%%', startangle=90, colors=['#4793AF', '#DD5746'])
+    ax.axis('equal')
+    ax.set_title('Distribution of students by Study Pattern')
+
+    # save the studyPattern chart and uncode it using binary stream
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    studyPattern_chart = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    plt.close()
+
+    # set the context dictionary entry so that other charts can be computed 
+    context['studyPattern_chart'] = studyPattern_chart
+
+
+    # 2. Piechart for distribution of students by studyMode =====================================================================================
+
+    # plot the piechart to be display and declare settings
+    fig, ax = plt.subplots(figsize=(4, 3))
+    ax.pie(studyMode_counts, labels=studyMode_counts.index, autopct='%1.1f%%', startangle=90, colors=['#ed6a5a', '#f4f1bb', '#9bc1bc'])
+    ax.axis('equal')
+    ax.set_title('Distribution of students by Study Mode')
+
+    # save the studyPattern chart and uncode it using binary stream
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    studyMode_chart = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    plt.close()
+
+    # set the context dictionary entry so that other charts can be computed 
+    context['studyMode_chart'] = studyMode_chart
+
+
+    # 3. Piechart for distribution of internships by contractMode =================================================================================
+
+    # group and count internships by contractPattern and contractMode columns in the dataframe
+    contractPattern_counts = internships_df['contractPattern'].value_counts()
+    contractMode_counts = internships_df['contractMode'].value_counts()
+
+    # plot the piechart to be display and declare settings
+    fig, ax = plt.subplots(figsize=(4, 3))
+    ax.pie(contractPattern_counts, labels=contractPattern_counts.index, autopct='%1.1f%%', startangle=90, colors=['#f6f7eb', '#e94f37'])
+    ax.axis('equal')
+    ax.set_title('Distribution of internships by Contract Pattern')
+
+    # save the studyPattern chart and uncode it using binary stream
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    contractPattern_chart = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    plt.close()
+
+    # set the context dictionary entry so that other charts can be computed 
+    context['contractPattern_chart'] = contractPattern_chart
+
+    # 4. Piechart for distribution of internships by contractPattern ==============================================================================
+    
+    # plot the piechart to be display and declare settings
+    fig, ax = plt.subplots(figsize=(4, 3))
+    ax.pie(contractMode_counts, labels=contractMode_counts.index, autopct='%1.1f%%', startangle=90, colors=['#124e78', '#f0f0c9', '#f2bb05'])
+    ax.axis('equal')
+    ax.set_title('Distribution of internships by Contract Mode')
+
+    # save the studyPattern chart and uncode it using binary stream
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    contractMode_chart = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    plt.close()
+
+    # set the context dictionary entry so that other charts can be computed 
+    context['contractMode_chart'] = contractMode_chart
+
+
+
+    # 5. Last computed compatibility matrix in the form of a heatmap ==============================================================================
+    with open('matrix.pkl', 'rb') as file:
+        matrix = pickle.load(file)
+
+    fig, ax = plt.subplots(figsize=(9, 7))
+    sns.heatmap(matrix.iloc[:15, :15], cmap="viridis", annot=True, linewidth=.5)  # Sample 20 rows for the heatmap
+    ax.set_title('Last computed Compatibility Matrix sample')
+    plt.xticks(rotation=45, ha='right')
+    plt.yticks(rotation=45, ha='right')
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    matrixChart = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    plt.close()
+    context['matrix_chart'] = matrixChart
+
+
+    # 6. Histogram of students grouped by current programme
+
+    # run a value count, and display in the form of a table on the screen
+    currProgramme_counts = students_df['currProgramme'].value_counts().reset_index()
+    currProgramme_counts.columns = ['Programme of Study', 'Students Enrolled']
+    context['currProgramme_df'] = currProgramme_counts.to_html(classes='table table-bordered table-striped', index=False)
+
+
+    # 7. Analytics specific to the last algorithm run ===============================================================
+
+    with open('algorithm_analytics.pkl', 'rb') as file:
+        analytics_dictionary = pickle.load(file)
+
+    # encode the analytics chart into a binary stream
+    chart = analytics_dictionary['assignmentsLeft_vs_iterations_plot']
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    algorithm_chart = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    plt.close()
+    analytics_dictionary['assignmentsLeft_vs_iterations_plot'] = algorithm_chart
+
+    context['algorithm_analytics'] = analytics_dictionary
+
+
+
+    # 8. Histogram of total internship positions per Field
+
+    # create an internship dataframe with internship field and positions, 
+    # then run a value count on that and display the dataframe to screen, in the form of a table
+    total_positions_df = internships_df[['field', 'numberPositions']]
+    positions_per_field = total_positions_df.groupby('field')['numberPositions'].sum().reset_index()
+    positions_per_field.columns = ['Internship Field', 'Available Internships']
+    context['positionsPerField_df'] = positions_per_field.to_html(classes='table table-bordered table-striped', index=False)
+
+    return render(request, 'analytics_dashboard.html', context)
+
+
+
+
+
+
 
 # ======================================================== #
 #  Authentication (Login & Signup) and Authorization logic #
@@ -887,7 +1118,4 @@ def delete_recruiter(request):
         return redirect('home')
     else:
         return redirect('home')
-
-
-
-
+    

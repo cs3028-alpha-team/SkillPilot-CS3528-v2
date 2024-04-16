@@ -18,27 +18,30 @@
     {% endif %}
 
 
-    <button onclick="window.history.back();" class="btn btn-outline-dark mt-4 ms-4">
+    <a href="{% url 'admin_page' %}" class="btn btn-outline-dark mt-4 ms-4">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-left me-3" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0z"/>
             <path fill-rule="evenodd" d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708z"/>
         </svg>
         Back
-    </button>
+    </a>
 
 
     <div class="container">
-        <div class="my-3 mx-5 d-flex flex-row justify-content-between"> 
-            <h1 class="display-6 ms-5">Algorithm Dashboard</h1>
+
+        <div class="d-flex flex-row justify-content-between ms-5 my-4"> 
+            <h1 class="display-6">Algorithm Dashboard</h1>
 
             <form method="POST" action="{% url 'algorithm-dashboard' %}" autocomplete="off" enctype="multipart/form-data">
                 {% csrf_token %}
 
-                <button type="submit" class="btn btn-lg btn-primary">Run algorithm</button>
+                <button type="submit" class="btn btn-primary">Run Algorithm</button>
             </form>
         </div>
 
-        <div class="col-md-auto mx-5 mt-3 overflow-y-auto" style="height:450px;">
+        <p class="ms-5">There are {{ computedMatches|length }} matches awaiting review.</p>
+
+        <div class="col-md-auto overflow-y-auto" style="height:450px;">
 
             <!-- if there are no computed matches left then return message -->
             {% if computedMatches|length == 0%}
@@ -65,15 +68,15 @@
                                 </svg>
                             {% endif %}
 
-                            <span class="ms-3">
+                            <span class="ms-1">
                                 <a href="{% url 'student-details' match.studentID.studentID %}">{{ match.studentID.fullName }}</a>
-                                matched for 
+                                matched with 
                                 <a href="{% url 'internship-details' match.internshipID.internshipID %}">{{ match.internshipID.title }}</a> 
                                 at {{ match.internshipID.companyID.companyName }}
                             </span>
                         </div>
 
-                        <div>
+                        <div class="btn-group ms-3" role="group">
                             <a href="{% url 'approve-match' match.computedMatchID %}" class="btn btn-success">Approve</a>
                             <a href="{% url 'reject-match' match.computedMatchID %}" class="btn btn-danger">Reject</a>
                         </div>
