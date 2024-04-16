@@ -481,7 +481,7 @@ def algorithm_dashboard(request):
             fulfillments_chart.set_ylabel('Internships to be Assigned')
             fulfillments_chart.set_title('Internships to be Assigned vs Algorithm Iterations')
             fig = fulfillments_chart.get_figure()
-            fig.set_size_inches(7, 4)
+            fig.set_size_inches(5, 4)
 
 
             metrics = {
@@ -737,8 +737,8 @@ def analytics_dashboard(request):
     with open('matrix.pkl', 'rb') as file:
         matrix = pickle.load(file)
 
-    fig, ax = plt.subplots(figsize=(9, 7))
-    sns.heatmap(matrix.iloc[:20, :20], cmap="viridis", annot=True, linewidth=.5)  # Sample 20 rows for the heatmap
+    fig, ax = plt.subplots(figsize=(7, 5))
+    sns.heatmap(matrix.iloc[:15, :15], cmap="viridis", annot=True, linewidth=.5)  # Sample 20 rows for the heatmap
     ax.set_title('Last computed Compatibility Matrix sample')
     plt.xticks(rotation=45, ha='right')
     plt.yticks(rotation=45, ha='right')

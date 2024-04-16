@@ -40,7 +40,8 @@
             </div>
 
             <!-- display system-generic informations -->
-            <div class="d-flex mx-5 my-5 justify-content-between align-items-center">
+            <h3 class="fw-bold mb-3" style="margin-left:100px; margin-top:100px;">Current Database Analytics</h3>
+            <div class="d-flex m-5 justify-content-evenly align-items-center">
                 <div><span class="ms-5 display-6">{{ general.students_count }}</span><span> Student Accounts</span></div>
                 <div><span class="display-6">{{ general.internships_count }}</span><span> Live Internships </span></div>
                 <div><span class="display-6">{{ general.recruiters_count }}</span><span> Recruiter Accounts </span></div>
@@ -48,6 +49,7 @@
             </div>
 
             <!-- SYSTEM GENERIC ANALYTICS -->
+            <h3 class="fw-bold mb-3" style="margin-left:100px; margin-top:150px; margin-bottom:50px;">Application Generic Analytics</h3>
             <div class="d-flex mx-5 my-5 justify-content-between align-items-center">
 
                 <!-- piechart for the distribution of students by mode of study-->
@@ -65,33 +67,36 @@
                 <!-- piechart for the distribution of students by pattern of study-->
                 <img src="data:image/png;base64,{{ studyPattern_chart }}">
 
-                <div class="div2">
+                <div class="table-responsive" style="overflow-y: auto; max-height:300px;" >
+                    {{ currProgramme_df|safe }}
+                </div>
+
+                <div class="table-responsive">
                     {{ positionsPerField_df|safe }}
                 </div>
             </div>
     
-            <div class="d-flex mx-5 my-5 justify-content-between align-items-center">
-                {{ currProgramme_df|safe }}
-            </div>
+            
+            <h3 class="fw-bold mb-3" style="margin-left:100px; margin-top:100px;">Algorithm Specific Analytics</h3>
+            <div class="d-flex justify-content-between align-items-center">
 
-        </div>
-
-        <div class="d-flex justify-content-between align-items-center">
-
-            <div class="matrixChart">
-                <!-- heatmap for the last computed compatibility matrix-->
-                <img src="data:image/png;base64,{{ matrix_chart }}">
-            </div>
-
-            <div class="d-flex flex-column">
-                <img src="data:image/png;base64,{{ algorithm_analytics.assignmentsLeft_vs_iterations_plot }}">
-
-                <div class="my-4 ms-5" style="width:500px;">
-                    {{ algorithm_analytics.metrics|safe }}
+                <div class="matrixChart">
+                    <!-- heatmap for the last computed compatibility matrix-->
+                    <img src="data:image/png;base64,{{ matrix_chart }}">
                 </div>
+
+                <div class="d-flex flex-column">
+                    <img src="data:image/png;base64,{{ algorithm_analytics.assignmentsLeft_vs_iterations_plot }}">
+
+                    <div class="my-4 ms-5" style="width:500px;">
+                        {{ algorithm_analytics.metrics|safe }}
+                    </div>
+                </div>
+
             </div>
 
         </div>
+
 
     </body>
 
