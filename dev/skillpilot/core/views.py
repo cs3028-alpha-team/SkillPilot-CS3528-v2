@@ -481,21 +481,20 @@ def algorithm_dashboard(request):
             fulfillments_chart.set_ylabel('Internships to be Assigned')
             fulfillments_chart.set_title('Internships to be Assigned vs Algorithm Iterations')
             fig = fulfillments_chart.get_figure()
-            fig.set_size_inches(5, 4)
+            fig.set_size_inches(6, 4)
 
 
             metrics = {
-                'Time Elapsed' : f"{time_elapsed} seconds",
-                'Comparisons Made' : comparisons,
-                'Students Matched' : f"{round(len(nonNull_offers)/len(offers) * 100, 1)} %",
-                'Internships Matched' : f"{round(len(columns)* 100 / len(nonNull_offers), 1)} %",
+                'time_elapsed' : f"{time_elapsed} seconds",
+                'comparisons_made' : comparisons,
+                'students_matched' : f"{round(len(nonNull_offers)/len(offers) * 100, 1)} %",
+                'internships_matched' : f"{round(len(columns)* 100 / len(nonNull_offers), 1)} %",
             }
 
-            algorithm_analytics_df = pd.DataFrame.from_dict(metrics, orient='index', columns=['Value']).to_html(classes="table table-bordered table-striped", index=True)
 
             # compute a dictionary to store all the analytics relevant to the current algorithm run - this is updated at each run
             algorithm_analytics = {
-                'metrics' : algorithm_analytics_df,
+                'metrics' : metrics,
                 'assignmentsLeft_vs_iterations_plot' : fulfillments_chart
             }
 
@@ -737,7 +736,7 @@ def analytics_dashboard(request):
     with open('matrix.pkl', 'rb') as file:
         matrix = pickle.load(file)
 
-    fig, ax = plt.subplots(figsize=(7, 5))
+    fig, ax = plt.subplots(figsize=(9, 7))
     sns.heatmap(matrix.iloc[:15, :15], cmap="viridis", annot=True, linewidth=.5)  # Sample 20 rows for the heatmap
     ax.set_title('Last computed Compatibility Matrix sample')
     plt.xticks(rotation=45, ha='right')

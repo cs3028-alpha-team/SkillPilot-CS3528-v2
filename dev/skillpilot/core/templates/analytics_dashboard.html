@@ -77,8 +77,8 @@
             </div>
     
             
-            <h3 class="fw-bold mb-3" style="margin-left:100px; margin-top:100px;">Algorithm Specific Analytics</h3>
-            <div class="d-flex justify-content-between align-items-center">
+            <h3 class="fw-bold mb-5" style="margin-left:100px; margin-top:100px;">Algorithm Specific Analytics</h3>
+            <div class="d-flex justify-content-center align-items-center">
 
                 <div class="matrixChart">
                     <!-- heatmap for the last computed compatibility matrix-->
@@ -89,7 +89,29 @@
                     <img src="data:image/png;base64,{{ algorithm_analytics.assignmentsLeft_vs_iterations_plot }}">
 
                     <div class="my-4 ms-5" style="width:500px;">
-                        {{ algorithm_analytics.metrics|safe }}
+         
+                    <table class="table table-striped">
+                          <tbody>
+                            <tr>
+                                <th>Time Elapsed</th>
+                                <td>{{ algorithm_analytics.metrics.time_elapsed }} seconds</td>
+                            </tr>
+                            <tr>
+                                <th>Comparisons Made</th>
+                                <td> {{ algorithm_analytics.metrics.comparisons_made }} </td>
+                            </tr>
+                            <tr>
+                                <th>Students Matched</th>
+                                <td> {{ algorithm_analytics.metrics.students_matched }}</td>
+                            </tr>
+                            <tr>
+                                <th>Internships Matched</th>
+                                <td>{{ algorithm_analytics.metrics.internships_matched }}</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
                     </div>
                 </div>
 
