@@ -470,11 +470,13 @@ def algorithm_dashboard(request):
             nonNull_offers = { k:v for k,v in offers.items() if v[0] is not None}
 
             # create a lineplot instance of the number of internships to be assigned at each iteration of the algorithm
-            fulfillments_df = pd.DataFrame({'algorithm_iterations': range(1, len(fulfillments) + 1), 'internships_to_be_assigned': fulfillments})
-            fulfillments_chart = sns.lineplot(data=fulfillments_df, x='algorithm_iterations', y='internships_to_be_assigned')
-            plt.xlabel('Algorithm Iterations')
-            plt.ylabel('Internships to Assign')
-            plt.title('Internships to Assign vs Algorithm Iterations')
+            fulfillments_df = pd.DataFrame({'algorithm_iterations': range(1, len(fulfillments) + 1), 'internships_to_be_assigned': fulfillments[::-1]})
+            fulfillments_chart = sns.lineplot(data=fulfillments_df, x='algorithm_iterations', y='internships_to_be_assigned', color='green')
+            fulfillments_chart.set_xlabel('Algorithm Iterations')
+            fulfillments_chart.set_ylabel('Internships to be Assigned')
+            fulfillments_chart.set_title('Internships to be Assigned vs Algorithm Iterations')
+            fig = fulfillments_chart.get_figure()
+            fig.set_size_inches(10, 4)
 
             # compute a dictionary to store all the analytics relevant to the current algorithm run - this is updated at each run
             algorithm_analytics = {
@@ -503,7 +505,7 @@ def algorithm_dashboard(request):
                 computed_match = ComputedMatch( computedMatchID=f"{student.studentID}{internship.internshipID}", internshipID=internship, studentID=student )
 
                 # save computed match only if not already in comptued matches table
-                try: ComputedMatch.objects.get(studentID=student.studentID, internshipID=internship.internshipID)
+                try: match_exists = ComputedMatch.objects.get(computedMatchID=f"{student.studentID}{internship.internshipID}")
                 except: computed_match.save()
 
             # update the Internships table to reflect the number of positions left per internship after the algorithm has been called
@@ -630,7 +632,6 @@ def analytics_dashboard(request):
         'companies_count' : companies_count, 
     }
 
-
     # generate a student dataframe to develop the charts 
     students = [ [student.studentID, student.currProgramme, student.studyMode, student.studyPattern] for student in Student.objects.all() ]
     students_df = pd.DataFrame(data=students, columns=['studentID', 'currProgramme', 'studyMode', 'studyPattern'])
@@ -740,6 +741,22 @@ def analytics_dashboard(request):
 
 
     # TO BE IMPLEMENTED 
+
+
+    # 7. Analytics specific to the last algorithm run ===============================================================
+
+    with open('algorithm_analytics.pkl', 'rb') as file:
+        analytics_dictionary = pickle.load(file)
+
+    # encode the analytics chart into a binary stream
+    chart = analytics_dictionary['assignmentsLeft_vs_iterations_plot']
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    algorithm_chart = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    plt.close()
+    analytics_dictionary['assignmentsLeft_vs_iterations_plot'] = algorithm_chart
+
+    context['algorithm_analytics'] = analytics_dictionary
 
     return render(request, 'analytics_dashboard.html', context)
 
