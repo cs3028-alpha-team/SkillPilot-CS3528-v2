@@ -98,6 +98,11 @@ def send_email(request):
 # ====================== #
 
 def home(request):
+
+    for it in Internship.objects.all():
+        it.numberPositions = random.randint(2, 6)
+        it.save()
+
     return render(request, 'home.html')
 
 def contacts(request):
@@ -637,8 +642,8 @@ def analytics_dashboard(request):
     students_df = pd.DataFrame(data=students, columns=['studentID', 'currProgramme', 'studyMode', 'studyPattern'])
 
     # generate an internship dataframe to develop the charts 
-    internships = [ [ internship.internshipID, internship.contractMode, internship.contractPattern ] for internship in Internship.objects.all() ]
-    internships_df = pd.DataFrame(data=internships, columns=['internshipID', 'contractMode', 'contractPattern'])
+    internships = [ [ internship.internshipID, internship.contractMode, internship.contractPattern, internship.field, internship.numberPositions ] for internship in Internship.objects.all() ]
+    internships_df = pd.DataFrame(data=internships, columns=['internshipID', 'contractMode', 'contractPattern', 'field', 'numberPositions'])
 
 
     # 1. Piechart for distribution of students by studyPattern =================================================================================
@@ -739,8 +744,10 @@ def analytics_dashboard(request):
 
     # 6. Histogram of students grouped by current programme
 
-
-    # TO BE IMPLEMENTED 
+    # run a value count, and display in the form of a table on the screen
+    currProgramme_counts = students_df['currProgramme'].value_counts().reset_index()
+    currProgramme_counts.columns = ['Programme of Study', 'Students Enrolled']
+    context['currProgramme_df'] = currProgramme_counts.to_html(classes='table table-bordered table-striped', index=False)
 
 
     # 7. Analytics specific to the last algorithm run ===============================================================
@@ -757,6 +764,16 @@ def analytics_dashboard(request):
     analytics_dictionary['assignmentsLeft_vs_iterations_plot'] = algorithm_chart
 
     context['algorithm_analytics'] = analytics_dictionary
+
+
+    # 8. Histogram of total internship positions per Field
+
+    # create an internship dataframe with internship field and positions, 
+    # then run a value count on that and display the dataframe to screen, in the form of a table
+    total_positions_df = internships_df[['field', 'numberPositions']]
+    positions_per_field = total_positions_df.groupby('field')['numberPositions'].sum().reset_index()
+    positions_per_field.columns = ['Internship Field', 'Available Internships']
+    context['positionsPerField_df'] = positions_per_field.to_html(classes='table table-bordered table-striped', index=False)
 
     return render(request, 'analytics_dashboard.html', context)
 
@@ -1117,4 +1134,3 @@ def delete_recruiter(request):
     else:
         return redirect('home')
     
-

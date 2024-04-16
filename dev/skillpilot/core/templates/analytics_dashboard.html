@@ -73,11 +73,6 @@
                 <img class="ms-5" src="data:image/png;base64,{{ matrix_chart }}">
             </div>
 
-            {% comment %} <!-- histrogram of students grouped by current programme of study-->
-            <div class="ms-5 mt-5">
-                <img class="ms-5" src="data:image/png;base64,{{ currProgramme_chart }}">
-            </div>
-            {% endcomment %}
 
             <div class="ms-5 mt-5">
                 <img class="ms-5" src="data:image/png;base64,{{ algorithm_analytics.assignmentsLeft_vs_iterations_plot }}">
@@ -85,6 +80,14 @@
                 <p>comparisons made : {{ algorithm_analytics.comparisons_made}}</p>
                 <p>percentage of students matched to an internship : {{ algorithm_analytics.matched_students_percentage}} %</p>
                 <p>percentage of internships matched to a student : {{ algorithm_analytics.matched_internships_percentage}} %</p>
+            </div>
+            
+            <div class="ms-5 mt-5" style="width:500px;">
+                {{ currProgramme_df|safe }}
+            </div>
+
+            <div class="ms-5 mt-5" style="width:400px;">
+                {{ positionsPerField_df|safe }}
             </div>
 
         </div>
