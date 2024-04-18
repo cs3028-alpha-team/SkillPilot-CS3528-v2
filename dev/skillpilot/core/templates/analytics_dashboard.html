@@ -1,0 +1,125 @@
+{% extends "base.html" %}  
+{% load static %} <!-- NOTE : this line is needed on ALL templates -->
+
+{% block content %}
+
+
+    <body>
+        <div class="container-fluid">
+
+            {% if messages %}
+                {% for message in messages %}
+
+                    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                        <div class="mx-auto alert alert-danger w-50 mt-3" id="flash-message" role="alert"> {{ message }} </div>
+                    {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                        <div class="mx-auto alert alert-success w-50 mt-3" id="flash-message" role="alert"> {{ message }} </div>
+                    {% else %}
+                        <div class="mx-auto alert alert-primary w-50 mt-3" id="flash-message" role="alert"> {{ message }} </div>
+                    {% endif %}
+
+                {% endfor %} 
+            {% endif %}
+
+            <a href="{% url 'admin_page' %}" class="btn btn-outline-dark mt-4 ms-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-left me-3" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0z"/>
+                    <path fill-rule="evenodd" d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708z"/>
+                </svg>
+                Back
+            </a>
+
+
+            <div class="d-flex mx-5 mt-5 justify-content-between align-items-center">
+                <h3 class="display-4 ms-5">Analytics Dashboard</h3>
+                <!-- fetch and plot the up-to-date statics for the admin analytics dashboard-->
+                <form method="POST" action="{% url 'analytics-dashboard' %}" autocomplete="off" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary btn-lg me-5">New Analysis</button>
+                </form>
+            </div>
+
+            <!-- display system-generic informations -->
+            <h3 class="fw-bold mb-3" style="margin-left:100px; margin-top:100px;">Current Database Analytics</h3>
+            <div class="d-flex m-5 justify-content-evenly align-items-center">
+                <div><span class="ms-5 display-6">{{ general.students_count }}</span><span> Student Accounts</span></div>
+                <div><span class="display-6">{{ general.internships_count }}</span><span> Live Internships </span></div>
+                <div><span class="display-6">{{ general.recruiters_count }}</span><span> Recruiter Accounts </span></div>
+                <div><span class="display-6">{{ general.companies_count }}</span><span class="me-5"> Registered Companies </span></div>
+            </div>
+
+            <!-- SYSTEM GENERIC ANALYTICS -->
+            <h3 class="fw-bold mb-3" style="margin-left:100px; margin-top:150px; margin-bottom:50px;">Application Generic Analytics</h3>
+            <div class="d-flex mx-5 my-5 justify-content-between align-items-center">
+
+                <!-- piechart for the distribution of students by mode of study-->
+                <img src="data:image/png;base64,{{ studyMode_chart }}">
+
+                <!-- piechart for the distribution of internships by contract pattern-->
+                <img src="data:image/png;base64,{{ contractPattern_chart }}">
+
+                <!-- piechart for the distribution of internships by contract mode-->
+                <img src="data:image/png;base64,{{ contractMode_chart }}">
+
+            </div>
+
+            <div class="d-flex mx-5 my-5 justify-content-between align-items-center">
+                <!-- piechart for the distribution of students by pattern of study-->
+                <img src="data:image/png;base64,{{ studyPattern_chart }}">
+
+                <div class="table-responsive" style="overflow-y: auto; max-height:300px;" >
+                    {{ currProgramme_df|safe }}
+                </div>
+
+                <div class="table-responsive">
+                    {{ positionsPerField_df|safe }}
+                </div>
+            </div>
+    
+            
+            <h3 class="fw-bold mb-5" style="margin-left:100px; margin-top:100px;">Algorithm Specific Analytics</h3>
+            <div class="d-flex justify-content-center align-items-center">
+
+                <div class="matrixChart">
+                    <!-- heatmap for the last computed compatibility matrix-->
+                    <img src="data:image/png;base64,{{ matrix_chart }}">
+                </div>
+
+                <div class="d-flex flex-column">
+                    <img src="data:image/png;base64,{{ algorithm_analytics.assignmentsLeft_vs_iterations_plot }}">
+
+                    <div class="my-4 ms-5" style="width:500px;">
+         
+                    <table class="table table-striped">
+                          <tbody>
+                            <tr>
+                                <th>Time Elapsed</th>
+                                <td>{{ algorithm_analytics.metrics.time_elapsed }} seconds</td>
+                            </tr>
+                            <tr>
+                                <th>Comparisons Made</th>
+                                <td> {{ algorithm_analytics.metrics.comparisons_made }} </td>
+                            </tr>
+                            <tr>
+                                <th>Students Matched</th>
+                                <td> {{ algorithm_analytics.metrics.students_matched }}</td>
+                            </tr>
+                            <tr>
+                                <th>Internships Matched</th>
+                                <td>{{ algorithm_analytics.metrics.internships_matched }}</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </body>
+
+{% endblock %}

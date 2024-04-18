@@ -42,6 +42,21 @@
                 </p>
                 <p class="mb-3"><strong>Status:</strong> {{ interview.outcome }}</p> 
             </div>
+<<<<<<< HEAD
+            <!-- This is the recruiter version, it will be removed here when the recruiter dashboard is added and moved there-->
+            <div style="flex: 1; padding-left: 20px;"> 
+                <form method="post" action="{% url 'update-interview' interview.interviewID %}">
+                    {% csrf_token %}
+                    <select name="new_outcome" class="form-select mb-3" aria-label="Select Interview Outcome"> <!-- Added margin bottom -->
+                        <option value="accepted">Accepted</option>
+                        <option value="pending">Pending</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </div>
+=======
+>>>>>>> abac23f585183bfb38b77223a67c81a2b9a34f81
         </div>
     </div>
     {% else %}
