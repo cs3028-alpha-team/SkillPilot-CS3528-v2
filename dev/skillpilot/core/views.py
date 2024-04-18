@@ -220,8 +220,8 @@ def admin(request):
 # ============================================================ #
 
 # handle the companies management tool functionality
-#@login_required
-#@allowed_users(allowed_roles=['Admin']) 
+@login_required
+@allowed_users(allowed_roles=['Admin']) 
 def companies_management_tool(request):
     
     context = {}
