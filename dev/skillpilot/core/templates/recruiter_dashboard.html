@@ -6,6 +6,7 @@
         once recruiiters have created an account with username and password, they will be able to access their dashboard 
     -->
 
+
 {% if messages %}
   {% for message in messages %}
 
@@ -158,18 +159,6 @@
                       <a href="{% url 'student-details' student.studentID %}">{{student.fullName}}</a>
                   </p>
                   <p class="mb-3"><strong>Status:</strong> {{ interview.outcome }}</p> 
-              </div>
-              <!-- This is the recruiter version, it will be removed here when the recruiter dashboard is added and moved there-->
-              <div style="flex: 1; padding-left: 20px;"> 
-                  <form method="post" action="{% url 'update_interview' interview.interviewID %}">
-                      {% csrf_token %}
-                      <select name="new_outcome" class="form-select mb-3" aria-label="Select Interview Outcome"> <!-- Added margin bottom -->
-                          <option value="accepted">Accepted</option>
-                          <option value="pending">Pending</option>
-                          <option value="rejected">Rejected</option>
-                      </select>
-                      <button type="submit" class="btn btn-primary">Update</button>
-                  </form>
               </div>
           </div>
       </div>

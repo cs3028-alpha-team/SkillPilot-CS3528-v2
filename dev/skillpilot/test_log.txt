@@ -1,0 +1,30 @@
+Creating test database for alias 'default'...
+Found 30 test(s).
+System check identified no issues (0 silenced).
+..............................
+----------------------------------------------------------------------
+Ran 30 tests in 15.298s
+
+OK
+Destroying test database for alias 'default'...
+Posted internships: <QuerySet []>
+Posted internships: <QuerySet []>
+Posted internships: <QuerySet [<Internship: Internship object (123)>]>
+An error occurred: No Interview matches the given query.
+Posted internships: <QuerySet [<Internship: Internship object (123)>]>
+[[122  12]
+ [  6 160]]
+
+
+              precision    recall  f1-score   support
+
+       False       0.95      0.91      0.93       134
+        True       0.93      0.96      0.95       166
+
+    accuracy                           0.94       300
+   macro avg       0.94      0.94      0.94       300
+weighted avg       0.94      0.94      0.94       300
+
+An error occurred: No Student matches the given query.
+Posted internships: <QuerySet []>
+An error occurred: No Interview matches the given query.
