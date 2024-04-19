@@ -1,0 +1,14 @@
+{% extends "base.html" %}  
+{% load static %} <!-- NOTE : this line is needed on ALL templates -->
+
+{% block content %}
+
+    <!-- define a versatile template which displays the error message passed to this template via the views.py file -->
+    <div class="col-lg-6 col-8 offset-lg-3 mt-5 offset-2 alert alert-danger" role="alert">
+
+        <h4 class="alert-heading">Error</h4>
+        {% if error %} <p> {{ error }} </p> {% endif %}
+
+    </div>
+
+{% endblock %}
