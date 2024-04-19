@@ -186,8 +186,8 @@ def recruiter_update(request, internship_id):
     return render(request, 'recruiter_update.html', {'form': form, 'internship': internship})
 
 # view for the route '/recruiter'
-@login_required
-@allowed_users(allowed_roles=['Companies']) 
+#@login_required
+#@allowed_users(allowed_roles=['Companies']) 
 def recruiter_dashboard(request):
     form = InternshipForm()
     logged_in_recruiter = request.user
@@ -216,7 +216,8 @@ def recruiter_dashboard(request):
             return redirect('recruiter')
         else:
             messages.error(request, 'Form unsuccessful try again')
-            return redirect('recruiter')
+            context['form'] = form
+            return render(request, 'recruiter_dashboard.html', context)
     else:
         # Interview system code
         
@@ -248,11 +249,11 @@ def recruiter_dashboard(request):
         except Exception as e:
             print("An error occurred:", e)
             return render(request, 'recruiter_dashboard.html', context)
-        
+
         
 # accept/reject an interview
 # currently only changes outcome in the database#
-@login_required
+#@login_required
 #@allowed_users(allowed_roles=['Companies']) 
 def update_interview(request, interview_id):
     if request.method == 'POST':
@@ -808,25 +809,33 @@ def student_signup(request):
     if request.user.is_authenticated:
         return redirect('student')
     if request.method == 'POST':
-        payload = {
-            'username': request.POST.get('studentUsername'),
-            'email': request.POST.get('studentEmail'),
-            'password1': request.POST.get('studentPassword1'),
-            'password2': request.POST.get('studentPassword1')
-        }
-        
-        new_student = StudentSignupForm(payload)
-        
-        if new_student.is_valid():
-            new_student = User.objects.create_user(username=payload['username'], email=payload['email'], password=payload['password1'])
-            group = Group.objects.get(name='Students')
-            new_student.groups.add(group)
+        username = request.POST.get('studentUsername')
+        email = request.POST.get('studentEmail')
+        password1 = request.POST.get('studentPassword1')
+        password2 = request.POST.get('studentPassword2')
 
-            messages.success(request, 'Signup successful!')
-            return redirect('student-login')
-        else:
-            messages.info(request, 'Looks like you already have an account, please login!')
-            return redirect('student-login')
+        # Check if username already exists
+        if User.objects.filter(username=username).exists():
+            messages.error(request, 'Username already exists. Please choose a different username.')
+            return render(request, 'auth/student_signup.html')
+
+        # Check if email already exists
+        if User.objects.filter(email=email).exists():
+            messages.error(request, 'Email already exists. Please use a different email address.')
+            return render(request, 'auth/student_signup.html')
+
+        # Check if passwords match
+        if password1 != password2:
+            messages.error(request, 'Passwords do not match.')
+            return render(request, 'auth/student_signup.html')
+
+        # Create new user if all checks pass
+        new_user = User.objects.create_user(username=username, email=email, password=password1)
+        group = Group.objects.get(name='Students')
+        new_user.groups.add(group)
+
+        messages.success(request, 'Signup successful!')
+        return redirect('student-login')
 
     return render(request, 'auth/student_signup.html')
 
