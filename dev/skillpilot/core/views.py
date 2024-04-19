@@ -28,14 +28,12 @@ from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
-
 import seaborn as sns
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('Agg') # use the agg backend to silence GUI warning
 import io
 import base64
-
 from django.db.models import Q
 from datetime import date
 import random
