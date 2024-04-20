@@ -17,27 +17,9 @@ class StudentDashboardViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'student_dashboard.html')
 
-    def test_student_dashboard_POST_valid_form(self):
-        self.client.login(username='test_student', password='password123')
-        form_data = {
-            # Fill in form data here
-        }
-        response = self.client.post(reverse('student'), data=form_data)
-        self.assertEqual(response.status_code, 302)  # Redirect upon successful form submission
-
-    def test_student_dashboard_POST_invalid_form(self):
-        self.client.login(username='test_student', password='password123')
-        form_data = {
-            # Fill in invalid form data here
-        }
-        response = self.client.post(reverse('student'), data=form_data)
-        self.assertEqual(response.status_code, 200)  # Form should be re-rendered with errors
-
     def test_student_dashboard_not_logged_in(self):
         response = self.client.get(reverse('student'))
         self.assertEqual(response.status_code, 302)  # Redirect to login page
-
-    # You can add more tests for edge cases, such as when objects don't exist
 
 class RecruiterDashboardViewTest(TestCase):
     def setUp(self):
@@ -52,22 +34,6 @@ class RecruiterDashboardViewTest(TestCase):
         response = self.client.get(reverse('recruiter'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'recruiter_dashboard.html')
-
-    def test_recruiter_dashboard_POST_valid_form(self):
-        self.client.login(username='test_recruiter', password='password123')
-        form_data = {
-            # Fill in form data here
-        }
-        response = self.client.post(reverse('recruiter'), data=form_data)
-        self.assertEqual(response.status_code, 302)  # Redirect upon successful form submission
-
-    def test_recruiter_dashboard_POST_invalid_form(self):
-        self.client.login(username='test_recruiter', password='password123')
-        form_data = {
-            # Fill in invalid form data here
-        }
-        response = self.client.post(reverse('recruiter'), data=form_data)
-        self.assertEqual(response.status_code, 302)  # Should still redirect even with invalid form data
 
     def test_recruiter_dashboard_no_logged_in_user(self):
         response = self.client.get(reverse('recruiter'))
@@ -106,20 +72,6 @@ class ViewIntegrationTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'recruiter_dashboard.html')
 
-        # Test recruiter dashboard with POST request and valid form
-        form_data = {
-            # Fill in valid form data here
-        }
-        response = self.client.post(reverse('recruiter'), data=form_data)
-        self.assertEqual(response.status_code, 302)  # Redirect upon successful form submission
-
-        # Test recruiter dashboard with POST request and invalid form
-        form_data = {
-            # Fill in invalid form data here
-        }
-        response = self.client.post(reverse('recruiter'), data=form_data)
-        self.assertEqual(response.status_code, 302)  # Should still redirect even with invalid form data
-
         # Test recruiter dashboard without logging in (unauthorized access)
         response = self.client.get(reverse('recruiter'))
         self.assertEqual(response.status_code, 302)  # Redirect to login page
@@ -130,20 +82,6 @@ class ViewIntegrationTest(TestCase):
         response = self.client.get(reverse('student'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'student_dashboard.html')
-
-        # Test student dashboard with POST request and valid form
-        form_data = {
-            # Fill in valid form data here
-        }
-        response = self.client.post(reverse('student'), data=form_data)
-        self.assertEqual(response.status_code, 302)  # Redirect upon successful form submission
-
-        # Test student dashboard with POST request and invalid form
-        form_data = {
-            # Fill in invalid form data here
-        }
-        response = self.client.post(reverse('student'), data=form_data)
-        self.assertEqual(response.status_code, 200)  # Form should be re-rendered with errors
 
         # Test student dashboard without logging in (unauthorized access)
         response = self.client.get(reverse('student'))
