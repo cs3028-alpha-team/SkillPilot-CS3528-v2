@@ -3,7 +3,7 @@ Found 30 test(s).
 System check identified no issues (0 silenced).
 ..............................
 ----------------------------------------------------------------------
-Ran 30 tests in 15.298s
+Ran 30 tests in 18.962s
 
 OK
 Destroying test database for alias 'default'...

@@ -1,8 +1,6 @@
-from django.contrib import admin
 from django.test import TestCase, Client
-from core.models import Student, Internship, Company, Recruiter, Interview, ComputedMatch, SuperUser
+from core.models import Student, Internship, Company, Recruiter
 from django.contrib.auth.models import User
-from django.urls import reverse
 
 #below the code tests url for templates
 #verifying by checking the page displays code from the corresponding html file 

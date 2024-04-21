@@ -65,14 +65,6 @@
               request payload 
           -->
           <div class="row">
-            <!-- internship recruiter ID input 
-            <div class="mb-3 col">
-              <label for="recruiterIDInput" class="form-label"
-                >Recruiter ID</label
-              >
-              {{ form.recruiterID }}
-            </div>
-            -->
             <!-- internship recruiter ID read-only -->
             <div class="mb-3 col">
               <label for="recruiterIDInput" class="form-label">Recruiter ID</label>
@@ -92,28 +84,12 @@
               >
               {{ form.companyID }}
             </div>
-            <!-- company ID input read only
-            <div class="mb-3 col">
-              <label for="companyID" class="form-label">Recruiter Token</label>
-              <input
-                type="fieldInput"
-                id="companyID"
-                name="companyID"
-                class="form-control"
-                value="{{ company_id }}"
-                readonly
-              />
-            </div>
-          </div>
-          -->
-          <div class="row mb-3">
+            <div class="row mb-3">
             <!-- internship contract length input -->
-            <div class="col">
-              <label for="contractmodeInput" class="form-label"
-                >Contract Mode</label
-              >
+              <div class="col">
+                <label for="contractmodeInput" class="form-label">Contract Mode</label>
               {{ form.contractMode }}
-            </div>
+              </div>
             <!-- internship contract pattern input -->
             <div class="col">
               <label for="contractpatternInput" class="form-label"
