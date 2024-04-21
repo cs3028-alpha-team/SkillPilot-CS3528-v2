@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
-from .models import Company, Recruiter, Internship
-from .forms import CompanyRegistrationForm
+from core.models import Company, Recruiter, Internship
+from core.forms import CompanyRegistrationForm
 from django.contrib.auth.models import User
 
 class UnitTests(TestCase):
@@ -13,9 +13,9 @@ class UnitTests(TestCase):
         self.user.is_staff = True
         self.user.save()
 
-        self.company1 = Company.objects.create(companyName="Company1", industrySector="Tech", websiteURL="http://company1.com")
-        self.company2 = Company.objects.create(companyName="Company2", industrySector="Finance", websiteURL="http://company2.com")
-        self.recruiter = Recruiter.objects.create(companyID=self.company1.companyID, email='recruiter@company1.com')
+        self.company1 = Company.objects.create(companyID="C001", companyName="Company1", industrySector="Tech", websiteURL="http://company1.com")
+        self.company2 = Company.objects.create(companyID="C002", companyName="Company2", industrySector="Finance", websiteURL="http://company2.com")
+        self.recruiter = Recruiter.objects.create(recruiterID="R001", fullName="John Smith", companyID=self.company1, email='recruiter@company1.com')
 
     def tearDown(self):
         self.user.delete()
@@ -63,9 +63,9 @@ class IntegrationTests(TestCase):
         self.user.is_staff = True
         self.user.save()
 
-        self.company1 = Company.objects.create(companyName="Company1", industrySector="Tech", websiteURL="http://company1.com")
-        self.company2 = Company.objects.create(companyName="Company2", industrySector="Finance", websiteURL="http://company2.com")
-        self.recruiter = Recruiter.objects.create(companyID=self.company1.companyID, email='recruiter@company1.com')
+        self.company1 = Company.objects.create(companyID="C001", companyName="Company1", industrySector="Tech", websiteURL="http://company1.com")
+        self.company2 = Company.objects.create(companyID="C002", companyName="Company2", industrySector="Finance", websiteURL="http://company2.com")
+        self.recruiter = Recruiter.objects.create(recruiterID="R001", fullName="John Smith", companyID=self.company1, email='recruiter@company1.com')
 
     def tearDown(self):
         self.user.delete()
@@ -75,16 +75,18 @@ class IntegrationTests(TestCase):
 
     def test_companies_management_tool_view(self):
         self.client.force_login(self.user)
-        response = self.client.get(reverse('companies-management-tool'))
+        response = self.client.get(reverse('manage-companies'))
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(response.context['companies'], [repr(self.company1), repr(self.company2)])
         
+    def test_companies_management_tool_filter_claimed(self):    
         # Test POST request with filter_condition='claimed'
-        response = self.client.post(reverse('companies-management-tool'), {'companyFilterDrowpdown': 'claimed'})
+        response = self.client.post(reverse('manage-companies'), {'companyFilterDrowpdown': 'claimed'})
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(response.context['companies'], [repr(self.company1)])
-        
+    
+    def test_companies_management_tool_filter_unclaimed(self):     
         # Test POST request with filter_condition='unclaimed'
-        response = self.client.post(reverse('companies-management-tool'), {'companyFilterDrowpdown': 'unclaimed'})
+        response = self.client.post(reverse('manage-companies'), {'companyFilterDrowpdown': 'unclaimed'})
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(response.context['companies'], [repr(self.company2)])

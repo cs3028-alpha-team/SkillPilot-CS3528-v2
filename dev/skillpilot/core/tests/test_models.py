@@ -12,7 +12,7 @@ class TestModels(TestCase):
         self.recruiter = Recruiter.objects.create(recruiterID='R001', fullName='Test Recruiter', email='test@example.com', companyID=self.company, jobTitle='HR Manager')
         self.student = Student.objects.create(studentID=1, fullName='Test Student', email='teststudent@example.com', currProgramme='Test Program', prevProgramme='Previous Program', studyMode='online', studyPattern='FT', GPA=4, desiredContractLength='6-W', willingRelocate=True, aspirations='To excel in the field')
         self.internship = Internship.objects.create(internshipID='I001', companyID=self.company, recruiterID=self.recruiter, contractMode='online', contractPattern='FT', numberPositions=5, field='IT', title='Test Internship', minGPA=3)
-        self.interview = Interview.objects.create(interviewID='IV001', companyID=self.company, studentID=self.student, recruiterID=self.recruiter, outcome='accepted')
+        self.interview = Interview.objects.create(interviewID='IV001', companyID=self.company, studentID=self.student, recruiterID=self.recruiter, internshipID=Internship.objects.get(internshipID='I001'), outcome='accepted')
 
     def test_str_methods(self):
         self.assertEqual(str(self.company), "C001, Test Company, IT")
@@ -32,6 +32,7 @@ class TestModels(TestCase):
         self.company.delete()
         self.assertIsNone(Recruiter.objects.filter(recruiterID='R001').first())
 
+# test model str methods
 class TestStrMethods(TestCase):
     def test_student_str_method(self):
         student = Student.objects.create(fullName='Test Student', email='teststudent@example.com', currProgramme='Test Program', prevProgramme='Previous Program', studyMode='online', studyPattern='FT', GPA=4, desiredContractLength='6-W', willingRelocate=True, aspirations='To excel in the field')
@@ -39,7 +40,7 @@ class TestStrMethods(TestCase):
 
     def test_internship_str_method(self):
         internship = Internship.objects.create(internshipID='I001', companyID=Company.objects.create(companyID='C001', companyName='Test Company', industrySector='IT'), recruiterID=Recruiter.objects.create(recruiterID='R001', fullName='Test Recruiter', email='test@example.com', companyID=Company.objects.get(companyID='C001'), jobTitle='HR Manager'), contractMode='online', contractPattern='FT', numberPositions=5, field='IT', title='Test Internship', minGPA=3)
-        self.assertEqual(str(internship), "I001, C001, Test Company, IT, R001, Test Recruiter, C001, Test Company, IT, 5, IT, 3")
+        self.assertEqual(str(internship), "I001, C001, R001, 5, IT, 3")
 
     def test_company_str_method(self):
         company = Company.objects.create(companyID='C001', companyName='Test Company', industrySector='IT')
@@ -47,7 +48,7 @@ class TestStrMethods(TestCase):
 
     def test_recruiter_str_method(self):
         recruiter = Recruiter.objects.create(recruiterID='R001', fullName='Test Recruiter', email='test@example.com', companyID=Company.objects.create(companyID='C001', companyName='Test Company', industrySector='IT'), jobTitle='HR Manager')
-        self.assertEqual(str(recruiter), "R001, Test Recruiter, C001, Test Company, IT")
+        self.assertEqual(str(recruiter), "R001, Test Recruiter, C001")
 
     def test_interview_str_method(self):
         # Create required objects
@@ -62,6 +63,7 @@ class TestStrMethods(TestCase):
         
 
     def test_computedmatch_str_method(self):
+        # create required objects
         company = Company.objects.create(companyID='C001', companyName='Test Company', industrySector='IT')
         recruiter = Recruiter.objects.create(recruiterID='R001', fullName='Test Recruiter', email='test@example.com', companyID=company, jobTitle='HR Manager')
         student = Student.objects.create(studentID=1, fullName='Test Student', email='teststudent@example.com', currProgramme='Test Program', prevProgramme='Previous Program', studyMode='online', studyPattern='FT', GPA=4, desiredContractLength='6-W', willingRelocate=True, aspirations='To excel in the field')
@@ -95,25 +97,35 @@ class TestFieldValidation(TestCase):
     def test_internship_field_validation(self):
         # Test invalid contract mode
         with self.assertRaises(ValidationError):
-            internship = Internship.objects.create(internshipID='I001', companyID=Company.objects.create(companyID='C001', companyName='Test Company', industrySector='IT'), recruiterID=Recruiter.objects.create(recruiterID='R001', fullName='Test Recruiter', email='test@example.com', companyID=Company.objects.get(companyID='C001'), jobTitle='HR Manager'), contractMode='invalid', contractPattern='FT', numberPositions=5, field='IT', title='Test Internship', minGPA=3)
+            internship = Internship.objects.create(internshipID='I007', companyID=Company.objects.create(companyID='C004', companyName='Test Company', industrySector='IT'), recruiterID=Recruiter.objects.create(recruiterID='R009', fullName='Test Recruiter', email='test@example.com', companyID=Company.objects.get(companyID='C004'), jobTitle='HR Manager'), contractMode='invalid', contractPattern='FT', numberPositions=5, field='IT', title='Test Internship', minGPA=3)
             internship.full_clean()
 
         # Test invalid number of positions
         with self.assertRaises(ValidationError):
             internship = Internship.objects.create(internshipID='I001', companyID=Company.objects.create(companyID='C001', companyName='Test Company', industrySector='IT'), recruiterID=Recruiter.objects.create(recruiterID='R001', fullName='Test Recruiter', email='test@example.com', companyID=Company.objects.get(companyID='C001'), jobTitle='HR Manager'), contractMode='online', contractPattern='FT', numberPositions=-5, field='IT', title='Test Internship', minGPA=3)
             internship.full_clean()
+            
         # Test valid internship
         valid_internship = Internship.objects.create(internshipID='I002', companyID=Company.objects.create(companyID='C002', companyName='Test Company 2', industrySector='IT'), recruiterID=Recruiter.objects.create(recruiterID='R002', fullName='Test Recruiter 2', email='test2@example.com', companyID=Company.objects.get(companyID='C002'), jobTitle='HR Manager'), contractMode='online', contractPattern='FT', numberPositions=5, field='IT', title='Test Internship 2', minGPA=3)
         valid_internship.full_clean()
         
     def test_interview_field_validation(self):
+        # Create objects for testing
+        company_c002, _ = Company.objects.get_or_create(companyID='C002', defaults={'companyName':'Test Company', 'industrySector':'IT'})
+        company_c001, _ = Company.objects.get_or_create(companyID='C001', defaults={'companyName':'Test Company 2', 'industrySector':'IT'})
+        recruiter_r002, _ = Recruiter.objects.get_or_create(recruiterID='R002', defaults={'fullName':'Test Recruiter 2', 'email':'test2@example.com', 'companyID':company_c002, 'jobTitle':'HR Manager'})
+        recruiter_r001, _ = Recruiter.objects.get_or_create(recruiterID='R001', defaults={'fullName':'Test Recruiter', 'email':'test@example.com', 'companyID':company_c002, 'jobTitle':'HR Manager'})
+        internship_i009 = Internship.objects.create(internshipID='I009', companyID=company_c002, recruiterID=recruiter_r002, contractMode='online', contractPattern='FT', numberPositions=5, field='IT', title='Test Internship 2', minGPA=3)
+        student = Student.objects.create(studentID=1, fullName='Test Student', email='teststudent@example.com', currProgramme='Test Program', prevProgramme='Previous Program', studyMode='online', studyPattern='FT', GPA=4, desiredContractLength='6-W', willingRelocate=True, aspirations='To excel in the field')
+
         # Test invalid outcome
         with self.assertRaises(ValidationError):
-            interview = Interview.objects.create(interviewID='IV001', companyID=Company.objects.create(companyID='C001', companyName='Test Company', industrySector='IT'), studentID=Student.objects.create(studentID=1, fullName='Test Student', email='teststudent@example.com', currProgramme='Test Program', prevProgramme='Previous Program', studyMode='online', studyPattern='FT', GPA=4, desiredContractLength='6-W', willingRelocate=True, aspirations='To excel in the field'), recruiterID=Recruiter.objects.create(recruiterID='R001', fullName='Test Recruiter', email='test@example.com', companyID=Company.objects.get(companyID='C001'), jobTitle='HR Manager'), outcome='invalid')
+            interview = Interview.objects.create(interviewID='IV001', companyID=company_c002, internshipID=internship_i009, studentID=student, recruiterID=recruiter_r001, outcome='invalid')
             interview.full_clean()
 
         # Test valid interview
-        valid_interview = Interview.objects.create(interviewID='IV002', companyID=Company.objects.get(companyID='C001'), studentID=Student.objects.get(studentID=1), recruiterID=Recruiter.objects.get(recruiterID='R001'), outcome='accepted')
+        internship_i007 = Internship.objects.create(internshipID='I007', companyID=company_c001, recruiterID=recruiter_r001, contractMode='online', contractPattern='FT', numberPositions=5, field='IT', title='Test Internship 2', minGPA=3)
+        valid_interview = Interview.objects.create(interviewID='IV002', companyID=company_c001, studentID=student, recruiterID=recruiter_r001, internshipID=internship_i007, outcome='accepted')
         valid_interview.full_clean()
         
     def test_company_field_validation(self):
@@ -181,3 +193,4 @@ class TestClassifier(TestCase):
     def test_assess_produces_correct_output(self):
         self.classifier.assess()
         # Add assertions for the expected output of classification report and confusion matrix
+        # not 100% sure what they should be 

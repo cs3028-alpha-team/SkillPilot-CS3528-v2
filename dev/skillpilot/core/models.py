@@ -51,7 +51,7 @@ class Internship(models.Model):
 
     # string representation for the Internship class
     def __str__(self):
-        return f"{self.internshipID}, {self.companyID}, {self.recruiterID}, {self.numberPositions}, {self.field}, {self.minGPA}"
+        return f"{self.internshipID}, {self.companyID.companyID}, {self.recruiterID.recruiterID}, {self.numberPositions}, {self.field}, {self.minGPA}"
 
     # enum for pattern
     class pattern(models.TextChoices):
@@ -71,10 +71,10 @@ class Internship(models.Model):
     contractMode = models.CharField(max_length=10, choices= mode.choices)
     contractPattern = models.CharField(max_length = 2, choices= pattern.choices)
     # number of internships availables in the company for that internship type
-    numberPositions = models.SmallIntegerField() 
+    numberPositions = models.SmallIntegerField(validators=[MinValueValidator(0)]) 
     field = models.CharField(max_length = 20)
     title = models.CharField(max_length = 50)
-    minGPA = models.SmallIntegerField()
+    minGPA = models.SmallIntegerField(validators=[MinValueValidator(0)])
 
 # companies table
 class Company(models.Model):
@@ -95,7 +95,7 @@ class Recruiter(models.Model):
 
     # string representation of Recruiter model
     def __str__(self):
-        return f"{self.recruiterID}, {self.fullName}, {self.companyID}"
+        return f"{self.recruiterID}, {self.fullName}, {self.companyID.companyID}"
 
     # attributes for recruiter table
     recruiterID = models.CharField(max_length = 10, primary_key = True)

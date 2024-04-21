@@ -25,7 +25,7 @@ urlpatterns = [
     path('reject-match/<str:matchID>/', views.reject_match, name='reject-match'),
 
     # path to render the algorithm dashboard, where the admin can run the algorithm and manage assignments
-    path('algorithm-dahshboard', views.algorithm_dashboard, name='algorithm-dashboard'),
+    path('algorithm-dashboard', views.algorithm_dashboard, name='algorithm-dashboard'),
 
     # path to render the analytics dashboard, accessible from the admin page
     path('analytics-dashboard', views.analytics_dashboard, name='analytics-dashboard'),
