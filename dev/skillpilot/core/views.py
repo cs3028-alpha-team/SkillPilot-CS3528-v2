@@ -147,7 +147,7 @@ def student_dashboard(request):
 
 # Handle recruiters wanting to delete posted internships
 @login_required
-@allowed_users(allowed_roles=['Companies']) #Access to companies only 
+#@allowed_users(allowed_roles=['Companies']) #Access to companies only 
 def delete_internship(request, internship_id):
     if request.method == 'POST':
         try:
