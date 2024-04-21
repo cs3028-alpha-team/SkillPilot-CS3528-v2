@@ -7,6 +7,8 @@ urlpatterns = [
 
     path('home', views.home, name='home'),
 
+    path('error', views.error, name='error'),
+
     path('recruiter', views.recruiter_dashboard, name='recruiter'),
 
     path('admin_page', views.admin, name='admin_page'),
@@ -19,7 +21,6 @@ urlpatterns = [
 
     path('delete-internship/<str:internship_id>/', views.delete_internship, name='delete-internship'),
    
-
     # paths to handle admin approval/rejection of matchmaking algorithm output 
     path('approve-match/<str:matchID>/', views.approve_match, name='approve-match'),
     path('reject-match/<str:matchID>/', views.reject_match, name='reject-match'),

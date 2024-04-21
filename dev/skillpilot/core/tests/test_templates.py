@@ -38,7 +38,6 @@ class TemplateRenderingTestCase(TestCase):
 
         self.assertTemplateUsed(response, 'auth/student_login.html')
 
-      
         self.assertContains(response, '<h1 class="display-4 m-3"> Student Login Page </h1>')
     
     def test_template_rendering_template3(self):

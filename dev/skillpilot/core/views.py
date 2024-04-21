@@ -58,7 +58,6 @@ def send_email(request):
     return HttpResponse('Email sent')
 
 
-
 # ====================== #
 #  General Purpose views #
 # ====================== #
@@ -73,11 +72,13 @@ def home(request):
 def contacts(request):
     return render(request, 'contacts.html')
 
-
+def error(request):
+    return render(request, 'error.html')
 
 # ============================================== #
 #  Student, Recruiter, and Admin Dashboard pages #
 # ============================================== #
+
 
 # View for the route '/student'
 @login_required
@@ -112,7 +113,6 @@ def student_dashboard(request):
         form = StudentForm()
         context = {'form': form}
 
-    
     try:
         user = request.user
         student_email = user.email
@@ -131,18 +131,19 @@ def student_dashboard(request):
         return render(request, 'student_dashboard.html', {'interview': interview, 'username': student_username, 'recruiter': recruiter, 'date': random_date, 'mode': random_mode})
     
     except Student.DoesNotExist:
-        print("Student does not exist")
+        return render(request, 'error.html', context={ 'error': 'Student does not exist'})
     
     except Interview.DoesNotExist:
-        print("Interview does not exist")
+        return render(request, 'error.html', context={ 'error': 'Interview does not exist'})
         
     except Recruiter.DoesNotExist:
-        print("Recruiter does not exist")
+        return render(request, 'error.html', context={ 'error': 'Recruiter does not exist'})
 
     except Exception as e:
-        print("An error occurred:", e)
+        return render(request, 'error.html', context={ 'error': 'Server error occured'})
 
     return render(request, 'student_dashboard.html', context)        
+
 
 # Handle recruiters wanting to delete posted internships
 @login_required
@@ -154,9 +155,11 @@ def delete_internship(request, internship_id):
             internship.delete()
             return redirect('recruiter')  
         except Internship.DoesNotExist:
-            return HttpResponse("Internship does not exist", status=404)
+            return render(request, 'error.html', context={ 'error': 'Internship does not exist'})
+
     else:
-        return HttpResponse("error not allowed", status=405)
+        return render(request, 'error.html', context={ 'error': 'An error occured'})
+
 
 # Handle recruiters wanting to update their internships
 @login_required
@@ -186,12 +189,10 @@ def recruiter_dashboard(request):
         
         # Retrieve posted internships associated with the corresponding recruiter
         posted_internships = Internship.objects.filter(recruiterID=recruiter)
-        print("Posted internships:", posted_internships)
 
         # Prepare context data
         context = {'form': form, 'company_id': recruiter.recruiterID, 'posted_internships': posted_internships}
-    
-        #context = {'form': form, 'company_id': recruiter.recruiterID}
+
     except Recruiter.DoesNotExist:
         messages.error(request, 'No recruiter associated with the logged-in user')
         return redirect('home')
@@ -231,12 +232,10 @@ def recruiter_dashboard(request):
             return render(request, 'recruiter_dashboard.html', {'interviews': interview_pairs, 'username': recruiter_username, 'date': random_date, 'mode': random_mode}, context)
 
         except (Interview.DoesNotExist, Student.DoesNotExist):
-            print("An object does not exist")
-            return render(request, 'recruiter_dashboard.html', context)
+            return render(request, 'error.html', context={ 'error': 'Interview or Student do not exist'})
 
         except Exception as e:
-            print("An error occurred:", e)
-            return render(request, 'recruiter_dashboard.html', context)
+            return render(request, 'error.html', context={ 'error': 'An error occured'})
 
         
 # Accept/reject an interview
@@ -307,6 +306,7 @@ def companies_management_tool(request):
 
     return render(request, 'companies_management_tool.html', context=context)
 
+
 # Handle the procedure to delete a company from the database
 @login_required
 @allowed_users(allowed_roles=['Admin']) #Access to admin only 
@@ -348,7 +348,6 @@ def delete_company(request, companyID):
 
     return render(request, 'companies_management_tool.html') #render the companies management tool template
 
-
 # register a new company to the database using the payload from the form submitted from the companies management tool
 @login_required
 @allowed_users(allowed_roles=['Admin']) #Access to admin only 
@@ -377,7 +376,6 @@ def register_company(request):
         return redirect('manage-companies')
 
     return render(request, 'companies_management_tool.html')
-
 
 
 # =========================================== #
@@ -567,8 +565,6 @@ def algorithm_dashboard(request):
 
     return render(request, 'algorithm_dashboard.html', context)
 
-
-
 # handle the approval routine for a match computed by the algorithm
 @login_required
 @allowed_users(allowed_roles=['Admin']) #Access to admin only 
@@ -593,7 +589,6 @@ def approve_match(request, matchID):
     messages.success(request, "successfully saved match and booked internship")
     return redirect('algorithm-dashboard')
 
-
 # handle the rejection routine for a match computed by the algorithm
 @login_required
 @allowed_users(allowed_roles=['Admin']) #Access to admin only 
@@ -613,12 +608,6 @@ def reject_match(request, matchID):
     messages.error(request, "match rejected successfully")
     return redirect('algorithm-dashboard')
     
-
-
-
-
-
-
 
 
 # ===================================== #
@@ -787,10 +776,6 @@ def analytics_dashboard(request):
 
 
 
-
-
-
-
 # ======================================================== #
 #  Authentication (Login & Signup) and Authorization logic #
 # ======================================================== #
@@ -955,6 +940,7 @@ def user_logout(request):
 #  Student, Recruiters, and Internships detail pages #
 # ================================================== #
 
+
 # Render a given student profile's details page
 @login_required
 @allowed_users(allowed_roles=['Admin']) #Access to admin only 
@@ -1040,6 +1026,7 @@ def query_students(request):
     return render(request, 'admin_search_feature/students_db_query.html', context=context)
 
 # handle the routine triggered from the admin dashboard to query all recruiter profiles
+
 @login_required
 @allowed_users(allowed_roles=['Admin']) #Access to admin only 
 def query_recruiters(request):
@@ -1169,6 +1156,7 @@ def delete_recruiter(request):
 
         # Store the recruiter email 
         recruiter_email = recruiter.email
+
         print("Recruiter:", recruiter) # Debugging
         print("Recruiter Email:", recruiter_email) # Debugging
 
@@ -1177,14 +1165,17 @@ def delete_recruiter(request):
             recruiter.delete() # Delete recruiter 
             print("Recruiter deleted successfully") #Debugging
         except Exception as e:
-            print("Error deleting recruiter:", e) # Debugging
+            return render(request, 'error.html', context={ 'error': 'Exception occured while deleting Recruiter account'})
+
 
         # Delete any internship listings associated with the company
         try:
             Internship.objects.filter(recruiterID=recruiter.recruiterID).delete()
+
             print("Internships deleted successfully") #Debugging
         except Exception as e:
-            print("Error deleting internships:", e) #Debugging
+            return render(request, 'error.html', context={ 'error': 'Exception occured while deleting Internship'})
+
 
         # Delete the user associated with the company by email
         if recruiter_email:
