@@ -80,7 +80,7 @@ def error(request):
 # ============================================== #
 
 
-# View for the route '/student'
+# view for the route '/student'
 @login_required
 @allowed_users(allowed_roles=['Students']) # access to student accounts only
 def student_dashboard(request):
@@ -113,6 +113,7 @@ def student_dashboard(request):
         form = StudentForm()
         context = {'form': form}
 
+    
     try:
         user = request.user
         student_email = user.email
@@ -131,18 +132,18 @@ def student_dashboard(request):
         return render(request, 'student_dashboard.html', {'interview': interview, 'username': student_username, 'recruiter': recruiter, 'date': random_date, 'mode': random_mode})
     
     except Student.DoesNotExist:
-        return render(request, 'error.html', context={ 'error': 'Student does not exist'})
+        print("Student does not exist")
     
     except Interview.DoesNotExist:
-        return render(request, 'error.html', context={ 'error': 'Interview does not exist'})
+        print("Interview does not exist")
         
     except Recruiter.DoesNotExist:
-        return render(request, 'error.html', context={ 'error': 'Recruiter does not exist'})
+        print("Recruiter does not exist")
 
     except Exception as e:
-        return render(request, 'error.html', context={ 'error': 'Server error occured'})
+        print("An error occurred:", e)
 
-    return render(request, 'student_dashboard.html', context)        
+    return render(request, 'student_dashboard.html', context)         
 
 
 # Handle recruiters wanting to delete posted internships
@@ -176,9 +177,9 @@ def recruiter_update(request, internship_id):
 
     return render(request, 'recruiter_update.html', {'form': form, 'internship': internship})
 
-# View for the route '/recruiter'
+# view for the route '/recruiter'
 @login_required
-@allowed_users(allowed_roles=['Companies']) #Access to companies only 
+@allowed_users(allowed_roles=['Companies']) 
 def recruiter_dashboard(request):
     form = InternshipForm()
     logged_in_recruiter = request.user
@@ -189,10 +190,12 @@ def recruiter_dashboard(request):
         
         # Retrieve posted internships associated with the corresponding recruiter
         posted_internships = Internship.objects.filter(recruiterID=recruiter)
+        print("Posted internships:", posted_internships)
 
         # Prepare context data
         context = {'form': form, 'company_id': recruiter.recruiterID, 'posted_internships': posted_internships}
-
+    
+        #context = {'form': form, 'company_id': recruiter.recruiterID}
     except Recruiter.DoesNotExist:
         messages.error(request, 'No recruiter associated with the logged-in user')
         return redirect('home')
@@ -232,10 +235,12 @@ def recruiter_dashboard(request):
             return render(request, 'recruiter_dashboard.html', {'interviews': interview_pairs, 'username': recruiter_username, 'date': random_date, 'mode': random_mode}, context)
 
         except (Interview.DoesNotExist, Student.DoesNotExist):
-            return render(request, 'error.html', context={ 'error': 'Interview or Student do not exist'})
+            print("An object does not exist")
+            return render(request, 'recruiter_dashboard.html', context)
 
         except Exception as e:
-            return render(request, 'error.html', context={ 'error': 'An error occured'})
+            print("An error occurred:", e)
+            return render(request, 'recruiter_dashboard.html', context)
 
         
 # Accept/reject an interview
