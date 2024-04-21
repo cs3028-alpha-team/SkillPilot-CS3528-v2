@@ -1,52 +1,59 @@
 {% extends "base.html" %}
 {% load static %}
-<!-- NOTE : this line is needed on ALL templates -->
+<!-- NOTE: this line is needed on ALL templates -->
 
 {% block content %}
-    <body>
-        <button onclick="window.history.back();" class="btn btn-outline-dark mt-4 ms-4">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-left me-3" viewBox="0 0 16 16">
+    <div class="container mt-5">
+        <button onclick="window.history.back();" class="btn btn-outline-dark mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-left me-2" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0z"/>
                 <path fill-rule="evenodd" d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708z"/>
             </svg>
             Back
-         </button>
+        </button>
 
-         <div class="container-fluid mt-5 ms-5">
-            <h1>Internship Details</h1>
-            <form id="updateForm" method="POST" action="{% url 'recruiter-update' internship.pk %}">
-                {% csrf_token %}
-                {{ form.non_field_errors }}
-                <!-- Code below will render all form feilds  -->
-                {% for field in form.visible_fields %}
-                    <!-- Code below will make comapnyID, recruiterID and internshipID readonly-->
-                    {% if field.name not in 'companyID recruiterID internshipID' %} 
-                        <div class="mb-3">
-                            {{ field.label_tag }}
-                            {{ field }}
-                        </div>
-                    {% else %}
-                        <div class="mb-3">
-                            {{ field.label_tag }}
-                            <input type="text" name="{{ field.name }}" value="{{ field.value }}" class="form-control" readonly>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-                <button type="submit" class="btn btn-primary">Update</button>
-            </form>
-            <!-- delete internship -->
-            <form id="deleteForm" method="POST" action="{% url 'delete-internship' internship.pk %}">
-                {% csrf_token %}
-                <button type="button" class="btn btn-danger" onclick="confirmDelete()">Delete</button>
-            </form>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <h1 class="text-center mb-4">Internship Details</h1>
+                <form id="updateForm" method="POST" action="{% url 'recruiter-update' internship.pk %}">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    <!-- Render all form fields -->
+                    {% for field in form.visible_fields %}
+                        <!-- Make companyID, recruiterID, and internshipID readonly -->
+                        {% if field.name not in 'companyID recruiterID internshipID' %}
+                            <div class="mb-3">
+                                {{ field.label_tag }}
+                                {{ field }}
+                            </div>
+                        {% else %}
+                            <div class="mb-3">
+                                {{ field.label_tag }}
+                                <input type="text" name="{{ field.name }}" value="{{ field.value }}" class="form-control" readonly>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary col-12">Update</button>
+                </form>
+            </div>
         </div>
 
-        <script>
-            function confirmDelete() {
-                if (confirm("Are you sure you want to delete this internship?")) {
-                    document.getElementById("deleteForm").submit();
-                }
+        <!-- Delete internship -->
+        <div class="row justify-content-center mt-3">
+            <div class="col-md-8">
+                <form id="deleteForm" method="POST" action="{% url 'delete-internship' internship.pk %}">
+                    {% csrf_token %}
+                    <button type="button" class="btn btn-danger col-12" onclick="confirmDelete()">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function confirmDelete() {
+            if (confirm("Are you sure you want to delete this internship?")) {
+                document.getElementById("deleteForm").submit();
             }
-        </script>
-    </body>
+        }
+    </script>
 {% endblock %}
