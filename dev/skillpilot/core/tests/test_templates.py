@@ -292,7 +292,7 @@ class TemplateRenderingTestCase(TestCase):
         self.assertTemplateUsed(response, 'recruiter_update.html')
 
        
-        self.assertContains(response, '<h1>Internship Details</h1>')
+        self.assertContains(response, '<h1 class="text-center mb-4">Internship Details</h1>')
 
     def test_template_rendering_template16(self):
  
