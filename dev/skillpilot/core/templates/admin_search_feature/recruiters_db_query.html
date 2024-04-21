@@ -35,21 +35,21 @@
 
                     <h3 class="display-6 mb-2">Search recruiters</h3>
                     <p>Click Submit to query the entire recruiter database</p>
-
+                    <!-- form to query recruiters from POST method -->
                     <form method="POST" action="{% url 'query-recruiters' %}" autocomplete="off" enctype="multipart/form-data">
 
                         {% csrf_token %}
-
+                         <!-- Input field for name of recruiter -->   
                         <div class="mb-3 col">
                             <label for="recruiterFullname" class="form-label">Fullname</label>
                             <input type="text" id="recruiterFullname" name="recruiterFullname" class="form-control">
                         </div>
-
+                        <!-- Input field for job title of recruiter -->  
                         <div class="mb-3 col">
                             <label for="recruiterJobTitle" class="form-label">Job Title</label>
                             <input type="text" id="recruiterJobTitle" name="recruiterJobTitle" class="form-control">
                         </div>
-
+                        <!-- will display a a drop down that has all companies currently  -->
                         <div class="mb-3 col">
                             <label for="recruiterCompany" class="form-label">Company</label>
                             <select class="form-select" id="recruiterCompany" name="recruiterCompany">
@@ -67,10 +67,10 @@
 
                     </form>
                 </div>
-
+                <!-- results from the query are handled below -->
                 <div class="col-md-auto mx-5 overflow-y-auto" style="height:400px;">
                     <h3 class="display-6 mb-4">Results</h3>
-
+                    <!-- GET and POST conditions -->
                     {% if request.method == 'GET' %}
                         <div class="alert alert-light" role="alert">
                             All records matching your query will appear here
@@ -82,12 +82,13 @@
                            No results match your query
                         </div>
                     {% endif %}
-
+                    <!-- will display the recruiters name that match the query -->
                     {% for recruiter in recruiters %}
 
                         <div class="card mb-2" style="width:500px;">
                             <div class="card-body d-flex justify-content-between align-items-center">
                                 <span>{{recruiter.fullName}}</span>
+                                <!-- button to go see recruiter details -->
                                 <a href="{% url 'recruiter-details' recruiter.recruiterID %}" class="btn btn-light">Details</a>
                             </div>
                         </div>

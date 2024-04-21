@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.test import TestCase, Client
 from core.models import Student, Internship, Company, Recruiter, Interview, ComputedMatch, SuperUser
 from django.contrib.auth.models import User
-from django.urls import reverse
 
 #test admin page model registrations
 class AdminTests(TestCase):
