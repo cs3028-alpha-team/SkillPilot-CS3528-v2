@@ -27,6 +27,8 @@ import base64
 from django.db.models import Q
 from datetime import date
 import random
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 
 
@@ -796,6 +798,14 @@ def student_signup(request):
         password1 = request.POST.get('studentPassword1')
         password2 = request.POST.get('studentPassword2')
 
+        #Check if the email submitted has the correct format
+        try:
+            validate_email(email) #using djanos validate email function 
+        except ValidationError:
+            #if email is incorrect print error message
+            messages.error(request, 'Please enter a valid email address.') 
+            return render(request, 'auth/student_signup.html')
+        
         # Check if username already exists, if true sends an error message 
         if User.objects.filter(username=username).exists():
             messages.error(request, 'Username already exists. Please choose a different username.')
@@ -871,7 +881,15 @@ def recruiter_signup(request):
         except Company.DoesNotExist:
             messages.error(request, 'Invalid recruiter token. Please enter a valid recruiter token.')
             return redirect('recruiter-signup')
-
+        
+        #Check if the email submitted has the correct format
+        try:
+            validate_email(recruiter_email) #using djanos validate email function 
+        except ValidationError:
+            #if email is incorrect print error message
+            messages.error(request, 'Please enter a valid email address.') 
+            return render(request, 'auth/recruiter_signup.html')
+        
         # Check if passwords match
         if password1 != password2:
             messages.error(request, 'Passwords do not match.')
@@ -886,6 +904,11 @@ def recruiter_signup(request):
         if Recruiter.objects.filter(recruiterID=recruiter_id).exists():
             messages.error(request, 'Recruiter ID already exists. Please choose a different recruiter ID.')
             return redirect('recruiter-signup')
+        
+        # Check if email already exists, if true sends an error message 
+        if User.objects.filter(email=recruiter_email).exists():
+            messages.error(request, 'Email already exists. Please use a different email address.')
+            return render(request, 'auth/recruiter_signup.html')
         
         # Create the recruiter account if all validations pass, using the calues from the form 
         user = User.objects.create_user(username=recruiter_username, email=recruiter_email, password=password1)

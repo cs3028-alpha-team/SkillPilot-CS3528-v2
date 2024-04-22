@@ -1,11 +1,10 @@
-{% extends "base.html" %}  
-{% load static %} 
+{% extends "base.html" %}
+{% load static %} <!-- NOTE : this line is needed on ALL templates -->
 
 {% block content %}
 
     {% if messages %}
         {% for message in messages %}
-
             {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
                 <div class="mx-auto alert alert-danger w-50 mt-3" id="flash-message" role="alert"> {{ message }} </div>
             {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
@@ -13,18 +12,18 @@
             {% else %}
                 <div class="mx-auto alert alert-primary w-50 mt-3" id="flash-message" role="alert"> {{ message }} </div>
             {% endif %}
-
         {% endfor %} 
     {% endif %}
 
     <h1 class="display-4 m-3"> Student Registration Page </h1>
 
     <div class="col-6 col-md-6 offset-3">
-        <p>Already have an account? Login <a href={% url 'student-login' %}>here</a></p>
+        <p>Already have an account? Login <a href="{% url 'student-login' %}">here</a></p>
 
-        <form method="POST" class="needs-validation" action="{% url 'student-signup' %}" autocomplete="off" enctype="multipart/form-data" novalidate>
+        <form id="registrationForm" method="POST" class="needs-validation" action="{% url 'student-signup' %}" autocomplete="off" enctype="multipart/form-data" novalidate>
             {% csrf_token %}
 
+            <!--  username input field  -->
             <div class="mb-3 col">
                 <label for="studentUsername" class="form-label">Username</label>
                 <input type="text" id="studentUsername" name="studentUsername" class="form-control" required>
@@ -32,18 +31,19 @@
             </div>
 
             <div class="mb-3 col">
+                <!--  email input field  -->
                 <label for="studentEmail" class="form-label">Email</label>
                 <input type="email" id="studentEmail" name="studentEmail" class="form-control" required>
                 <div class="invalid-feedback">Please enter a valid email</div>
             </div>
 
             <div class="mb-3 col">
-                <!-- Password1 is imposed by Django's CreateUserForm -->
+                <!-- Password input field (password1)-->
                 <label for="studentPassword1" class="form-label">Password</label>
                 <input type="password" id="studentPassword1" name="studentPassword1" class="form-control" required>
                 <div class="invalid-feedback">Please enter a strong password</div>
             </div>
-
+            <!--  Password2 input field (enter password1 again)  -->
             <div class="mb-3 col">
                 <label for="studentPassword2" class="form-label">Confirm Password</label>
                 <input type="password" id="studentPassword2" name="studentPassword2" class="form-control" required>
@@ -52,7 +52,29 @@
 
             <!-- button for form submission -->
             <div class="mb-3 mt-5">
-                <button type="submit" class="btn btn-primary col-3">Submit</button>
+                <!-- Using the data-bs-toggle and data-bs-target attributes to trigger the modal -->
+                <button type="button" class="btn btn-primary col-3" data-bs-toggle="modal" data-bs-target="#confirmationModal">Submit</button>
+            </div>
+
+            <!-- Confirmation Modal for terms and conditions -->
+            <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Confirmation</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Signing up means accepting our terms and conditions
+                        </div>
+                        <div class="modal-footer">
+                            <!-- Using the data-bs-dismiss attribute to close the modal -->
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <!-- confirm button with run the signup_student view-->
+                            <button type="submit" class="btn btn-primary">Confirm</button> 
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </form>
