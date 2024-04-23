@@ -1,4 +1,4 @@
-# CS3208 Team Alpha - Skillbridge
+# CS3528 Team Alpha - SkillPilot
 Welcome to the GitHub repository for SkillPilot, an automated internship match-making software commissioned to Team Alpha by the university's school of medicine, medical sciences and nutrition. In this document you will find an explanation of what the application does and how to run it on your own machine, if you so wish. A [video](https://www.youtube.com/watch?v=YOUR_VIDEO_ID) demostration of the application in action can be found 
 
 ### Running the application
