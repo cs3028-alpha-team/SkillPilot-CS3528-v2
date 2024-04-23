@@ -13,12 +13,17 @@ urlpatterns = [
 
     path('admin_page', views.admin, name='admin_page'),
 
+    # path to contacts page
     path('contacts', views.contacts, name='contacts'),
     
+    # path for help page
+    path('help', views.help, name='help'),
+    
+    # url for sending emails
     path('send-email', views.send_email, name="send-email"),
 
+    # paths to handle updating/deleting recruiters
     path('recruiter-update/<str:internship_id>/', views.recruiter_update, name='recruiter-update'),
-
     path('delete-internship/<str:internship_id>/', views.delete_internship, name='delete-internship'),
    
     # paths to handle admin approval/rejection of matchmaking algorithm output 

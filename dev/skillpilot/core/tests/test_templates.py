@@ -89,7 +89,7 @@ class TemplateRenderingTestCase(TestCase):
         self.assertTemplateUsed(response, 'student_dashboard.html')
 
       
-        self.assertContains(response, '<h1> Student dashboard</h1>')
+        self.assertContains(response, 'Welcome back')
 
     def test_template_rendering_template7(self):
 
@@ -167,7 +167,7 @@ class TemplateRenderingTestCase(TestCase):
         logged_in = self.client.login(username='admin', password='12435687abdn')
         self.assertTrue(logged_in)
 
-        response = self.client.get('/algorithm-dahshboard')
+        response = self.client.get('/algorithm-dashboard')
 
         self.assertEqual(response.status_code, 200)
 

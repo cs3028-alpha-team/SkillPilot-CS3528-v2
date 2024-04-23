@@ -2,10 +2,8 @@
 {% load static %} <!-- NOTE: this line is needed on ALL templates -->
 
 {% block content %}
-
     {% if messages %}
         {% for message in messages %}
-
             {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
                 <div class="mx-auto alert alert-danger w-50 mt-3" id="flash-message" role="alert"> {{ message }} </div>
             {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
@@ -13,26 +11,21 @@
             {% else %}
                 <div class="mx-auto alert alert-primary w-50 mt-3" id="flash-message" role="alert"> {{ message }} </div>
             {% endif %}
-
         {% endfor %} 
     {% endif %}
 
-<body>
-    <div class="container">
+    <body>
+        <div class="container">
+            <!-- Once students have created an account with username and password, they will be able to access their dashboard -->
+            <header class="display-4 mt-5 d-flex justify-content-center align-items-center">Welcome back, {{ request.user }}</header>
 
-        <!-- Once students have created an account with username and password, they will be able to access their dashboard -->
-        <header class="display-5 mt-5 ms-5">Welcome back, {{ request.user }}</header>
-
-
-        <h1> Student dashboard</h1>
-            <div class="col-md-8 mx-3">
-                <!-- Here they can configure their profile, and if they have done so already then form will be replaced by a paragraph saying something along the lines of "looks like you have configured your application profile already, please contact admin for any issue..." -->
-                <h3 class="display-6 mt-5 mb-4">Configure your profile</h3>
-                <form method="POST" action="{% url 'student' %}" autocomplete="off" enctype="multipart/form-data">
-
-                    {% csrf_token %}
-
-                    <!-- Student full name input -->
+            <div class="row">
+                <!-- Form Section -->
+                <div class="col-md-6 mb-5">
+                    <h3 class="display-6 mt-5 mb-4">Configure your profile</h3>
+                    <form method="POST" action="{% url 'student' %}" autocomplete="off" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <!-- Student full name input -->
                     <div class="mb-3">
                         <label for="fullnameInput" class="form-label">Full name</label>
                         {{ form.fullName }}
@@ -102,40 +95,40 @@
                     <div class="row mb-3">
                         <button type="submit" class="btn btn-primary col-12">Submit</button>
                     </div>
-                </form>
+                    </form>
+                </div>
+
+                <!-- Interview Section -->
+                <div class="col-md-6 mb-5">
+                    <h3 class="display-6 mt-5 mb-4">Interview Schedule</h3>
+                    {% if interview %}
+                        <div class="card p-2 mb-4" style="max-width: 700px;"> 
+                            <div class="card-body d-flex justify-content-between">
+                                <div style="flex: 1;"> 
+                                    <h5 class="card-title mb-3">Fake Interview</h5>
+                                    <p class="text-body-secondary mb-3">
+                                        {{date}} {{mode}}, with 
+                                        <a href="{% url 'recruiter-details' recruiter.recruiterID %}">{{recruiter.fullName}}</a>
+                                    </p>
+                                    <p class="mb-3"><strong>Status:</strong> {{ interview.outcome }}</p> 
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p>No current interviews scheduled</p>
+                    {% endif %}
+                </div>
             </div>
-        </div>
-         <!-- display interviews -->
-
-    {% if interview %}
-
-    <h3 class="display-6 mt-5 mb-4">Your upcoming interview</h3>
-              
-        <div class="card p-2 mb-4" style="max-width: 700px;"> 
-            <div class="card-body d-flex justify-content-between">
-                <div style="flex: 1;"> 
-                    <h5 class="card-title mb-3">Fake Interview</h5>
-                    <p class="text-body-secondary mb-3">
-                        {{date}} {{mode}}, with 
-                        <a href="{% url 'recruiter-details' recruiter.recruiterID %}">{{recruiter.fullName}}</a>
-                    </p>
-                    <p class="mb-3"><strong>Status:</strong> {{ interview.outcome }}</p> 
+            
+            <!-- Delete user account button-->
+            <div class="row justify-content-center mt-2">
+                <div class="col-md-8">
+                    <form method="POST" action="{% url 'delete-user' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger col-12">Delete My Account</button>
+                    </form>
                 </div>
             </div>
         </div>
-        {% else %}
-            <p>No upcoming interviews</p>
-        {% endif %}
-      
-        <div class="row justify-content-center mt-2">
-            <div class="col-md-8">
-                <form method="POST" action="{% url 'delete-user' %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger col-12">Delete My Account</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</body> 
-
+    </body> 
 {% endblock %}

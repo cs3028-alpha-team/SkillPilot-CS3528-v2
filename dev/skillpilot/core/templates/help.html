@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+    <div class="container text-center">
+        <h2 class="display-2 mt-5">Help</h2>
+        <br>
+        <h3 class="display-8 mt-1">Instructions for operating the website</h3>
+        
+        <!-- Tab navigation -->
+        <ul class="nav nav-tabs mt-5" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="student-tab" data-bs-toggle="tab" href="#student" role="tab" aria-controls="student" aria-selected="false">Student Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="recruiter-tab" data-bs-toggle="tab" href="#recruiter" role="tab" aria-controls="recruiter" aria-selected="false">Recruiter Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="admin-tab" data-bs-toggle="tab" href="#admin" role="tab" aria-controls="admin" aria-selected="false">Admin Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="admin-panel-tab" data-bs-toggle="tab" href="#admin-panel" role="tab" aria-controls="admin-panel" aria-selected="false">Admin Panel</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="contacts-tab" data-bs-toggle="tab" href="#contacts" role="tab" aria-controls="contacts" aria-selected="false">Contacts</a>
+            </li>
+        </ul>
+        
+        <!-- Tab content -->
+        <div class="tab-content mt-3" id="myTabContent">
+            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <!-- Home page content -->
+                <div class="row mt-4 col-8 offset-2 my-3">
+                    <div class="col-sm-12">
+                        <h2>Home page</h2>
+                        <p>To sign in:</p>
+                        <ul>
+                            <li>For Admin:
+                                <ul>
+                                    <li>Click on 'admin' on the navigation bar.</li>
+                                    <li>Sign into the using the provided admin credentials.</li>
+                                </ul>
+                            </li>
+                            <li>For Students:
+                                <ul>
+                                    <li>If you have an account, click login under student portal and login using your credentials.</li>
+                                    <li>If you do not have an account click 'sign up', and fill in the form.</li>
+                                </ul>
+                            </li>
+                            <li>For Recruiters:
+                                <ul>
+                                    <li>If you have an account, click login under recruiter portal and login using your credentials.</li>
+                                    <li>If you do not have an account click 'sign up', and fill in the form.</li>
+                                    <li>For recruiter token, it must be provided by the admin</li>
+                                    <li>Recruiter Id is up to your choosing, it must be unique </li>
+                                    <li>Fill in the rest of the fields appropirately, such as username and password.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <p>To sign out: click the logout button at the top left of the navigation bar.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="student" role="tabpanel" aria-labelledby="student-tab">
+                <!-- Student dashboard content -->
+                <div class="row mt-4 col-8 offset-2 my-3">
+                    <div class="col-sm-12">
+                        <h2>Student dashboard</h2>
+                        <ul>
+                            <li>After signing in, use the form provided to add in your details.</li>
+                            <li>To change any details, fill in the form again and click submit.</li>
+                            <li>At the right of the page any interviews you have will be displayed.
+                                <ul>
+                                    <li>Click the name of the recruiter and internship to see their details.</li>
+                                </ul>
+                            </li>
+                            <li>Your account can be deleted by clicking the 'delete account' button.</li>
+                        </ul>
+                        <ul>To return to the student dashboard from the homepage, click the login button or sign-up button in the student portal card.</ul>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="recruiter" role="tabpanel" aria-labelledby="recruiter-tab">
+                <!-- Recruiter dashboard content -->
+                <div class="row mt-4 col-8 offset-2 my-3">
+                    <div class="col-sm-12">
+                        <h2>Recruiter dashboard</h2>
+                        <ul>
+                            <li>After signing in, you can use the form provided under 'add opportunities' to add new internships.</li>
+                            <li>To change any details, fill in the form again and click submit.</li>
+                            <li>At the right of the page any interviews you have will be displayed.
+                                <ul>
+                                    <li>You can use the dropdown menu to change the outcome of the interview.</li>
+                                    <li>Click the name of the student to see the student details.</li>
+                                </ul>
+                            </li>
+                            <li>Your account can be deleted by clicking the 'delete account' button. This will delete any internships associated with your account.</li>
+                        </ul>
+                        <ul>To return to the recruiter dashboard from the homepage, click the login button or sign-up button in the recruiter portal card.</ul>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="admin" role="tabpanel" aria-labelledby="admin-tab">
+                <!-- Admin dashboard content -->
+                <div class="row mt-4 col-8 offset-2 my-3">
+                    <div class="col-sm-12">
+                        <h2>Admin dashboard</h2>
+                        <h3>Internship, student and recruiter search</h3>
+                        <ul>
+                            <li>These pages are used to search the database for either internships, students, or recruiters.</li>
+                            <li>Use either the dropdown menus or the search fields to search the database.</li>
+                            <li>Click either the Download Recruiters CSV, Download Internships CSV or Download Students CSV to download all of the recruiters, students, or internships.</li>
+                            <li>Leaving the search fields blank will return all of the recruiters, students, or internships.</li>
+                        </ul>
+                        <h3>Compute matches</h3>
+                        <ul>
+                            <li>This page is used to see a list of computed matches and approve/disapprove them.</li>
+                            <li>Click 'run algorithm' to run the algorithm and compute matches.
+                                <ul>
+                                    <li>This will display a list of matches.</li>
+                                    <li>Use the approve/disapprove buttons to reject or accept matches.</li>
+                                    <li>Click on the name of the student or internship to see their details.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <h3>Company management tool</h3>
+                        <ul>
+                            <li>This page is used to register/delete companies and manage their details.</li>
+                            <li>Under 'All companies' it displays a list of all companies.
+                                <ul>
+                                    <li>Use the dropdown to filter the companies by ones that have or don't have a matched internship.</li>
+                                    <li>Click on the name of the recruiter to see their details.</li>
+                                    <li>Click the delete button to delete the company.</li>
+                                </ul>
+                            </li>
+                            <li>To register a new company, fill in the form on the left and click submit.</li>
+                        </ul>
+                        <h3>Analytics dashboard</h3>
+                        <ul>
+                            <li>This page is used to display various analytics about the data in the database.</li>
+                            <li>Click 'new analysis' to display the charts again if the database has been modified.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="contacts" role="tabpanel" aria-labelledby="contacts-tab">
+        <!-- Contacts page content -->
+        <div class="row mt-4 col-8 offset-2 my-3">
+            <div class="col-sm-12">
+                <h2>Contacts page</h2>
+                <p>Contacts for Toni and Heather:</p>
+                <ul>
+                    <li>Toni: [Toni's contact information]</li>
+                    <li>Heather: [Heather's contact information]</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="admin-panel" role="tabpanel" aria-labelledby="admin-panel-tab">
+        <!-- Admin panel content -->
+        <div class="row mt-4 col-8 offset-2 my-3">
+            <div class="col-sm-12">
+                <h2>Admin panel</h2>
+                <p>The admin panel is used to see the database and make changes to it:</p>
+                <ul>
+                    <li>Navigate to the /admin page and login using the admin credentials.</li>
+                    <li>There will be a list of tables on the left of the screen.</li>
+                    <li>From these, you can view all the objects in that table and add, delete and edit them</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

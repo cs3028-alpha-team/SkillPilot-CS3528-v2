@@ -32,8 +32,6 @@ from django.core.exceptions import ValidationError
 
 
 
-<<<<<<< HEAD
-=======
 @login_required
 @allowed_users(allowed_roles=['Admin']) # access to Admin accounts only    
 def send_email(request): 
@@ -62,10 +60,10 @@ def send_email(request):
     return HttpResponse('Email sent')
 
 
->>>>>>> main
 # ====================== #
 #  General Purpose views #
 # ====================== #
+# render home page
 def home(request):
 
     # for it in Internship.objects.all():
@@ -74,9 +72,15 @@ def home(request):
 
     return render(request, 'home.html')
 
+# render contacts page
 def contacts(request):
     return render(request, 'contacts.html')
 
+# render help page
+def help(request):
+    return render(request, 'help.html')
+
+# render error page
 def error(request):
     return render(request, 'error.html')
 
@@ -84,13 +88,10 @@ def error(request):
 #  Student, Recruiter, and Admin Dashboard pages #
 # ============================================== #
 
-<<<<<<< HEAD
 """
 The dashboard functions control the functionality for the recruiter, student and admin
 dashboard pages. 
 """
-=======
->>>>>>> main
 
 # view for the route '/student'
 @login_required
@@ -141,7 +142,8 @@ def student_dashboard(request):
         modes = ['online', 'in-person']
         random_mode = random.choice(modes)
         
-        return render(request, 'student_dashboard.html', {'interview': interview, 'username': student_username, 'recruiter': recruiter, 'date': random_date, 'mode': random_mode})
+        context = {'interview': interview, 'username': student_username, 'recruiter': recruiter, 'date': random_date, 'mode': random_mode, 'form': form}
+        return render(request, 'student_dashboard.html', context)
     
     except Student.DoesNotExist:
         print("Student does not exist")
@@ -245,7 +247,7 @@ def recruiter_dashboard(request):
             modes = ['online', 'in-person']
             random_mode = random.choice(modes)
 
-            return render(request, 'recruiter_dashboard.html', {'interviews': interview_pairs, 'username': recruiter_username, 'date': random_date, 'mode': random_mode}, context)
+            return render(request, 'recruiter_dashboard.html', {'interviews': interview_pairs, 'username': recruiter_username, 'date': random_date, 'mode': random_mode, 'form':form })
         
         # deal with exceptions
         except (Interview.DoesNotExist, Student.DoesNotExist):
@@ -257,16 +259,12 @@ def recruiter_dashboard(request):
             return render(request, 'recruiter_dashboard.html', context)
 
         
-<<<<<<< HEAD
 """
     update interview is used on the recruiter dashboard to
     change an interview's outcome to accepted, rejected or pending.
 """
-# accept/reject an interview
-=======
 # Accept/reject an interview
 # Currently only changes outcome in the database#
->>>>>>> main
 @login_required
 @allowed_users(allowed_roles=['Companies']) #Access to companies only 
 def update_interview(request, interview_id):
@@ -287,19 +285,12 @@ def admin(request):
 # ============================================================ #
 #  Admin Dashboard - Companies Management Tool functionalities #
 # ============================================================ #
-<<<<<<< HEAD
 """
  The companies management tool is used by the admin to add, search and delete companies.
 """
 # handle the companies management tool functionality
 @login_required
-@allowed_users(allowed_roles=['Admin']) 
-=======
-
-# Handle the companies management tool functionality
-@login_required
-@allowed_users(allowed_roles=['Admin']) #Access to admin only 
->>>>>>> main
+@allowed_users(allowed_roles=['Admin']) # access to admin only
 def companies_management_tool(request):
     
     context = {}
@@ -604,13 +595,10 @@ def algorithm_dashboard(request):
 
     return render(request, 'algorithm_dashboard.html', context)
 
-<<<<<<< HEAD
 
 """
     Approve_match is used to approve a computed match
 """
-=======
->>>>>>> main
 # handle the approval routine for a match computed by the algorithm
 @login_required
 @allowed_users(allowed_roles=['Admin']) #Access to admin only 
@@ -635,12 +623,9 @@ def approve_match(request, matchID):
     messages.success(request, "successfully saved match and booked internship")
     return redirect('algorithm-dashboard')
 
-<<<<<<< HEAD
 """
     Reject_match is used to reject a computed match
 """
-=======
->>>>>>> main
 # handle the rejection routine for a match computed by the algorithm
 @login_required
 @allowed_users(allowed_roles=['Admin']) #Access to admin only 
@@ -1016,17 +1001,12 @@ def user_logout(request):
 # ================================================== #
 #  Student, Recruiters, and Internships detail pages #
 # ================================================== #
-<<<<<<< HEAD
 """
     The details pages are used to display a list of details about
     a particular student, recruiter or internship.
 """
-# render a given student profile's details page
-=======
-
 
 # Render a given student profile's details page
->>>>>>> main
 @login_required
 @allowed_users(allowed_roles=['Admin']) #Access to admin only 
 def student_details(request, studentID):
@@ -1083,7 +1063,6 @@ def internship_details(request, internshipID):
 #  Admin Dashboard - Query Database functionality #
 # =============================================== #
 
-<<<<<<< HEAD
 """
     The query database functions are used to search the
     student, recruiter and internship tables, and display a
@@ -1091,9 +1070,6 @@ def internship_details(request, internshipID):
 """
 
 # handle the routine triggered from the admin dashboard to query all student profiles
-=======
-# Handle the routine triggered from the admin dashboard to query all student profiles
->>>>>>> main
 @login_required
 @allowed_users(allowed_roles=['Admin']) #Access to admin only 
 def query_students(request):
@@ -1222,12 +1198,6 @@ def download_csv(data, filename):
 
     return response
 
-#download student results as csv
-def download_students_csv(request):
-    students = Student.objects.all()
-    response = download_csv(students.values(), 'student_search_results')
-    return response
-
 #download recruiters
 def download_recruiters_csv(request):
     recruiters = Recruiter.objects.all()
@@ -1236,13 +1206,13 @@ def download_recruiters_csv(request):
 
 #download students
 def download_students_csv(request):
-    students = Student.objects.all()
+    students = Recruiter.objects.all()
     response = download_csv(students.values(), 'student_search_results')
     return response
 
 #download internships
 def download_internships_csv(request):
-    internships = Internship.objects.all()
+    internships = Recruiter.objects.all()
     response = download_csv(internships.values(), 'internship_search_results')
     return response
 
@@ -1329,6 +1299,7 @@ def delete_recruiter(request):
 """
     Send email is used to send an email to students and recruiters
     to inform them that they have been matched.
+    
 """
 # function to send an email    
 def send_email(request): 

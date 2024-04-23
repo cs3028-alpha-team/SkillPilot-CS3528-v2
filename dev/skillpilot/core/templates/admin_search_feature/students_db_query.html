@@ -35,15 +35,12 @@
 
                     <h3 class="display-6 mb-2">Search students</h3>
                     <p>Click Submit to query the entire students database</p>
-<<<<<<< HEAD
                     
                     <a href="{% url 'download_students_csv' %}" download="students.csv">
                         <button>Download Students CSV</button>
                     </a>
 
-=======
                     <!-- form to query students from POST method -->
->>>>>>> main
                     <form method="POST" action="{% url 'query-students' %}" autocomplete="off" enctype="multipart/form-data">
 
                         {% csrf_token %}

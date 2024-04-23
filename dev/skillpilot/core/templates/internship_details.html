@@ -2,7 +2,13 @@
 {% load static %} <!-- NOTE : this line is needed on ALL templates -->
 
 {% block content %}
-
+    <style>
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }        
+    </style>
     <body>
 
         <button onclick="window.history.back();" class="btn btn-outline-dark mt-4 ms-4">

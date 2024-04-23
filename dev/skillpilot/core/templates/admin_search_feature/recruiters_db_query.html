@@ -35,14 +35,11 @@
 
                     <h3 class="display-6 mb-2">Search recruiters</h3>
                     <p>Click Submit to query the entire recruiter database</p>
-<<<<<<< HEAD
+                    
                     <a href="{% url 'download_recruiters_csv' %}" download="recruiters.csv">
                         <button>Download Recruiters CSV</button>
                     </a>
 
-=======
-                    <!-- form to query recruiters from POST method -->
->>>>>>> main
                     <form method="POST" action="{% url 'query-recruiters' %}" autocomplete="off" enctype="multipart/form-data">
 
                         {% csrf_token %}
