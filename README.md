@@ -16,4 +16,4 @@ On the navigation bar you should see "help", click on this and it should navigat
 The login for the admin is Username = admin, Password = 12435687abdn
 
 ### Commands to run tests
-To run the tests navigate to the project folder and run the command '''python manage.py test > test_log.txt 2>&1'''
+To run the tests navigate to the project folder and run the command ```python manage.py test > test_log.txt 2>&1```
