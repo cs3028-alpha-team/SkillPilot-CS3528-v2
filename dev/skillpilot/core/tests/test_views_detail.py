@@ -5,8 +5,10 @@ from django.contrib.auth.models import User
 
 #test student detail view
 class TestStudentViews(TestCase):
+    
+    # create test data
     def setUp(self):
-        self.student = Student.objects.create(
+        self.student = Student.objects.create( # create student
             studentID="123", 
             fullName="John Doe", 
             email="john@example.com",
@@ -25,23 +27,27 @@ class TestStudentViews(TestCase):
         self.user = User.objects.create_user(username='testuser', password='12345')
         self.client.login(username='testuser', password='12345')
 
+    # test student details view
     def test_student_details_view(self):
         response = self.client.get(reverse('student-details', kwargs={'studentID': '123'}))
         self.assertContains(response, self.student.fullName)
 
+    # test student details with invalid student
     def test_student_details_view_no_student(self):
         response = self.client.get(reverse('student-details', kwargs={'studentID': '999'}))
         self.assertEqual(response.status_code, 302)
 
 #test recruiter detail views
 class TestRecruiterViews(TestCase):
+    
+    # create test data
     def setUp(self):
-        self.company = Company.objects.create(
+        self.company = Company.objects.create( # create test company
             companyID="C001", 
             companyName="Test Company", 
             industrySector="Tech"
         )
-        self.recruiter = Recruiter.objects.create(
+        self.recruiter = Recruiter.objects.create( # create test recruiter
             recruiterID="456", 
             fullName="Jane Doe", 
             email="jane@example.com", 
@@ -54,10 +60,12 @@ class TestRecruiterViews(TestCase):
         self.user = User.objects.create_user(username='testuser', password='12345')
         self.client.login(username='testuser', password='12345')
 
+    # test recruiter details page
     def test_recruiter_details_view(self):
         response = self.client.get(reverse('recruiter-details', kwargs={'recruiterID': '456'}))
         self.assertContains(response, self.recruiter.fullName)
 
+    # test recruiter details page with no recruiter
     def test_recruiter_details_view_no_recruiter(self):
         response = self.client.get(reverse('recruiter-details', kwargs={'recruiterID': '999'}))
         self.assertEqual(response.status_code, 302)

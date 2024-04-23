@@ -4,24 +4,32 @@ from django.contrib.auth.models import User, Group
 from core.models import Student, Interview, Recruiter, Company, Internship
 from core.forms import StudentForm
 
+# test student dashboard view
 class StudentDashboardViewTest(TestCase):
+    
+    # create test data
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(username='test_student', password='password123')
         self.student_group = Group.objects.create(name='Students')
         self.student_group.user_set.add(self.user)
 
+    # test student dashboard with GET request
     def test_student_dashboard_GET(self):
         self.client.login(username='test_student', password='password123')
         response = self.client.get(reverse('student'))
         self.assertEqual(response.status_code, 200)
         #self.assertTemplateUsed(response, 'student_dashboard.html')
-
+    
+    # test unauthorised access is redirected
     def test_student_dashboard_not_logged_in(self):
         response = self.client.get(reverse('student'))
         self.assertEqual(response.status_code, 302)  # Redirect to login page
 
+# test recruiter dashboard
 class RecruiterDashboardViewTest(TestCase):
+    
+    # create test data
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(username='test_recruiter', password='password123')
@@ -40,17 +48,22 @@ class RecruiterDashboardViewTest(TestCase):
             jobTitle="Recruitment Officer"  
         )
 
+    # test dashboard with GET request
     def test_recruiter_dashboard_GET(self):
         self.client.login(username='test_recruiter', password='password123')
         response = self.client.get(reverse('recruiter'))
         self.assertEqual(response.status_code, 302) # 
         #self.assertTemplateUsed(response, 'recruiter_dashboard.html')
 
+    # test unautherised access is redirected
     def test_recruiter_dashboard_no_logged_in_user(self):
         response = self.client.get(reverse('recruiter'))
         self.assertEqual(response.status_code, 302)  # Redirect to login page
 
+# test update interview function
 class UpdateInterviewViewTest(TestCase):
+    
+    # create test data
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(username='test_user', password='password123')
@@ -101,12 +114,16 @@ class UpdateInterviewViewTest(TestCase):
             outcome='accepted'
         )
     
+    # test with POST request
     def test_update_interview_POST(self):
         self.client.login(username='test_user', password='password123')
         response = self.client.post(reverse('update-interview', args=[self.interview.interviewID]), {'new_outcome': 'accepted'})
         self.assertEqual(response.status_code, 302)  
-        
+
+# test integration of views
 class ViewIntegrationTest(TestCase):
+    
+    # create test data
     def setUp(self):
         self.client = Client()
         self.user_recruiter = User.objects.create_user(username='test_recruiter', password='password123')
@@ -159,7 +176,8 @@ class ViewIntegrationTest(TestCase):
             internshipID=self.internship, 
             outcome='accepted'
         )
-
+        
+    # test recruiter dashboard integration
     def test_recruiter_dashboard_integration(self):
         # Test recruiter dashboard with GET request
         self.client.login(username='test_recruiter', password='password123')
@@ -167,6 +185,7 @@ class ViewIntegrationTest(TestCase):
         self.assertEqual(response.status_code, 302) # 
         #self.assertTemplateUsed(response, 'recruiter_dashboard.html')
 
+    # test student dashboard integration
     def test_student_dashboard_integration(self):
         # Test student dashboard with GET request
         self.client.login(username='test_student', password='password123')
@@ -174,6 +193,7 @@ class ViewIntegrationTest(TestCase):
         self.assertEqual(response.status_code, 200)
         #self.assertTemplateUsed(response, 'student_dashboard.html')
 
+    # test update interview integration
     def test_update_interview_integration(self):
         # Test update interview with POST request
         self.client.login(username='test_student', password='password123')

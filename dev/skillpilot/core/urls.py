@@ -76,4 +76,10 @@ urlpatterns = [
     
     # updates the outcome of an interview to accepted/rejected
     path('update-interview/<interview_id>/', views.update_interview, name='update-interview'),
+    
+    # paths for downloading CSV files
+    path('download-students-csv/', views.download_students_csv, name='download_students_csv'),
+    path('download-recruiters-csv/', views.download_recruiters_csv, name='download_recruiters_csv'),
+    path('download-internships-csv/', views.download_internships_csv, name='download_internships_csv'),
+
 ]
