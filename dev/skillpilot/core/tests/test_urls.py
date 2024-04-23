@@ -2,6 +2,7 @@ from django.test import SimpleTestCase, TestCase, Client
 from django.urls import reverse, resolve
 from core import views
 
+# test urls resolve properly
 class UrlResolveTestCase(SimpleTestCase):
     def test_home_url_resolves(self):
         url = reverse('home')
@@ -111,6 +112,7 @@ class UrlResolveTestCase(SimpleTestCase):
         url = reverse('update-interview', args=[1])  # Assuming interview_id of 1
         self.assertEquals(resolve(url).func, views.update_interview)
 
+# test urls http response
 class HttpResponseTestCase(TestCase):
     def setUp(self):
         self.client = Client()

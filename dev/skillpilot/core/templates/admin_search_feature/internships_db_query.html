@@ -35,6 +35,9 @@
 
                     <h3 class="display-6 mb-2">Search live internships</h3>
                     <p>Click Submit to query the entire internship database</p>
+                    <a href="{% url 'download_internships_csv' %}" download="internships.csv">
+                        <button>Download Internships CSV</button>
+                    </a>
 
                     <form method="POST" action="{% url 'query-internships' %}" autocomplete="off" enctype="multipart/form-data">
 

@@ -7,6 +7,11 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 from django.core.validators import MinValueValidator
 import numpy as np
+"""
+    The models file is used to store the implementation of the models
+    to be used in the database.
+"""
+
 
 # students table
 class Student(models.Model):
