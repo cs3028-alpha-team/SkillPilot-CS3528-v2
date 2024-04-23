@@ -7,6 +7,8 @@ urlpatterns = [
 
     path('home', views.home, name='home'),
 
+    path('error', views.error, name='error'),
+
     path('recruiter', views.recruiter_dashboard, name='recruiter'),
 
     path('admin_page', views.admin, name='admin_page'),
@@ -19,7 +21,6 @@ urlpatterns = [
 
     path('delete-internship/<str:internship_id>/', views.delete_internship, name='delete-internship'),
    
-
     # paths to handle admin approval/rejection of matchmaking algorithm output 
     path('approve-match/<str:matchID>/', views.approve_match, name='approve-match'),
     path('reject-match/<str:matchID>/', views.reject_match, name='reject-match'),
@@ -48,7 +49,6 @@ urlpatterns = [
     # path to delete a recruiter profile associated, and student application connected to it
     path('delete-recruiter', views.delete_recruiter, name='delete-recruiter'),
 
-
     # paths related to student authentication and authorization
     path('student-signup', views.student_signup, name='student-signup'),
     path('student-login', views.student_login, name='student-login'),
@@ -60,7 +60,7 @@ urlpatterns = [
     path('recruiter-signup', views.recruiter_signup, name='recruiter-signup'),
     path('recruiter-login', views.recruiter_login, name='recruiter-login'),
 
-    # logout route generalized to all users 
+    # logout route generalized to all users
     path('logout', views.user_logout, name='logout'),
 
     # paths available to the admin to query the database from the admin dashboard
@@ -72,9 +72,8 @@ urlpatterns = [
     path('student-details/<str:studentID>/', views.student_details, name='student-details'),
     path('recruiter-details/<str:recruiterID>/', views.recruiter_details, name='recruiter-details'),
     path('internship-details/<str:internshipID>/', views.internship_details, name='internship-details'),
-
-    
-    # updates the outcome of an interview to accepted/rejected
+  
+    # updates the outcome of an interview to accepted/rejected 
     path('update-interview/<interview_id>/', views.update_interview, name='update-interview'),
     
     # paths for downloading CSV files

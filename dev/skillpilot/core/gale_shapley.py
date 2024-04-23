@@ -1,8 +1,6 @@
-import sys
 import random
 import pandas as pd
 import time
-import csv
 from . models import *
 
 """

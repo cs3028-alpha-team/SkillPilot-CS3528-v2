@@ -1,51 +1,71 @@
 from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
-from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
+from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group, auth
-from django.urls import reverse
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
-from django.views import View
 from . models import *
 from . forms import *
 from . gale_shapley import *
 from . data_pipeline import *
-import subprocess
-import csv
 import pickle
-import os
-import json
 import random 
 from django.db.models import Q
 from .decorators import *
-from sklearn.preprocessing import StandardScaler
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import classification_report, confusion_matrix
-from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
-
 import seaborn as sns
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('Agg') # use the agg backend to silence GUI warning
 import io
 import base64
-
 from django.db.models import Q
 from datetime import date
 import random
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 
 
+<<<<<<< HEAD
+=======
+@login_required
+@allowed_users(allowed_roles=['Admin']) # access to Admin accounts only    
+def send_email(request): 
+    internships = Internship.objects.all() #get data from database
+    students = Student.objects.all()
+        
+    subject = "Successful application match"
+
+    for student in students:
+        name = student.fullName
+        context = {'name': name}
+        
+        html_message = render_to_string('email.html', context)
+        text_message = strip_tags(html_message)
+        
+        mail = EmailMultiAlternatives(
+                    subject = subject, #subject
+                    body = text_message, #plain text version of message
+                    from_email = settings.EMAIL_HOST_USER, #from email display name
+                    to = [student.email] #recipient's email      
+                )
+        
+        mail.attach_alternative(html_message, 'text/html')
+        mail.send()
+        
+    return HttpResponse('Email sent')
+
+
+>>>>>>> main
 # ====================== #
 #  General Purpose views #
 # ====================== #
-
 def home(request):
 
     # for it in Internship.objects.all():
@@ -57,16 +77,20 @@ def home(request):
 def contacts(request):
     return render(request, 'contacts.html')
 
-
+def error(request):
+    return render(request, 'error.html')
 
 # ============================================== #
 #  Student, Recruiter, and Admin Dashboard pages #
 # ============================================== #
 
+<<<<<<< HEAD
 """
 The dashboard functions control the functionality for the recruiter, student and admin
 dashboard pages. 
 """
+=======
+>>>>>>> main
 
 # view for the route '/student'
 @login_required
@@ -131,11 +155,12 @@ def student_dashboard(request):
     except Exception as e:
         print("An error occurred:", e)
 
-    return render(request, 'student_dashboard.html', context)        
+    return render(request, 'student_dashboard.html', context)         
+
 
 # Handle recruiters wanting to delete posted internships
 @login_required
-@allowed_users(allowed_roles=['Companies']) 
+@allowed_users(allowed_roles=['Companies']) #Access to companies only 
 def delete_internship(request, internship_id):
     if request.method == 'POST':
         try:
@@ -143,13 +168,15 @@ def delete_internship(request, internship_id):
             internship.delete()
             return redirect('recruiter')  
         except Internship.DoesNotExist:
-            return HttpResponse("Internship does not exist", status=404)
+            return render(request, 'error.html', context={ 'error': 'Internship does not exist'})
+
     else:
-        return HttpResponse("error not allowed", status=405)
+        return render(request, 'error.html', context={ 'error': 'An error occured'})
+
 
 # Handle recruiters wanting to update their internships
 @login_required
-@allowed_users(allowed_roles=['Companies'])  
+@allowed_users(allowed_roles=['Companies'])  #Access to companies only 
 def recruiter_update(request, internship_id):
     internship = get_object_or_404(Internship, pk=internship_id)
     form = InternshipForm(instance=internship)
@@ -193,7 +220,8 @@ def recruiter_dashboard(request):
             return redirect('recruiter')
         else:
             messages.error(request, 'Form unsuccessful try again')
-            return redirect('recruiter')
+            context['form'] = form
+            return render(request, 'recruiter_dashboard.html', context)
     else:
         """
         Interview system code, used to display interview details for a recruiter.
@@ -227,14 +255,20 @@ def recruiter_dashboard(request):
         except Exception as e:
             print("An error occurred:", e)
             return render(request, 'recruiter_dashboard.html', context)
+
         
+<<<<<<< HEAD
 """
     update interview is used on the recruiter dashboard to
     change an interview's outcome to accepted, rejected or pending.
 """
 # accept/reject an interview
+=======
+# Accept/reject an interview
+# Currently only changes outcome in the database#
+>>>>>>> main
 @login_required
-#@allowed_users(allowed_roles=['Companies']) 
+@allowed_users(allowed_roles=['Companies']) #Access to companies only 
 def update_interview(request, interview_id):
     if request.method == 'POST':
         new_outcome = request.POST.get('new_outcome')
@@ -245,7 +279,7 @@ def update_interview(request, interview_id):
         return redirect('student')
     
 @login_required
-@allowed_users(allowed_roles=['Admin']) 
+@allowed_users(allowed_roles=['Admin']) #Access to admin only 
 def admin(request):
     return render(request, 'admin.html')
 
@@ -253,12 +287,19 @@ def admin(request):
 # ============================================================ #
 #  Admin Dashboard - Companies Management Tool functionalities #
 # ============================================================ #
+<<<<<<< HEAD
 """
  The companies management tool is used by the admin to add, search and delete companies.
 """
 # handle the companies management tool functionality
 @login_required
 @allowed_users(allowed_roles=['Admin']) 
+=======
+
+# Handle the companies management tool functionality
+@login_required
+@allowed_users(allowed_roles=['Admin']) #Access to admin only 
+>>>>>>> main
 def companies_management_tool(request):
     
     context = {}
@@ -301,11 +342,12 @@ def companies_management_tool(request):
 
     return render(request, 'companies_management_tool.html', context=context)
 
-# handle the procedure to delete a company from the database
-@login_required
-@allowed_users(allowed_roles=['Admin']) 
-def delete_company(request, companyID):
 
+# Handle the procedure to delete a company from the database
+@login_required
+@allowed_users(allowed_roles=['Admin']) #Access to admin only 
+def delete_company(request, companyID):
+    # Checkls if the request was POST
     if request.method == 'POST':
 
         # Retrieve the recruiters email before deleting the recruiter
@@ -336,15 +378,15 @@ def delete_company(request, companyID):
                 user = User.objects.get(email=recruiter_email)
                 user.delete()
             except: pass
+        #Display success message one all checks are completed succesfully and redirect to manage-companies url
         messages.success(request, 'Company deleted successfully. Please contact the recruiter to inform them of the action')
         return redirect('manage-companies')
 
-    return render(request, 'companies_management_tool.html')
-
+    return render(request, 'companies_management_tool.html') #render the companies management tool template
 
 # register a new company to the database using the payload from the form submitted from the companies management tool
 @login_required
-@allowed_users(allowed_roles=['Admin']) 
+@allowed_users(allowed_roles=['Admin']) #Access to admin only 
 def register_company(request):
 
     if request.method == 'POST':
@@ -372,7 +414,6 @@ def register_company(request):
     return render(request, 'companies_management_tool.html')
 
 
-
 # =========================================== #
 # Admin Dashboard - Algorithm Functionalities #
 # =========================================== #
@@ -382,7 +423,7 @@ can see a list of computed matches and approve or reject them
 """
 # render the algorithm dashboard page, where the admin can compute and manage assignments
 @login_required
-@allowed_users(allowed_roles=['Admin']) 
+@allowed_users(allowed_roles=['Admin']) #Access to admin only
 def algorithm_dashboard(request):
 
     if request.method == 'POST':
@@ -563,13 +604,16 @@ def algorithm_dashboard(request):
 
     return render(request, 'algorithm_dashboard.html', context)
 
+<<<<<<< HEAD
 
 """
     Approve_match is used to approve a computed match
 """
+=======
+>>>>>>> main
 # handle the approval routine for a match computed by the algorithm
 @login_required
-@allowed_users(allowed_roles=['Admin']) 
+@allowed_users(allowed_roles=['Admin']) #Access to admin only 
 def approve_match(request, matchID):
 
     # retrieve the match, the internship listing, the recruiter, the company
@@ -591,10 +635,15 @@ def approve_match(request, matchID):
     messages.success(request, "successfully saved match and booked internship")
     return redirect('algorithm-dashboard')
 
+<<<<<<< HEAD
 """
     Reject_match is used to reject a computed match
 """
+=======
+>>>>>>> main
 # handle the rejection routine for a match computed by the algorithm
+@login_required
+@allowed_users(allowed_roles=['Admin']) #Access to admin only 
 def reject_match(request, matchID):
 
     # retrieve match
@@ -621,7 +670,7 @@ def reject_match(request, matchID):
     about students, internships computed matches in the form of charts and heatmaps
 """
 @login_required
-@allowed_users(allowed_roles=['Admin']) 
+@allowed_users(allowed_roles=['Admin']) #Access to admin only 
 def analytics_dashboard(request):
 
     context = {}
@@ -783,73 +832,89 @@ def analytics_dashboard(request):
 
 
 
-
-
-
-
 # ======================================================== #
 #  Authentication (Login & Signup) and Authorization logic #
 # ======================================================== #
 
-# handle the signup routine for a new studen
+# Handle the signup routine for a new studen
 def student_signup(request):
-    if request.user.is_authenticated:
-        return redirect('student')
-    if request.method == 'POST':
-        payload = {
-            'username': request.POST.get('studentUsername'),
-            'email': request.POST.get('studentEmail'),
-            'password1': request.POST.get('studentPassword1'),
-            'password2': request.POST.get('studentPassword1')
-        }
-        
-        new_student = StudentSignupForm(payload)
-        
-        if new_student.is_valid():
-            new_student = User.objects.create_user(username=payload['username'], email=payload['email'], password=payload['password1'])
-            group = Group.objects.get(name='Students')
-            new_student.groups.add(group)
+    if request.user.is_authenticated: # Checks if user is authenticated 
+        return redirect('student') # If true sends them to the student dashboard
+    if request.method == 'POST': # When the sign up is submitted 
+        # The below information is collected
+        username = request.POST.get('studentUsername') 
+        email = request.POST.get('studentEmail')
+        password1 = request.POST.get('studentPassword1')
+        password2 = request.POST.get('studentPassword2')
 
-            messages.success(request, 'Signup successful!')
-            return redirect('student-login')
-        else:
-            messages.info(request, 'Looks like you already have an account, please login!')
-            return redirect('student-login')
+        #Check if the email submitted has the correct format
+        try:
+            validate_email(email) #using djanos validate email function 
+        except ValidationError:
+            #if email is incorrect print error message
+            messages.error(request, 'Please enter a valid email address.') 
+            return render(request, 'auth/student_signup.html')
+        
+        # Check if username already exists, if true sends an error message 
+        if User.objects.filter(username=username).exists():
+            messages.error(request, 'Username already exists. Please choose a different username.')
+            return render(request, 'auth/student_signup.html')
+
+        # Check if email already exists, if true sends an error message 
+        if User.objects.filter(email=email).exists():
+            messages.error(request, 'Email already exists. Please use a different email address.')
+            return render(request, 'auth/student_signup.html')
+
+        # Check if passwords match, if true sends an error message 
+        if password1 != password2:
+            messages.error(request, 'Passwords do not match.')
+            return render(request, 'auth/student_signup.html')
+
+        # Create new user if all checks pass, with the values collected from the submitted form 
+        new_user = User.objects.create_user(username=username, email=email, password=password1)
+        group = Group.objects.get(name='Students')
+        new_user.groups.add(group) #Assigns the user to group student 
+
+        messages.success(request, 'Signup successful!')
+        return redirect('student-login')
 
     return render(request, 'auth/student_signup.html')
 
 
-# handle the login routine for a returning student
+# Handle the login routine for a returning student
 def student_login(request):
-    if request.user.is_authenticated:
-        return redirect('student')
-    form = UserLoginForm()
+    if request.user.is_authenticated: # If user it authenticated 
+        return redirect('student')# Send them to student dashboard 
+    form = UserLoginForm() # If not authenticated, create a form for user login
+    # Check if the request method is POST e.g. form submitted 
     if request.method == 'POST':
+        # bind the form with the POST data
         form = UserLoginForm(request, data=request.POST)
 
-        if form.is_valid():
-            username = request.POST.get('username')
-            password = request.POST.get('password')
+        if form.is_valid(): # Checks if the form is valid 
+            username = request.POST.get('username') # Collects the username 
+            password = request.POST.get('password') # Collects the password 
+            # Authenciate the user 
             user = authenticate(request, username=username, password=password)
 
-            if user is not None:
-                auth.login(request, user)
-                messages.success(request, 'login successfull')  
-                return redirect('student')
+            if user is not None: #Checks if authentication is successful
+                auth.login(request, user) # If passed, logs the user in
+                messages.success(request, 'login successfull')  # Prints success message 
+                return redirect('student') # Send the user to the student dashboard 
 
-        else:       
-            messages.error(request, 'Login failed! please try again or signup for an account')
+        else:    # If the form is invalid, print error message and send user to sign up page   
+            messages.error(request, 'Login failed! please try again or signup for an account') 
             return redirect('student-signup')
 
-    return render(request, 'auth/student_login.html')
+    return render(request, 'auth/student_login.html') # Render the login page 
 
-# handle the signup routine for new recruiters
+# Handle the signup routine for new recruiters
 def recruiter_signup(request):
-    if request.user.is_authenticated:
-        return redirect('recruiter')
-    
+    if request.user.is_authenticated: # Checks if user if authenticated 
+        return redirect('recruiter') # If authenticated, send to recruiter dashboard 
+    # Check if the request method is POST e.g. form submitted 
     if request.method == 'POST':
-        # Extract recruiter details from the form
+        # values are extracted from the recruiter sign up form 
         recruiter_username = request.POST.get('recruiterUsername')
         recruiter_email = request.POST.get('recruiterEmail')
         recruiter_token = request.POST.get('recruiterToken')
@@ -861,10 +926,19 @@ def recruiter_signup(request):
         # Check if the recruiter token matches a companyID in the database
         try:
             company = Company.objects.get(companyID=recruiter_token)
+        # If the companyID is invalid, display an error message and redirect to sign up page
         except Company.DoesNotExist:
             messages.error(request, 'Invalid recruiter token. Please enter a valid recruiter token.')
             return redirect('recruiter-signup')
-
+        
+        #Check if the email submitted has the correct format
+        try:
+            validate_email(recruiter_email) #using djanos validate email function 
+        except ValidationError:
+            #if email is incorrect print error message
+            messages.error(request, 'Please enter a valid email address.') 
+            return render(request, 'auth/recruiter_signup.html')
+        
         # Check if passwords match
         if password1 != password2:
             messages.error(request, 'Passwords do not match.')
@@ -875,14 +949,21 @@ def recruiter_signup(request):
             messages.error(request, 'Username already exists. Please choose a different username.')
             return redirect('recruiter-signup')
         
+        # Check if the recruiterID exits 
         if Recruiter.objects.filter(recruiterID=recruiter_id).exists():
             messages.error(request, 'Recruiter ID already exists. Please choose a different recruiter ID.')
             return redirect('recruiter-signup')
         
-        # Create the recruiter account if all validations pass
+        # Check if email already exists, if true sends an error message 
+        if User.objects.filter(email=recruiter_email).exists():
+            messages.error(request, 'Email already exists. Please use a different email address.')
+            return render(request, 'auth/recruiter_signup.html')
+        
+        # Create the recruiter account if all validations pass, using the calues from the form 
         user = User.objects.create_user(username=recruiter_username, email=recruiter_email, password=password1)
-        group = Group.objects.get(name = 'Companies')
-        user.groups.add(group)
+        group = Group.objects.get(name = 'Companies') 
+        user.groups.add(group) # makes user group companies 
+        # Create a recruiter with the detailts from the form 
         recruiter = Recruiter.objects.create(
             fullName=user.username, 
             email=user.email,  
@@ -890,32 +971,33 @@ def recruiter_signup(request):
             companyID=company,
             jobTitle=recruiter_job_title
         )
-
+        # Display a success message, and send user to login page
         messages.success(request, 'Recruiter account created successfully. Please login.')
         return redirect('recruiter-login')
 
-    return render(request, 'auth/recruiter_signup.html')
+    return render(request, 'auth/recruiter_signup.html') # render recruiter sign up page 
 
-# handle the login routine for returning recruiters
+# Handle the login routine for returning recruiters
 def recruiter_login(request):
-    if request.user.is_authenticated:
-        return redirect('recruiter')
-    
+    if request.user.is_authenticated: # Check if the user is authenticated 
+        return redirect('recruiter') # If authenticated, send to recruiter dashboard 
+    # Check if the request method is POST e.g. form submitted 
     if request.method == 'POST':
+        # Values are extracted from the login from 
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
 
-        # If user is authenticated, log them in and redirect to the recruiter form page
+        # If the user is authenticated, log them in and redirect to the recruiter form page
         if user is not None:
             login(request, user)
-            return redirect('recruiter')  # Adjust this to the correct URL name for the recruiter form page
+            return redirect('recruiter')  
+        # If authentication fails, display an error message and send user back to login page
         else:
-            # If authentication fails, display an error message
             messages.error(request, 'Invalid username or password.')
             return redirect('recruiter-login') 
 
-    return render(request, 'auth/recruiter_login.html')
+    return render(request, 'auth/recruiter_login.html') # Render recruietr login page
 
 # handle the login of admin using MFA
 def admin_login(request):
@@ -925,7 +1007,7 @@ def admin_login(request):
 def user_logout(request):
     # logout user in current session
     logout(request)
-
+    # Dislay success message, and send them to home page 
     messages.success(request, 'logout successfull')  
     return redirect('home')
 
@@ -934,45 +1016,63 @@ def user_logout(request):
 # ================================================== #
 #  Student, Recruiters, and Internships detail pages #
 # ================================================== #
+<<<<<<< HEAD
 """
     The details pages are used to display a list of details about
     a particular student, recruiter or internship.
 """
 # render a given student profile's details page
+=======
+
+
+# Render a given student profile's details page
+>>>>>>> main
 @login_required
-#@allowed_users(allowed_roles=['Admin']) 
+@allowed_users(allowed_roles=['Admin']) #Access to admin only 
 def student_details(request, studentID):
+    # Using the studentID passed to retrieve the corresponding student object 
     try:
         student = Student.objects.get(studentID = studentID)
+        # Render the student details page with the student object in the context
         return render(request, 'student_details.html', context={ 'student' : student })
     except:
+        # If no student is found with the passed studentID, an error message will display 
         messages.error(request, 'Looks like no student with that ID exists!')
         return redirect('query-students')
 
 # render a given recruiter profile's details page
 @login_required
-#@allowed_users(allowed_roles=['Admin']) 
+@allowed_users(allowed_roles=['Admin']) # Access to admin only 
 def recruiter_details(request, recruiterID):
+    # Using the recruiterID passed to retrieve the corresponding recruiter object 
     try:
         recruiter = Recruiter.objects.get(recruiterID = recruiterID)
+        # Get the company associated with the recruiter
+        # If not found there is a 404 error
         company = get_object_or_404(Company, pk=recruiter.companyID.pk)
-
+         # Render the recruiter details page with the recruiter and company objects in the context
         return render(request, 'recruiter_details.html', context={ 'recruiter' : recruiter, 'company' : company.companyName })
     except:
+        # If no recruiter is found with the passed recruiterID, an error message will display 
         messages.error(request, 'Looks like no recruiter with that ID exists!')
         return redirect('query-recruiters')
 
 # render a given live internship's details page
 @login_required
-#@allowed_users(allowed_roles=['Admin']) 
+@allowed_users(allowed_roles=['Admin']) #Access to admin only 
 def internship_details(request, internshipID):
+    # Using the internshipID passed to retrieve the corresponding internship object 
     try:    
         internship = Internship.objects.get(internshipID = internshipID)
+        # Get the company and recruiter associated with the inetrnship 
+        # If not found there is a 404 error
         company = get_object_or_404(Company, pk=internship.companyID.pk)
         recruiter = get_object_or_404(Recruiter, pk=internship.recruiterID.pk)
 
+        # Render the internship details page with the internship, recruiter and company objects in the context
         return render(request, 'internship_details.html', context={ 'internship' : internship, 'recruiter' : recruiter.fullName, 'company': company.companyName })
     except:
+        # If no internship is found with the passed internshipID, an error message will display 
         messages.error(request, 'Looks like no internship with that ID exists!')
         return redirect('query-internships')
 
@@ -983,6 +1083,7 @@ def internship_details(request, internshipID):
 #  Admin Dashboard - Query Database functionality #
 # =============================================== #
 
+<<<<<<< HEAD
 """
     The query database functions are used to search the
     student, recruiter and internship tables, and display a
@@ -990,8 +1091,11 @@ def internship_details(request, internshipID):
 """
 
 # handle the routine triggered from the admin dashboard to query all student profiles
+=======
+# Handle the routine triggered from the admin dashboard to query all student profiles
+>>>>>>> main
 @login_required
-@allowed_users(allowed_roles=['Admin']) 
+@allowed_users(allowed_roles=['Admin']) #Access to admin only 
 def query_students(request):
 
     # query the students table and create a dropdown menu options using only the programmes in the current database students
@@ -1017,8 +1121,9 @@ def query_students(request):
     return render(request, 'admin_search_feature/students_db_query.html', context=context)
 
 # handle the routine triggered from the admin dashboard to query all recruiter profiles
+
 @login_required
-@allowed_users(allowed_roles=['Admin']) 
+@allowed_users(allowed_roles=['Admin']) #Access to admin only 
 def query_recruiters(request):
 
     # fetch all the company names stored in the recruiters database using the recruiter.companyID attribute
@@ -1048,7 +1153,7 @@ def query_recruiters(request):
 
 # handle the routine triggered from the admin dashboard to query live internships
 @login_required
-@allowed_users(allowed_roles=['Admin']) 
+@allowed_users(allowed_roles=['Admin']) #Access to admin only 
 def query_internships(request):
 
     # fetch all the company names stored in the recruiters database using the recruiter.companyID attribute
@@ -1145,71 +1250,80 @@ def download_internships_csv(request):
 
 # handle the procedure to delete a student from the database
 @login_required
-@allowed_users(allowed_roles=['Students']) 
+@allowed_users(allowed_roles=['Students']) # Access to students only 
 def delete_user(request):
+    # Checks if the request is post
     if request.method == 'POST':
-        user = request.user
+        user = request.user # Get the currently logged in user 
 
-        # Delete forms connected to the user
+        # Delete all student objects connected to the user email 
         Student.objects.filter(email=user.email).delete()
 
         # Delete the user
         user.delete()
 
+        # Log the user out 
         logout(request)
+        # Display a success message
         messages.success(request, 'Student account deleted successfully')
-        return redirect('home')
+        return redirect('home') # Direct the user home 
     else:
-        return redirect('home')
+        return redirect('home') # If the request is instead get, direct the user home without deleting any forms 
 
-# handle the procedure to delete a recruiter from the database
+# Handle the procedure to delete a recruiter from the database
 @login_required
-@allowed_users(allowed_roles=['Companies']) 
+@allowed_users(allowed_roles=['Companies']) #Access to companies only 
 def delete_recruiter(request):
     if request.method == 'POST':
-        # Get the logged-in user (assuming it's a recruiter)
+        # Get the logged in user 
         logged_in_user = request.user
         
         try:
-            # Retrieve the recruiter associated with the logged-in user
+            # Retrieve the recruiter connected with the logged in user
             recruiter = Recruiter.objects.get(email=logged_in_user.email)
         except Recruiter.DoesNotExist:
-            # Handle the case where no recruiter is associated with the logged-in user
+            # If there is no recruiter is associated with the logged in user, display message and redirect to the home page
             messages.error(request, 'No recruiter associated with the logged-in user')
             return redirect('home')
 
-        # Now we have the correct recruiter instance
+        # Store the recruiter email 
         recruiter_email = recruiter.email
-        print("Recruiter:", recruiter)
-        print("Recruiter Email:", recruiter_email)
+
+        print("Recruiter:", recruiter) # Debugging
+        print("Recruiter Email:", recruiter_email) # Debugging
 
         # Delete the recruiter account associated with the current company
         try:
-            recruiter.delete()
-            print("Recruiter deleted successfully")
+            recruiter.delete() # Delete recruiter 
+            print("Recruiter deleted successfully") #Debugging
         except Exception as e:
-            print("Error deleting recruiter:", e)
+            return render(request, 'error.html', context={ 'error': 'Exception occured while deleting Recruiter account'})
+
 
         # Delete any internship listings associated with the company
         try:
             Internship.objects.filter(recruiterID=recruiter.recruiterID).delete()
-            print("Internships deleted successfully")
+
+            print("Internships deleted successfully") #Debugging
         except Exception as e:
-            print("Error deleting internships:", e)
+            return render(request, 'error.html', context={ 'error': 'Exception occured while deleting Internship'})
+
 
         # Delete the user associated with the company by email
         if recruiter_email:
             try:
                 user = User.objects.get(email=recruiter_email)
                 user.delete()
-                print("User deleted successfully")
+                print("User deleted successfully") # Debugging
             except Exception as e:
-                print("Error deleting user:", e)
+                print("Error deleting user:", e) # Debugging
 
+        #Display success message one all checks are completed succesfully, logout the user and redirect to home page
         messages.success(request, 'Company deleted successfully. Please contact the recruiter to inform them of the action')
         logout(request)
-        return redirect('home')
+        return redirect('home') 
     else:
+        #If the request is get, send the user home without deleting any data
         return redirect('home')
     
 """

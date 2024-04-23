@@ -1,11 +1,10 @@
-{% extends "base.html" %}  
-{% load static %} 
+{% extends "base.html" %}
+{% load static %}  <!-- NOTE : this line is needed on ALL templates -->
 
 {% block content %}
 
     {% if messages %}
         {% for message in messages %}
-
             {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
                 <div class="mx-auto alert alert-danger w-50 mt-3" id="flash-message" role="alert"> {{ message }} </div>
             {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
@@ -13,7 +12,6 @@
             {% else %}
                 <div class="mx-auto alert alert-primary w-50 mt-3" id="flash-message" role="alert"> {{ message }} </div>
             {% endif %}
-
         {% endfor %} 
     {% endif %}
 
@@ -21,19 +19,21 @@
 
     <div class="col-6 col-md-6 offset-3">
 
-        <p>Already have an account? Login <a href= "{% url 'recruiter-login' %}" >here</a></p>
+        <p>Already have an account? Login <a href="{% url 'recruiter-login' %}">here</a></p>
 
-        <form method="POST" class="needs-validation" action="{% url 'recruiter-signup' %}" autocomplete="off" enctype="multipart/form-data" novalidate>
+        <form id="registrationForm" method="POST" class="needs-validation" action="{% url 'recruiter-signup' %}" autocomplete="off" enctype="multipart/form-data" novalidate>
             {% csrf_token %}
 
             <div class="row">
                 <div class="mb-3 col">
+                    <!-- Input field for name of recruiter -->  
                     <label for="recruiterUsername" class="form-label">Username</label>
                     <input type="text" id="recruiterUsername" name="recruiterUsername" class="form-control" required>
                     <div class="invalid-feedback">Please enter a username</div>
                 </div>
 
                 <div class="mb-3 col">
+                    <!-- Input field for email of recruiter -->  
                     <label for="recruiterEmail" class="form-label">Email</label>
                     <input type="email" id="recruiterEmail" name="recruiterEmail" class="form-control" required>
                     <div class="invalid-feedback">Please enter a valid email</div>
@@ -41,6 +41,7 @@
             </div>
 
             <div class="mb-3 col">
+                <!-- Input field for recuriter token of recruiter -->  
                 <label for="recruiterToken" class="form-label">Recruiter Token</label>
                 <input type="text" id="recruiterToken" name="recruiterToken" class="form-control" required>
                 <div class="invalid-feedback">Please enter a recruiter token</div>
@@ -48,12 +49,14 @@
 
             <div class="row">
                 <div class="mb-3 col">
+                    <!-- Input field for recruiterID of recruiter -->  
                     <label for="recruiterID" class="form-label">Recruiter ID</label>
                     <input type="text" id="recruiterID" name="recruiterID" class="form-control" required>
                     <div class="invalid-feedback">Please enter a recruiter ID</div>
                 </div>
 
                 <div class="mb-3 col">
+                    <!-- Input field for job title of recruiter -->  
                     <label for="recruiterJobTitle" class="form-label">Job Title</label>
                     <input type="text" id="recruiterJobTitle" name="recruiterJobTitle" class="form-control" required>
                     <div class="invalid-feedback">Please enter a job title</div>
@@ -62,27 +65,48 @@
 
             <div class="row">
                 <div class="mb-3 col">
-                    <!-- Password1 is imposed by Django's CreateUserForm -->
+                    <!-- Input field for password of recruiter -->  
                     <label for="recruiterPassword1" class="form-label">Password</label>
                     <input type="password" id="recruiterPassword1" name="recruiterPassword1" class="form-control" required>
                     <div class="invalid-feedback">Please enter a strong password</div>
                 </div>
 
                 <div class="mb-3 col">
+                    <!-- Input field for confirmation of passwork of recruiter account -->  
                     <label for="recruiterPassword2" class="form-label">Confirm Password</label>
                     <input type="password" id="recruiterPassword2" name="recruiterPassword2" class="form-control" required>
                     <div class="invalid-feedback">Please enter a strong password</div>
                 </div>
             </div>
 
-            <!-- button for form submission -->
             <div class="mb-3 mt-5">
-                <button type="submit" class="btn btn-primary col-3">Submit</button>
+                <!-- Using the data-bs-toggle and data-bs-target attributes to trigger the modal -->
+                <button type="button" class="btn btn-primary col-3" data-bs-toggle="modal" data-bs-target="#confirmationModal">Submit</button>
+            </div>
+
+            <!-- Confirmation Modal -->
+            <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Confirmation</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Signing up means accepting our terms and conditions
+                        </div>
+                        <div class="modal-footer">
+                            <!-- Using the data-bs-dismiss attribute to close the modal -->
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <!-- Button to submit the form -->
+                            <button type="submit" class="btn btn-primary">Confirm</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </form>
 
     </div>
-
 
 {% endblock %}

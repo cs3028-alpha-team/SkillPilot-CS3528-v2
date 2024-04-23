@@ -39,6 +39,7 @@
                         <button>Download Internships CSV</button>
                     </a>
 
+                    <!-- form to query internships from POST method -->
                     <form method="POST" action="{% url 'query-internships' %}" autocomplete="off" enctype="multipart/form-data">
 
                         {% csrf_token %}
@@ -46,6 +47,7 @@
                         <div class="row">
                             <div class="mb-3 col">
                                 <label for="internshipCompany" class="form-label">Company</label>
+                                <!-- will display all comapanies currently in a drop down -->
                                 <select class="form-select" id="internshipCompany" name="internshipCompany">
                                     <option selected></option>
                                     {% for company in allCompanies %}
@@ -58,6 +60,7 @@
                         <div class="row">
                             <div class="mb-3 col">
                                 <label for="internshipField" class="form-label">Field</label>
+                                <!-- will display all curent company fields in a drop down-->
                                 <select class="form-select" id="internshipField" name="internshipField">
                                     <option selected></option>
                                     {% for field in fields %}
@@ -68,6 +71,7 @@
 
                             <div class="mb-3 col">
                                 <label for="internshipTitle" class="form-label">Title</label>
+                                <!-- will display all company titles in a drop down -->
                                 <select class="form-select" id="internshipTitle" name="internshipTitle">
                                     <option selected></option>
                                     {% for title in titles %}
@@ -80,6 +84,7 @@
                         <div class="row">
                             <div class="mb-3 col">
                                 <label for="internshipMinGPA" class="form-label">Sort by Min GPA</label>
+                                <!-- options to have result shown ascending or descending for GPA -->
                                 <select class="form-select" id="internshipMinGPA" name="internshipMinGPA">
                                     <option selected></option>
                                     <option value="asc">ascending</option>
@@ -96,9 +101,11 @@
                     </form>
                 </div>
 
+                <!-- results from the query are handled below -->
                 <div class="col-md-auto mx-5 overflow-y-auto" style="height:400px;">
                     <h3 class="display-6 mb-4">Results</h3>
 
+                    <!-- GET and POST conditions -->
                     {% if request.method == 'GET' %}
                         <div class="alert alert-light" role="alert">
                             All records matching your query will appear here
@@ -110,11 +117,12 @@
                            No results match your query
                         </div>
                     {% endif %}
-
+                    <!-- will display the internship title and comapny name associated -->
                     {% for internship in internships %}
                         <div class="card mb-2" style="width:500px;">
                             <div class="card-body d-flex justify-content-between align-items-center">
                                 <span>{{internship.title}} at {{ internship.company_name}} </span>
+                                <!-- button to go see internship details -->
                                 <a href="{% url 'internship-details' internship.internshipID %}" class="btn btn-light">Details</a>
                             </div>
                         </div>

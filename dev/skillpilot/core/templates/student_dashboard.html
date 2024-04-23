@@ -24,45 +24,7 @@
         <header class="display-5 mt-5 ms-5">Welcome back, {{ request.user }}</header>
 
 
-    <h1> Student dashboard</h1>
-
-    <!-- display interviews -->
-
-    {% if interview %}
-
-      <h3 class="display-6 mt-5 mb-4">Your upcoming interview</h3>
-                
-      <div class="card p-2 mb-4" style="max-width: 700px;"> 
-        <div class="card-body d-flex justify-content-between">
-            <div style="flex: 1;"> 
-                <h5 class="card-title mb-3">Fake Interview</h5>
-                <p class="text-body-secondary mb-3">
-                    {{date}} {{mode}}, with 
-                    <a href="{% url 'recruiter-details' recruiter.recruiterID %}">{{recruiter.fullName}}</a>
-                </p>
-                <p class="mb-3"><strong>Status:</strong> {{ interview.outcome }}</p> 
-            </div>
-<<<<<<< HEAD
-            <!-- This is the recruiter version, it will be removed here when the recruiter dashboard is added and moved there-->
-            <div style="flex: 1; padding-left: 20px;"> 
-                <form method="post" action="{% url 'update-interview' interview.interviewID %}">
-                    {% csrf_token %}
-                    <select name="new_outcome" class="form-select mb-3" aria-label="Select Interview Outcome"> <!-- Added margin bottom -->
-                        <option value="accepted">Accepted</option>
-                        <option value="pending">Pending</option>
-                        <option value="rejected">Rejected</option>
-                    </select>
-                    <button type="submit" class="btn btn-primary">Update</button>
-                </form>
-            </div>
-=======
->>>>>>> abac23f585183bfb38b77223a67c81a2b9a34f81
-        </div>
-    </div>
-    {% else %}
-        <p>No upcoming interviews</p>
-    {% endif %}
-        
+        <h1> Student dashboard</h1>
             <div class="col-md-8 mx-3">
                 <!-- Here they can configure their profile, and if they have done so already then form will be replaced by a paragraph saying something along the lines of "looks like you have configured your application profile already, please contact admin for any issue..." -->
                 <h3 class="display-6 mt-5 mb-4">Configure your profile</h3>
@@ -140,49 +102,31 @@
                     <div class="row mb-3">
                         <button type="submit" class="btn btn-primary col-12">Submit</button>
                     </div>
-
                 </form>
             </div>
-            <!-- interview styling 
-            <div class="col-md-8 mx-3">
-                -->
-                <!-- Here students will be able to see their upcoming interviews if they have any -->
-                 <!--<h3 class="display-6 mt-5 mb-4">Your upcoming interviews</h3> -->
+        </div>
+         <!-- display interviews -->
 
-                <!-- This is what an interview looks like on the student page. The recruiter name is a link to the recruiter's profile page on Skillpilot -->
-                <!--
-                <div class="card p-2 mb-4">
-                    <div class="card-body d-flex flex-column justify-content-between">
-                        <div>
-                            <h5 class="card-title mb-3">Fake Interview with NHS</h5>
-                        </div>
-                        <p class="text-body-secondary">
-                            01/01/2050 at Primark Union Street, with 
-                            <a href="#">John McDeeznuts</a>
-                        </p>
-                        <div class="d-flex">
-                            <button class="btn btn-danger">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-        
-                <div class="card p-2 mb-4">
-                    <div class="card-body d-flex flex-column justify-content-between">
-                        <div>
-                            <h5 class="card-title mb-3">Fake Interview with GSK</h5>
-                        </div>
-                        <p class="text-body-secondary">
-                            02/01/2420 at St. Machar Bar, with 
-                            <a href="#">Garfield</a>
-                        </p>
-                        <div class="d-flex">
-                            <button class="btn btn-danger">Cancel</button>
-                        </div>
-                    </div>
+    {% if interview %}
+
+    <h3 class="display-6 mt-5 mb-4">Your upcoming interview</h3>
+              
+        <div class="card p-2 mb-4" style="max-width: 700px;"> 
+            <div class="card-body d-flex justify-content-between">
+                <div style="flex: 1;"> 
+                    <h5 class="card-title mb-3">Fake Interview</h5>
+                    <p class="text-body-secondary mb-3">
+                        {{date}} {{mode}}, with 
+                        <a href="{% url 'recruiter-details' recruiter.recruiterID %}">{{recruiter.fullName}}</a>
+                    </p>
+                    <p class="mb-3"><strong>Status:</strong> {{ interview.outcome }}</p> 
                 </div>
             </div>
-            -->
         </div>
+        {% else %}
+            <p>No upcoming interviews</p>
+        {% endif %}
+      
         <div class="row justify-content-center mt-2">
             <div class="col-md-8">
                 <form method="POST" action="{% url 'delete-user' %}">
