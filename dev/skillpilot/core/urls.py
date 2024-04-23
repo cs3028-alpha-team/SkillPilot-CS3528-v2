@@ -26,7 +26,7 @@ urlpatterns = [
     path('reject-match/<str:matchID>/', views.reject_match, name='reject-match'),
 
     # path to render the algorithm dashboard, where the admin can run the algorithm and manage assignments
-    path('algorithm-dahshboard', views.algorithm_dashboard, name='algorithm-dashboard'),
+    path('algorithm-dashboard', views.algorithm_dashboard, name='algorithm-dashboard'),
 
     # path to render the analytics dashboard, accessible from the admin page
     path('analytics-dashboard', views.analytics_dashboard, name='analytics-dashboard'),
@@ -75,4 +75,10 @@ urlpatterns = [
   
     # updates the outcome of an interview to accepted/rejected 
     path('update-interview/<interview_id>/', views.update_interview, name='update-interview'),
+    
+    # paths for downloading CSV files
+    path('download-students-csv/', views.download_students_csv, name='download_students_csv'),
+    path('download-recruiters-csv/', views.download_recruiters_csv, name='download_recruiters_csv'),
+    path('download-internships-csv/', views.download_internships_csv, name='download_internships_csv'),
+
 ]

@@ -32,6 +32,8 @@ from django.core.exceptions import ValidationError
 
 
 
+<<<<<<< HEAD
+=======
 @login_required
 @allowed_users(allowed_roles=['Admin']) # access to Admin accounts only    
 def send_email(request): 
@@ -60,6 +62,7 @@ def send_email(request):
     return HttpResponse('Email sent')
 
 
+>>>>>>> main
 # ====================== #
 #  General Purpose views #
 # ====================== #
@@ -81,6 +84,13 @@ def error(request):
 #  Student, Recruiter, and Admin Dashboard pages #
 # ============================================== #
 
+<<<<<<< HEAD
+"""
+The dashboard functions control the functionality for the recruiter, student and admin
+dashboard pages. 
+"""
+=======
+>>>>>>> main
 
 # view for the route '/student'
 @login_required
@@ -213,8 +223,9 @@ def recruiter_dashboard(request):
             context['form'] = form
             return render(request, 'recruiter_dashboard.html', context)
     else:
-        # Interview system code
-        
+        """
+        Interview system code, used to display interview details for a recruiter.
+        """
         try:
             # Get recruiter details
             user = request.user
@@ -235,7 +246,8 @@ def recruiter_dashboard(request):
             random_mode = random.choice(modes)
 
             return render(request, 'recruiter_dashboard.html', {'interviews': interview_pairs, 'username': recruiter_username, 'date': random_date, 'mode': random_mode}, context)
-
+        
+        # deal with exceptions
         except (Interview.DoesNotExist, Student.DoesNotExist):
             print("An object does not exist")
             return render(request, 'recruiter_dashboard.html', context)
@@ -245,8 +257,16 @@ def recruiter_dashboard(request):
             return render(request, 'recruiter_dashboard.html', context)
 
         
+<<<<<<< HEAD
+"""
+    update interview is used on the recruiter dashboard to
+    change an interview's outcome to accepted, rejected or pending.
+"""
+# accept/reject an interview
+=======
 # Accept/reject an interview
 # Currently only changes outcome in the database#
+>>>>>>> main
 @login_required
 @allowed_users(allowed_roles=['Companies']) #Access to companies only 
 def update_interview(request, interview_id):
@@ -267,10 +287,19 @@ def admin(request):
 # ============================================================ #
 #  Admin Dashboard - Companies Management Tool functionalities #
 # ============================================================ #
+<<<<<<< HEAD
+"""
+ The companies management tool is used by the admin to add, search and delete companies.
+"""
+# handle the companies management tool functionality
+@login_required
+@allowed_users(allowed_roles=['Admin']) 
+=======
 
 # Handle the companies management tool functionality
 @login_required
 @allowed_users(allowed_roles=['Admin']) #Access to admin only 
+>>>>>>> main
 def companies_management_tool(request):
     
     context = {}
@@ -388,7 +417,10 @@ def register_company(request):
 # =========================================== #
 # Admin Dashboard - Algorithm Functionalities #
 # =========================================== #
-
+"""
+Functions used in the algorithm dashboard where the admin
+can see a list of computed matches and approve or reject them
+"""
 # render the algorithm dashboard page, where the admin can compute and manage assignments
 @login_required
 @allowed_users(allowed_roles=['Admin']) #Access to admin only
@@ -572,6 +604,13 @@ def algorithm_dashboard(request):
 
     return render(request, 'algorithm_dashboard.html', context)
 
+<<<<<<< HEAD
+
+"""
+    Approve_match is used to approve a computed match
+"""
+=======
+>>>>>>> main
 # handle the approval routine for a match computed by the algorithm
 @login_required
 @allowed_users(allowed_roles=['Admin']) #Access to admin only 
@@ -596,6 +635,12 @@ def approve_match(request, matchID):
     messages.success(request, "successfully saved match and booked internship")
     return redirect('algorithm-dashboard')
 
+<<<<<<< HEAD
+"""
+    Reject_match is used to reject a computed match
+"""
+=======
+>>>>>>> main
 # handle the rejection routine for a match computed by the algorithm
 @login_required
 @allowed_users(allowed_roles=['Admin']) #Access to admin only 
@@ -620,6 +665,10 @@ def reject_match(request, matchID):
 # ===================================== #
 # Admin Dashboard - Analytics Dashboard #
 # ===================================== #
+"""
+    Analytics dashboard is used by the admin to display various analytics
+    about students, internships computed matches in the form of charts and heatmaps
+"""
 @login_required
 @allowed_users(allowed_roles=['Admin']) #Access to admin only 
 def analytics_dashboard(request):
@@ -967,9 +1016,17 @@ def user_logout(request):
 # ================================================== #
 #  Student, Recruiters, and Internships detail pages #
 # ================================================== #
+<<<<<<< HEAD
+"""
+    The details pages are used to display a list of details about
+    a particular student, recruiter or internship.
+"""
+# render a given student profile's details page
+=======
 
 
 # Render a given student profile's details page
+>>>>>>> main
 @login_required
 @allowed_users(allowed_roles=['Admin']) #Access to admin only 
 def student_details(request, studentID):
@@ -1026,7 +1083,17 @@ def internship_details(request, internshipID):
 #  Admin Dashboard - Query Database functionality #
 # =============================================== #
 
+<<<<<<< HEAD
+"""
+    The query database functions are used to search the
+    student, recruiter and internship tables, and display a
+    list of search results.
+"""
+
+# handle the routine triggered from the admin dashboard to query all student profiles
+=======
 # Handle the routine triggered from the admin dashboard to query all student profiles
+>>>>>>> main
 @login_required
 @allowed_users(allowed_roles=['Admin']) #Access to admin only 
 def query_students(request):
@@ -1143,7 +1210,44 @@ def query_internships(request):
 
     return render(request, 'admin_search_feature/internships_db_query.html', context=context)
 
+#download query results as a csv file
+def download_csv(data, filename):
+    df = pd.DataFrame(data)
+
+    # Create CSV file
+    csv_file = df.to_csv(index=False)
+
+    response = HttpResponse(csv_file, content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="{filename}.csv"'
+
+    return response
+
+#download student results as csv
+def download_students_csv(request):
+    students = Student.objects.all()
+    response = download_csv(students.values(), 'student_search_results')
+    return response
+
+#download recruiters
+def download_recruiters_csv(request):
+    recruiters = Recruiter.objects.all()
+    response = download_csv(recruiters.values(), 'recruiter_search_results')
+    return response
+
+#download students
+def download_students_csv(request):
+    students = Student.objects.all()
+    response = download_csv(students.values(), 'student_search_results')
+    return response
+
+#download internships
+def download_internships_csv(request):
+    internships = Internship.objects.all()
+    response = download_csv(internships.values(), 'internship_search_results')
+    return response
+
 # ========================================= Recruiter and internship delete function ============================================ #
+
 # handle the procedure to delete a student from the database
 @login_required
 @allowed_users(allowed_roles=['Students']) # Access to students only 
@@ -1222,3 +1326,34 @@ def delete_recruiter(request):
         #If the request is get, send the user home without deleting any data
         return redirect('home')
     
+"""
+    Send email is used to send an email to students and recruiters
+    to inform them that they have been matched.
+"""
+# function to send an email    
+def send_email(request): 
+    internships = Internship.objects.all() #get data from database
+    students = Student.objects.all()
+    recruiters = Recruiter.objects.all()
+        
+    subject = "Successful application match"
+
+    for student in students:
+        name = student.fullName
+        context = {'name': name}
+        
+        html_message = render_to_string('email.html', context)
+        text_message = strip_tags(html_message)
+        
+        mail = EmailMultiAlternatives(
+                    subject = subject, #subject
+                    body = text_message, #plain text version of message
+                    from_email = settings.EMAIL_HOST_USER, #from email display name
+                    to = [student.email] #recipient's email      
+                )
+        
+        mail.attach_alternative(html_message, 'text/html')
+        mail.send()
+        
+    return HttpResponse('Email sent')
+

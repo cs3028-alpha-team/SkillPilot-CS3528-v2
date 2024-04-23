@@ -5,13 +5,19 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
 import pandas as pd
+from django.core.validators import MinValueValidator
 import numpy as np
+"""
+    The models file is used to store the implementation of the models
+    to be used in the database.
+"""
+
 
 # students table
 class Student(models.Model):
 
     # string representation of student class
-    def str(self):
+    def __str__(self):
         return f"{self.studentID}, {self.fullName}, {self.currProgramme}, {self.prevProgramme}, {self.GPA}"
 
     # enum for the study-pattern
@@ -40,7 +46,7 @@ class Student(models.Model):
     prevProgramme = models.CharField(max_length=50) # program they previously studies and now graduated from
     studyMode= models.CharField(max_length=10, choices= mode.choices)
     studyPattern = models.CharField(max_length = 2, choices= pattern.choices)
-    GPA = models.IntegerField()
+    GPA = models.IntegerField(validators=[MinValueValidator(0)])
     desiredContractLength = models.CharField(max_length=25, choices=contractLength.choices)
     willingRelocate = models.BooleanField()
     aspirations = models.CharField(max_length = 200)
@@ -49,8 +55,8 @@ class Student(models.Model):
 class Internship(models.Model):
 
     # string representation for the Internship class
-    def str(self):
-        return f"{self.internshipID}, {self.companyID}, {self.recruiterID}, {self.numberPositions}, {self.field}, {self.minGPA}"
+    def __str__(self):
+        return f"{self.internshipID}, {self.companyID.companyID}, {self.recruiterID.recruiterID}, {self.numberPositions}, {self.field}, {self.minGPA}"
 
     # enum for pattern
     class pattern(models.TextChoices):
@@ -70,16 +76,16 @@ class Internship(models.Model):
     contractMode = models.CharField(max_length=10, choices= mode.choices)
     contractPattern = models.CharField(max_length = 2, choices= pattern.choices)
     # number of internships availables in the company for that internship type
-    numberPositions = models.SmallIntegerField() 
+    numberPositions = models.SmallIntegerField(validators=[MinValueValidator(0)]) 
     field = models.CharField(max_length = 20)
     title = models.CharField(max_length = 50)
-    minGPA = models.SmallIntegerField()
+    minGPA = models.SmallIntegerField(validators=[MinValueValidator(0)])
 
 # companies table
 class Company(models.Model):
 
     # string representation of Company model
-    def str(self):
+    def __str__(self):
         return f"{self.companyID}, {self.companyName}, {self.industrySector}"
 
     #attributes for company table
@@ -93,8 +99,8 @@ class Company(models.Model):
 class Recruiter(models.Model):
 
     # string representation of Recruiter model
-    def str(self):
-        return f"{self.recruiterID}, {self.fullName}, {self.companyID}"
+    def __str__(self):
+        return f"{self.recruiterID}, {self.fullName}, {self.companyID.companyID}"
 
     # attributes for recruiter table
     recruiterID = models.CharField(max_length = 10, primary_key = True)
@@ -108,8 +114,8 @@ class Recruiter(models.Model):
 class Interview(models.Model):
 
     # string representation of Interview model
-    def str(self):
-        return f"{self.interviewID}, {self.companyID}, {self.studentID}, {self.recruiterID}, {self.outcome}"
+    def __str__(self):
+        return f"{self.interviewID}, {self.companyID.companyID}, {self.studentID.studentID}, {self.recruiterID.recruiterID}, {self.outcome}"
 
     #enum for interview outcomes
     class outcomes(models.TextChoices):
@@ -131,8 +137,8 @@ class Interview(models.Model):
 class ComputedMatch(models.Model):
 
     # string representation of Computed Match model
-    def str(self):
-        return f"{self.computedMatch}, {self.internshipID}, {self.studentID}, {self.interviewID}"
+    def __str__(self):
+        return f"{self.computedMatchID}, {self.internshipID.internshipID}, {self.studentID.studentID}, {self.interviewID.interviewID}"
 
     # table attributes
     computedMatchID = models.CharField(max_length = 20, primary_key = True)

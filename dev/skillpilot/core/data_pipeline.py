@@ -16,6 +16,9 @@ class DataPipeline:
 
     # encapsulate the cleaning operations in one method 
     def clean(self):        
+        
+        # fill in any nan values for GPA
+        self.internships['minGPA'] = self.internships['minGPA'].fillna(0)
 
         # handle cases where student's studyMode or studyPatter are null
         for i in self.students.index.tolist():
@@ -36,6 +39,10 @@ class DataPipeline:
 
 
     def __round(self, n):
+        #return if nan
+        if pd.isna(n):
+            return n
+        
         # extract the unitary digit
         unitary, decimal = int(n) % 10, int(n)//10
         
