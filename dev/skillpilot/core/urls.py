@@ -5,12 +5,16 @@ urlpatterns = [
 
     path('', views.home, name='home'),
 
+    # path to home page
     path('home', views.home, name='home'),
-
+    
+    # path to error page
     path('error', views.error, name='error'),
 
+    # path to recruiter page
     path('recruiter', views.recruiter_dashboard, name='recruiter'),
-
+    
+    # path to admin page
     path('admin_page', views.admin, name='admin_page'),
 
     # path to contacts page
