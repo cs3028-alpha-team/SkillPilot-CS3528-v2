@@ -4,7 +4,7 @@ Welcome to the GitHub repository for SkillPilot, an automated internship match-m
 ### Running the application
 In order to run the application you will need to have the following softwares installed and set-up on your computer
 1. An IDE (i.e. Visual Studio Code)
-2. Python 3.1 or above, Python TkInter
+2. Python 3.1 or above
 3. Up-to-date Django Software
 
 Once your development environment has been configured, travel to the project folder e.g. (SkillPilot-CS3528-v2\dev\skillpilot) and run the command ```python manage.py runserver``` the terminal. Download all needed imports, the command line will tell you how to download them (if any are missed). (which ones for example)
