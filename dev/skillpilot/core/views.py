@@ -30,6 +30,9 @@ import random
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
+import logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 
 @login_required
@@ -304,7 +307,7 @@ def companies_management_tool(request):
         # query the database for a recruiter whose companyID field matches the current company's companyID
         recruiter = None
         try: recruiter = Recruiter.objects.get(companyID=company.companyID)
-        except: pass
+        except Recruiter.DoesNotExist: pass
 
         # attach the recruiter object found to the current company
         company.recruiter = recruiter
@@ -325,7 +328,7 @@ def companies_management_tool(request):
             try:
                 recruiter = Recruiter.objects.get(companyID=company.companyID)
                 linked.append(company)
-            except:
+            except Recruiter.DoesNotExist:
                 unlinked.append(company)
 
         # check for the filter condition, and return the appropriate list to the user
@@ -338,6 +341,7 @@ def companies_management_tool(request):
 @login_required
 @allowed_users(allowed_roles=['Admin']) #Access to admin only 
 def delete_company(request, companyID):
+    recruiter_email = None
     # Checkls if the request was POST
     if request.method == 'POST':
 
@@ -345,12 +349,12 @@ def delete_company(request, companyID):
         try:
             recruiter = Recruiter.objects.get(companyID=companyID)
             recruiter_email = recruiter.email
-        except: pass
+        except Recruiter.DoesNotExist: pass
 
         # Delete the recruiter account associated with the current company
         try:
             recruiter.delete()
-        except: pass
+        except Recruiter.DoesNotExist: pass
 
         # Delete any internship listings associated with the company
         try:
@@ -360,7 +364,7 @@ def delete_company(request, companyID):
         # Delete the company listing
         try:
             Company.objects.get(companyID=companyID).delete()
-        except: pass
+        except Company.DoesNotExist: pass
           
 
         # Delete the user associated with the company by email
@@ -368,7 +372,7 @@ def delete_company(request, companyID):
             try:
                 user = User.objects.get(email=recruiter_email)
                 user.delete()
-            except: pass
+            except User.DoesNotExist: pass
         #Display success message one all checks are completed succesfully and redirect to manage-companies url
         messages.success(request, 'Company deleted successfully. Please contact the recruiter to inform them of the action')
         return redirect('manage-companies')
@@ -1222,6 +1226,8 @@ def download_internships_csv(request):
 @login_required
 @allowed_users(allowed_roles=['Students']) # Access to students only 
 def delete_user(request):
+    logging.debug('Delete user view accessed')
+
     # Checks if the request is post
     if request.method == 'POST':
         user = request.user # Get the currently logged in user 

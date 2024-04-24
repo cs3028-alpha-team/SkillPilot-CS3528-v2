@@ -140,11 +140,7 @@ class HttpResponseTestCase(TestCase):
     def test_approve_match_url(self):
         response = self.client.get(reverse('approve-match', args=['invalid_id']))
         self.assertEqual(response.status_code, 302) # redirect
-    """
-    def test_reject_match_url(self):
-        response = self.client.get(reverse('reject-match', args=['invalid_id']))
-        self.assertEqual(response.status_code, 302) # redirect
-    """
+
     def test_algorithm_dashboard_url(self):
         response = self.client.get(reverse('algorithm-dashboard'))
         self.assertEqual(response.status_code, 302) # redirect
