@@ -4,7 +4,7 @@ Welcome to the GitHub repository for SkillPilot, an automated internship match-m
 ### Running the application
 In order to run the application you will need to have the following softwares installed and set-up on your computer
 1. An IDE (i.e. Visual Studio Code)
-2. Python 3.1 or above, Python TkInter
+2. Python 3.1 or above
 3. Up-to-date Django Software
 
 Once your development environment has been configured, travel to the project folder e.g. (SkillPilot-CS3528-v2\dev\skillpilot) and run the command ```python manage.py runserver``` the terminal. Download all needed imports, the command line will tell you how to download them (if any are missed). (which ones for example)
@@ -14,7 +14,7 @@ Once your development environment has been configured, travel to the project fol
 On the navigation bar you should see "help", click on this and it should navigate you to a page explaining steps for each type of user.
 
 ### Login Credentials
-1. The login for the admin account are Username = admin, Password = 12435687abdn
+1. The login for the admin account will be provided to you upon request 
 2. A student account can be created from sign-up
 3. A recruiter account can be created from sign-up. The recruiter accounts needs a recruiter token, so login as an admin first and navigate to the company management tool here create a new company. Take note of the "recruiter Token" as this is needed for a recruiter account sign-up. After taken note of the recruiter token logout by clicking logout on the navigation bar, and try sign up as a recruiter using the new recruiter token.
 
