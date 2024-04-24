@@ -14,7 +14,7 @@ Once your development environment has been configured, travel to the project fol
 On the navigation bar you should see "help", click on this and it should navigate you to a page explaining steps for each type of user.
 
 ### Login Credentials
-1. The login for the admin account are Username = admin, Password = 12435687abdn
+1. The login for the admin account will be provided to you upon request 
 2. A student account can be created from sign-up
 3. A recruiter account can be created from sign-up. The recruiter accounts needs a recruiter token, so login as an admin first and navigate to the company management tool here create a new company. Take note of the "recruiter Token" as this is needed for a recruiter account sign-up. After taken note of the recruiter token logout by clicking logout on the navigation bar, and try sign up as a recruiter using the new recruiter token.
 
