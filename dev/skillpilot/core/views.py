@@ -372,7 +372,7 @@ def delete_company(request, companyID):
         #Display success message one all checks are completed succesfully and redirect to manage-companies url
         messages.success(request, 'Company deleted successfully. Please contact the recruiter to inform them of the action')
         return redirect('manage-companies')
-
+    
     return render(request, 'companies_management_tool.html') #render the companies management tool template
 
 # register a new company to the database using the payload from the form submitted from the companies management tool
@@ -981,7 +981,7 @@ def recruiter_login(request):
         else:
             messages.error(request, 'Invalid username or password.')
             return redirect('recruiter-login') 
-
+    
     return render(request, 'auth/recruiter_login.html') # Render recruietr login page
 
 # handle the login of admin using MFA
@@ -1008,7 +1008,7 @@ def user_logout(request):
 
 # Render a given student profile's details page
 @login_required
-@allowed_users(allowed_roles=['Admin']) #Access to admin only 
+@allowed_users(allowed_roles=['Admin', 'Students', 'Companies']) 
 def student_details(request, studentID):
     # Using the studentID passed to retrieve the corresponding student object 
     try:
@@ -1022,7 +1022,7 @@ def student_details(request, studentID):
 
 # render a given recruiter profile's details page
 @login_required
-@allowed_users(allowed_roles=['Admin']) # Access to admin only 
+@allowed_users(allowed_roles=['Admin', 'Students', 'Companies']) 
 def recruiter_details(request, recruiterID):
     # Using the recruiterID passed to retrieve the corresponding recruiter object 
     try:
@@ -1039,7 +1039,7 @@ def recruiter_details(request, recruiterID):
 
 # render a given live internship's details page
 @login_required
-@allowed_users(allowed_roles=['Admin']) #Access to admin only 
+@allowed_users(allowed_roles=['Admin', 'Students', 'Companies']) 
 def internship_details(request, internshipID):
     # Using the internshipID passed to retrieve the corresponding internship object 
     try:    
