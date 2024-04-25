@@ -63,7 +63,8 @@ urlpatterns = [
     path('student-login', views.student_login, name='student-login'),
 
     # path related to admin authentication and authorization
-    path('admin-login', views.admin_login, name='admin-login'),
+    path('admin_login', views.admin_login, name='admin_login'),
+    path('generate_qr_code/', views.generate_qr_code, name='generate_qr_code'),
 
     # paths related to recruiter authentication and authorization
     path('recruiter-signup', views.recruiter_signup, name='recruiter-signup'),

@@ -29,6 +29,9 @@ from datetime import date
 import random
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+import pyotp
+import qrcode
+import os
 
 import logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -990,7 +993,70 @@ def recruiter_login(request):
 
 # handle the login of admin using MFA
 def admin_login(request):
-    return render(request, 'auth/admin_login.html')
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None and user.is_superuser:
+                # Get the entered token from the form
+                entered_token = request.POST.get('2fa_token')
+
+                # Get the secret key stored in the session
+                secret_key = request.session.get('admin_2fa_secret')
+
+                print("Entered Token:", entered_token)
+                print("Stored Secret Key:", secret_key)
+
+                # Verify the entered token
+                totp = pyotp.TOTP(secret_key)
+                if totp.verify(entered_token):
+                    # If tokens match, login the user
+                    login(request, user)
+                    messages.success(request, 'Login successful')
+                    # Redirect to admin page
+                    return redirect('admin_page')
+                else:
+                    # If tokens don't match, display error message
+                    messages.error(request, 'Invalid 2FA token')
+                    print("Invalid 2FA token")
+            else:
+                messages.error(request, 'Invalid username or password')
+                print("Invalid username or password")
+    else:
+        form = AuthenticationForm()
+    return render(request, 'auth/admin_login.html', {'form': form})
+
+def generate_qr_code(request):
+    if request.method == 'POST':
+        # Generate a PyOTP secret key
+        secret_key = pyotp.random_base32()
+
+        # Generate the OTP URI using the secret key and admin username
+        otp_uri = pyotp.totp.TOTP(secret_key).provisioning_uri(request.user.username, issuer_name="SkillPilot")
+
+        # Create a QR code containing the OTP URI
+        qr = qrcode.QRCode()
+        qr.add_data(otp_uri)
+        qr.make()
+
+        # Define the file path to save the QR code image
+        file_path = os.path.join('data', 'qr_code.png')
+
+        # Save the QR code image
+        img = qr.make_image(fill_color="black", back_color="white")
+        img.save(file_path)
+        img.show()
+
+        # Store the secret key in the session
+        request.session['admin_2fa_secret'] = secret_key
+
+        # Return a response
+        return HttpResponse('QR code generated and saved successfully.')
+    else:
+        # If the request method is not POST, redirect to the admin login page
+        return redirect('admin_login')
 
 # handle the logout routine for all app users
 def user_logout(request):
