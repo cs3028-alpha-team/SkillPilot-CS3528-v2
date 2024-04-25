@@ -283,7 +283,12 @@ def update_interview(request, interview_id):
 @allowed_users(allowed_roles=['Admin']) #Access to admin only 
 def admin(request):
     return render(request, 'admin.html')
-
+#
+#
+#
+#
+#
+#
 
 # ============================================================ #
 #  Admin Dashboard - Companies Management Tool functionalities #
@@ -825,6 +830,33 @@ def analytics_dashboard(request):
 #  Authentication (Login & Signup) and Authorization logic #
 # ======================================================== #
 
+# Handle the login routine for the admin user
+def basic_admin_login(request):
+    if request.user.is_authenticated: # If user it authenticated 
+        return redirect('admin_page')# Send them to admin dashboard 
+    form = UserLoginForm() # If not authenticated, create a form for user login
+    # Check if the request method is POST e.g. form submitted 
+    if request.method == 'POST':
+        # bind the form with the POST data
+        form = UserLoginForm(request, data=request.POST)
+
+        if form.is_valid(): # Checks if the form is valid 
+            username = request.POST.get('username') # Collects the username 
+            password = request.POST.get('password') # Collects the password 
+            # Authenciate the user 
+            user = authenticate(request, username=username, password=password)
+
+            if user is not None: # Checks if authentication is successful
+                auth.login(request, user) # If passed, logs the user in
+                messages.success(request, 'login successfull')  # Prints success message 
+                return redirect('admin_page') # Send the user to the admin dashboard 
+
+        else:    # If the form is invalid, print error message and send user to sign up page   
+            messages.error(request, 'Login failed! please try again or contact staff') 
+            return redirect('admin-login')
+
+    return render(request, 'auth/admin_login.html') # Render the login page 
+
 # Handle the signup routine for a new studen
 def student_signup(request):
     if request.user.is_authenticated: # Checks if user is authenticated 
@@ -1018,7 +1050,7 @@ def student_details(request, studentID):
     try:
         student = Student.objects.get(studentID = studentID)
         # Render the student details page with the student object in the context
-        return render(request, 'student_details.html', context={ 'student' : student })
+        return render(request, 'detail_pages/student_details.html', context={ 'student' : student })
     except:
         # If no student is found with the passed studentID, an error message will display 
         messages.error(request, 'Looks like no student with that ID exists!')
@@ -1035,7 +1067,7 @@ def recruiter_details(request, recruiterID):
         # If not found there is a 404 error
         company = get_object_or_404(Company, pk=recruiter.companyID.pk)
          # Render the recruiter details page with the recruiter and company objects in the context
-        return render(request, 'recruiter_details.html', context={ 'recruiter' : recruiter, 'company' : company.companyName })
+        return render(request, 'detail_pages/recruiter_details.html', context={ 'recruiter' : recruiter, 'company' : company.companyName })
     except:
         # If no recruiter is found with the passed recruiterID, an error message will display 
         messages.error(request, 'Looks like no recruiter with that ID exists!')
@@ -1054,7 +1086,7 @@ def internship_details(request, internshipID):
         recruiter = get_object_or_404(Recruiter, pk=internship.recruiterID.pk)
 
         # Render the internship details page with the internship, recruiter and company objects in the context
-        return render(request, 'internship_details.html', context={ 'internship' : internship, 'recruiter' : recruiter.fullName, 'company': company.companyName })
+        return render(request, 'detail_pages/internship_details.html', context={ 'internship' : internship, 'recruiter' : recruiter.fullName, 'company': company.companyName })
     except:
         # If no internship is found with the passed internshipID, an error message will display 
         messages.error(request, 'Looks like no internship with that ID exists!')

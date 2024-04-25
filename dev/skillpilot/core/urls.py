@@ -65,6 +65,9 @@ urlpatterns = [
     # path related to admin authentication and authorization
     path('admin-login', views.admin_login, name='admin-login'),
 
+    # path related to admin authentication and authorization
+    path('basic-admin-login', views.basic_admin_login, name='basic-admin-login'),
+
     # paths related to recruiter authentication and authorization
     path('recruiter-signup', views.recruiter_signup, name='recruiter-signup'),
     path('recruiter-login', views.recruiter_login, name='recruiter-login'),
