@@ -10,9 +10,6 @@ In order to run the application you will need to have the following softwares in
 Once your development environment has been configured, travel to the project folder e.g. (SkillPilot-CS3528-v2\dev\skillpilot) and run the command ```python manage.py runserver``` the terminal. Download all needed imports, the command line will tell you how to download them (if any are missed). 
 
 ![image](https://github.com/cs3028-alpha-team/SkillPilot-CS3528-v2/assets/114080696/7a1a22f1-4423-405d-8325-924def412414)
-
-Short video explaining how to set up skillpilot on your machine
-1. [Video link](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
    
 ### Skillpilot navigation
 On the navigation bar you should see "help", click on this and it should navigate you to a page explaining steps for each type of user.
