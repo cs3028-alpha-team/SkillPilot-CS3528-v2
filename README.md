@@ -32,6 +32,7 @@ To run the tests navigate to the project folder and run the command ```python ma
 7. Outside the core file there is a skillpilot file that is created by django when the application was created. This contains files django files for the project, such as settings.py contains django settings for the skillpilot project. 
 9. There are also files outside the skillpilot and core, such as the database called 'dp.sqlite3'.
 
-
-
+### NOTE
+There is a branch called 2FA_login, hic contains the admin 2FA login system and is kept seperate form the main to allow easier testing by saving the user having to constantly login.
+CLicking the Generate 2FA button generates a QR code that is saved into the data folder in the code base. Scannng this links your google authenticator to allow you to get a log in number.
 
