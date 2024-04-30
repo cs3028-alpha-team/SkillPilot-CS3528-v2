@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-ghsloj9x4f@ct2&w7fi3$h53$si^2)jmzga_m8#%3nw(#g75ps
 DEBUG = True
 ALLOWED_HOSTS = ['skillpilotv2-bf0fdedf7855.herokuapp.com']
 
-ALLOWED_HOSTS = []
+
 
 
 # Application definition
