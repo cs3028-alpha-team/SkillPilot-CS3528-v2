@@ -1,1 +1,1 @@
-web: gunicorn skillpilot-v2.wsgi 
+web: cd dev && cd skillpilot && gunicorn skillpilot.wsgi

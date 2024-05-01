@@ -5,12 +5,16 @@ urlpatterns = [
 
     path('', views.home, name='home'),
 
+    # path to home page
     path('home', views.home, name='home'),
-
+    
+    # path to error page
     path('error', views.error, name='error'),
 
+    # path to recruiter page
     path('recruiter', views.recruiter_dashboard, name='recruiter'),
-
+    
+    # path to admin page
     path('admin_page', views.admin, name='admin_page'),
 
     # path to contacts page
@@ -60,6 +64,9 @@ urlpatterns = [
 
     # path related to admin authentication and authorization
     path('admin-login', views.admin_login, name='admin-login'),
+
+    # path related to admin authentication and authorization
+    path('basic-admin-login', views.basic_admin_login, name='basic-admin-login'),
 
     # paths related to recruiter authentication and authorization
     path('recruiter-signup', views.recruiter_signup, name='recruiter-signup'),
